@@ -74,21 +74,25 @@ function extractFollowUpQuestions(content: string): string[] {
     if (lines.length > 0) return lines.slice(0, 4);
   }
 
-  // 4. Dynamic Context Fallback: Extract product name from message and formulate 4 high-value R&D questions
-  let product = "sản phẩm này";
-  const kwMatch = content.match(/(?:keyword|sản phẩm|ngách|cơ hội|khuyến nghị)[=:\"\'\s]+([^\"\n\',.]+)/i);
-  if (kwMatch && kwMatch[1]) {
-    const candidate = kwMatch[1].trim();
-    if (candidate.length > 3 && candidate.length < 60) {
-      product = candidate;
-    }
-  }
+  // 4. Truly Dynamic Context Extraction: Parse Target Keyword, Recommended Product, Price, and Category from Table
+  const kwMatch = content.match(/\*\*Target Keyword\*\*\s*\|\s*\*\*([^*]+)\*\*/i) ||
+                  content.match(/keyword[:=]\s*"([^"]+)"/i) ||
+                  content.match(/sản phẩm\s*['"“]([^'"”]+)['"”]/i) ||
+                  content.match(/cơ hội\s*['"“]([^'"”]+)['"”]/i);
+  const prodMatch = content.match(/\*\*Recommended Product\*\*\s*\|\s*`?([^`|\n]+)`?/i);
+  const priceMatch = content.match(/\*\*Price Range\*\*\s*\|\s*`?([^`|\n]+)`?/i);
+  const catMatch = content.match(/\*\*Category\*\*\s*\|\s*`?([^`|\n]+)`?/i);
+
+  const keyword = kwMatch ? kwMatch[1].trim() : "sản phẩm này";
+  const product = prodMatch ? prodMatch[1].trim() : keyword;
+  const priceRange = priceMatch ? priceMatch[1].trim() : "$18 - $30";
+  const category = catMatch ? catMatch[1].trim() : "Printway R&D";
 
   return [
-    `Phân tích sâu Top 3 đối thủ cạnh tranh có doanh số cao nhất cho ${product}`,
-    `Gợi ý 5 biến thể thiết kế độc đáo và bảng màu thịnh hành trên Pinterest cho ${product}`,
-    `Dự báo chi tiết đà tăng trưởng tìm kiếm Google Trends trong 60 ngày tới`,
-    `Tính toán chi tiết chi phí xưởng Printway và dải giá bán lẻ tối ưu lợi nhuận`
+    `Phân tích sâu Top 3 đối thủ cạnh tranh đang bán chạy nhất cho '${keyword}'`,
+    `Gợi ý 5 biến thể thiết kế và phong cách thẩm mỹ Pinterest cho dòng ${product}`,
+    `Dự báo chi tiết chu kỳ tìm kiếm Google Trends và thời điểm vàng mở bán cho ngách ${category}`,
+    `Đánh giá chiến lược định giá trong dải ${priceRange} và tối ưu biên lợi nhuận xưởng Printway`
   ];
 }
 
