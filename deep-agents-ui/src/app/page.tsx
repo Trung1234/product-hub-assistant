@@ -7,15 +7,9 @@ import { ConfigDialog } from "@/app/components/ConfigDialog";
 import { Button } from "@/components/ui/button";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { ClientProvider, useClient } from "@/providers/ClientProvider";
-import { Settings, MessagesSquare, SquarePen, Sparkles } from "lucide-react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-import { ThreadList } from "@/app/components/ThreadList";
 import { ChatProvider } from "@/providers/ChatProvider";
 import { ChatInterface } from "@/app/components/ChatInterface";
+import { AppSidebar } from "@/app/components/AppSidebar";
 
 interface HomePageInnerProps {
   config: StandaloneConfig;
@@ -32,7 +26,7 @@ function HomePageInner({
 }: HomePageInnerProps) {
   const client = useClient();
   const [threadId, setThreadId] = useQueryState("threadId");
-  const [sidebar, setSidebar] = useQueryState("sidebar");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [mutateThreads, setMutateThreads] = useState<(() => void) | null>(null);
   const [interruptCount, setInterruptCount] = useState(0);
@@ -107,93 +101,28 @@ function HomePageInner({
         onSave={handleSaveConfig}
         initialConfig={config}
       />
-      <div className="flex h-screen flex-col bg-[#080B21] text-white">
-        {/* Cross Border AI Innovation Summit 2026 Header */}
-        <header className="relative flex h-16 items-center justify-between border-b border-[#00FF88]/20 bg-[#0E1538]/80 px-6 backdrop-blur-md">
-          <div className="flex items-center gap-4">
+      <div className="flex h-screen w-screen overflow-hidden bg-[#080B21] text-white">
+        {/* ChatGPT-Style Left Sidebar (Unified Navigation & History) */}
+        <AppSidebar
+          currentThreadId={threadId}
+          onThreadSelect={(id) => setThreadId(id)}
+          onNewResearch={() => setThreadId(null)}
+          onOpenSettings={() => setConfigDialogOpen(true)}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          interruptCount={interruptCount}
+          onMutateReady={(fn) => setMutateThreads(() => fn)}
+        />
 
-            {!sidebar && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSidebar("1")}
-                className="ml-2 rounded-lg border border-[#00FF88]/30 bg-[#101740] px-3 py-1.5 text-xs text-[#00FF88] hover:bg-[#00FF88]/15 hover:text-white transition-all shadow-[0_0_10px_rgba(0,255,136,0.15)]"
-              >
-                <MessagesSquare className="mr-2 h-3.5 w-3.5" />
-                History Threads
-                {interruptCount > 0 && (
-                  <span className="ml-2 inline-flex min-h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] text-destructive-foreground">
-                    {interruptCount}
-                  </span>
-                )}
-              </Button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setConfigDialogOpen(true)}
-              className="border-[#00D2FF]/30 bg-[#101740] text-xs text-[#00D2FF] hover:bg-[#00D2FF]/15 hover:text-white transition-all"
-            >
-              <Settings className="mr-1.5 h-3.5 w-3.5" />
-              Settings
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setThreadId(null)}
-              disabled={!threadId}
-              className="border-[#00FF88] bg-[#00FF88] text-xs font-bold text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all"
-            >
-              <SquarePen className="mr-1.5 h-3.5 w-3.5" />
-              New Research
-            </Button>
-          </div>
-        </header>
-
-        <div className="flex-1 overflow-hidden">
-          <ResizablePanelGroup
-            direction="horizontal"
-            autoSaveId="standalone-chat"
+        {/* Main Full-Height Workspace Area */}
+        <main className="relative flex flex-1 flex-col overflow-hidden bg-[#080B21]">
+          <ChatProvider
+            activeAssistant={assistant}
+            onHistoryRevalidate={() => mutateThreads?.()}
           >
-            {sidebar && (
-              <>
-                <ResizablePanel
-                  id="thread-history"
-                  order={1}
-                  defaultSize={25}
-                  minSize={20}
-                  className="relative min-w-[340px] border-r border-[#00FF88]/15 bg-[#0A0E2A]"
-                >
-                  <ThreadList
-                    onThreadSelect={async (id) => {
-                      await setThreadId(id);
-                    }}
-                    onMutateReady={(fn) => setMutateThreads(() => fn)}
-                    onClose={() => setSidebar(null)}
-                    onInterruptCountChange={setInterruptCount}
-                  />
-                </ResizablePanel>
-                <ResizableHandle className="bg-[#00FF88]/20 hover:bg-[#00FF88]/50 transition-colors" />
-              </>
-            )}
-
-            <ResizablePanel
-              id="chat"
-              className="relative flex flex-col bg-[#080B21]"
-              order={2}
-            >
-              <ChatProvider
-                activeAssistant={assistant}
-                onHistoryRevalidate={() => mutateThreads?.()}
-              >
-                <ChatInterface assistant={assistant} />
-              </ChatProvider>
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </div>
+            <ChatInterface assistant={assistant} />
+          </ChatProvider>
+        </main>
       </div>
     </>
   );
@@ -278,7 +207,7 @@ export default function HomePage() {
     <Suspense
       fallback={
         <div className="flex h-screen items-center justify-center bg-[#080B21]">
-          <p className="text-[#00FF88] font-mono animate-pulse">Initializing Cross Border AI Summit UI...</p>
+          <p className="text-[#00FF88] font-mono animate-pulse">Initializing Printway Opportunity Hub UI...</p>
         </div>
       }
     >
