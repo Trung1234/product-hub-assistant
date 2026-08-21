@@ -6,7 +6,14 @@ const CACHE_TTL = 1000 * 60 * 10; // 10 minutes
 
 export async function POST(req: Request) {
   try {
-    const { prefix, context } = await req.json();
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ completion: "" });
+    }
+
+    const { prefix, context } = body;
 
     if (!prefix || typeof prefix !== "string" || prefix.trim().length < 2) {
       return NextResponse.json({ completion: "" });

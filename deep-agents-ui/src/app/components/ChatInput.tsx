@@ -94,7 +94,6 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
     const timer = setTimeout(async () => {
       try {
-        setIsLlmFetching(true);
         const res = await fetch("/api/prompt-autocomplete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -112,10 +111,8 @@ export const ChatInput = React.memo<ChatInputProps>(({
         if (err.name !== "AbortError") {
           console.error("Dynamic LLM autocomplete error:", err);
         }
-      } finally {
-        setIsLlmFetching(false);
       }
-    }, 220);
+    }, 500);
 
     return () => {
       clearTimeout(timer);
@@ -671,31 +668,6 @@ export const ChatInput = React.memo<ChatInputProps>(({
                   <span className="text-[11px] text-[#00FF88] font-semibold flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
                     {attachments.length} tệp sẵn sàng gửi
-                  </span>
-                )}
-
-                {/* Inline Tab Suggestion Pill */}
-                {activeSuggestion && (
-                  <button
-                    type="button"
-                    onClick={handleAcceptSuggestion}
-                    className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-2.5 py-1 text-[11px] font-medium text-[#00FF88] hover:bg-[#00FF88]/30 transition-all shadow-[0_0_10px_rgba(0,255,136,0.2)] cursor-pointer animate-in fade-in zoom-in-95"
-                    title="Bấm hoặc nhấn Tab để hoàn thành gợi ý từ LLM"
-                  >
-                    <Sparkles className="h-3 w-3 text-[#00FF88]" />
-                    <span className="rounded bg-[#00FF88]/25 px-1 py-0.5 font-mono text-[9px] font-bold text-white">
-                      Tab
-                    </span>
-                    <span className="truncate max-w-[240px] sm:max-w-[360px]">
-                      {activeSuggestion}
-                    </span>
-                  </button>
-                )}
-
-                {isLlmFetching && !activeSuggestion && (
-                  <span className="flex items-center gap-1 text-[10px] text-slate-400 italic">
-                    <Loader2 className="h-2.5 w-2.5 animate-spin text-[#00FF88]" />
-                    <span>AI đang suy luận gợi ý...</span>
                   </span>
                 )}
               </div>
