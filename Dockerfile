@@ -28,12 +28,12 @@ RUN pip install --upgrade pip && \
 # Copy application source code
 COPY . /app/
 
-# Expose server port
+# Expose server ports
 EXPOSE 2024 10000
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:${PORT:-2024}/ok || exit 0
 
-# Start LangGraph server with dynamic PORT and allow-blocking
-CMD ["sh", "-c", "langgraph dev --host 0.0.0.0 --port ${PORT:-2024} --no-reload --no-browser --allow-blocking"]
+# Start LangGraph server via server.py
+CMD ["python", "server.py"]

@@ -102,7 +102,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
     resumeInterrupt,
   } = useChatContext();
 
-  const submitDisabled = isLoading || !assistant;
+  const submitDisabled = isLoading;
 
   const filteredPrompts = useMemo(() => {
     if (activeCategory === "all") return QUICK_PROMPTS;
