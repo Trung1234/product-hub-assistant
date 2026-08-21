@@ -22,12 +22,12 @@ from src.tools.skill_tools import (
 from src.tools.human_tools import ask_user_clarification
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
-# Configure LLM using Printway 9router API parameters
+# Configure LLM using Printway 9router API parameters with deterministic 0.0 temperature
 llm = ChatOpenAI(
     model=MODEL_NAME,
     openai_api_key=OPENAI_API_KEY,
     openai_api_base=OPENAI_API_BASE,
-    temperature=0.1
+    temperature=0.0
 )
 
 # Granular Specialized Tools with 5-Source Market Data, Visual Gallery & Skills
