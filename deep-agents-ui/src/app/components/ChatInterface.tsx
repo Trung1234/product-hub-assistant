@@ -362,16 +362,16 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         </div>
       </div>
 
-      {/* FLOATING SCROLL-TO-BOTTOM BUTTON WHEN SCROLLED UP */}
+      {/* MINIMALIST FLOATING SCROLL-TO-BOTTOM BUTTON WHEN SCROLLED UP */}
       {showScrollBottom && (
         <button
           type="button"
           onClick={handleScrollToBottom}
-          className="absolute bottom-28 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 rounded-full border border-[#00FF88]/40 bg-[#0E1538]/95 px-4 py-2 text-xs font-bold text-white shadow-[0_0_25px_rgba(0,255,136,0.35)] backdrop-blur-md hover:bg-[#121A45] hover:border-[#00FF88] hover:shadow-[0_0_30px_rgba(0,255,136,0.55)] hover:scale-105 transition-all duration-200 animate-in fade-in zoom-in-95 cursor-pointer"
+          className="group absolute bottom-36 left-1/2 -translate-x-1/2 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-[#00FF88]/40 bg-[#0E1538]/90 shadow-[0_0_20px_rgba(0,255,136,0.3)] backdrop-blur-md hover:bg-[#121A45] hover:border-[#00FF88] hover:shadow-[0_0_25px_rgba(0,255,136,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 animate-in fade-in zoom-in-90 cursor-pointer"
           title="Cuộn xuống tin nhắn mới nhất"
+          aria-label="Cuộn xuống tin nhắn mới nhất"
         >
-          <ArrowDown className="h-3.5 w-3.5 text-[#00FF88] animate-bounce" />
-          <span className="text-[12px] font-semibold text-[#00FF88]">Cuộn xuống mới nhất</span>
+          <ArrowDown className="h-4 w-4 text-[#00FF88] transition-transform duration-200 group-hover:translate-y-0.5 animate-bounce" />
         </button>
       )}
 
