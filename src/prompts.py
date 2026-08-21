@@ -116,15 +116,7 @@ Trình bày bảng Markdown 23 cột được tạo từ `record_product_opportu
 ]
 ```
 
-#### 8. 🎨 AI Visual Prompt Studio Cho Midjourney v6 / Ideogram (Interactive Prompt Studio Widget):
-```prompts
-{
-  "model": "Midjourney v6.0 / Ideogram v2",
-  "prompt": "[Prompt chi tiết tạo file in POD 300 DPI, CMYK, tách nền trong suốt --ar 1:1 --v 6.0 --style raw]"
-}
-```
-
-#### 9. 🔗 Bảng Trích Dẫn Dữ Liệu & Link Tải Báo Cáo:
+#### 8. 🔗 Bảng Trích Dẫn Dữ Liệu & Link Tải Báo Cáo:
 - Bảng trích dẫn nguồn dữ liệu (`[Etsy-1]`, `[Amazon-1]`, `[pytrends]`, `[Pinterest]`, `[Printway-Catalog]`).
 - Link tải dữ liệu CSV: `http://127.0.0.1:8001/reports/product_opportunities.csv`.
 
@@ -135,14 +127,14 @@ Kết thúc BẮT BUỘC bằng 4 câu gợi ý ĐƯỢC VIẾT DƯỚI GÓC NH�
 
 QUY TẮC VAI TRÒ TUYỆT ĐỐI (CRITICAL ROLE RULE):
 - KHÔNG ĐƯỢC viết theo vai AI hỏi người dùng (❌ SAI: "Bạn có muốn tôi phân tích đối thủ không?", "Bạn muốn chọn mica hay gỗ?").
-- PHẢI VIẾT theo vai NGƯỜI DÙNG yêu cầu AI (✅ ĐÚNG: "Phân tích chi tiết 5 shop bán chạy nhất ngách này trên Etsy", "So sánh biên lợi nhuận giữa phôi Mica 3mm và Gỗ Plywood xưởng Printway", "Lập kế hoạch chạy Ads TikTok Shop và thời điểm mở bán đón sóng Q4", "Tạo thêm 3 mẫu prompt Midjourney phong cách Watercolor").
+- PHẢI VIẾT theo vai NGƯỜI DÙNG yêu cầu AI (✅ ĐÚNG: "Phân tích chi tiết 5 shop bán chạy nhất ngách này trên Etsy", "So sánh biên lợi nhuận giữa phôi Mica 3mm và Gỗ Plywood xưởng Printway", "Lập kế hoạch chạy Ads TikTok Shop và thời điểm mở bán đón sóng Q4", "Tối ưu chi phí fulfillment và vận chuyển đơn hàng xưởng Printway").
 
 Cấu trúc trả về trong thẻ:
 <follow_up_questions>
 - ↳ [Prompt người dùng 1: Yêu cầu phân tích sâu đối thủ cạnh tranh trên Etsy / Amazon / TikTok Shop]
 - ↳ [Prompt người dùng 2: Yêu cầu so sánh hoặc tùy biến vật liệu phôi xưởng Printway: Mica, Gỗ, Suncatcher, Tumbler]
 - ↳ [Prompt người dùng 3: Yêu cầu lập kế hoạch mở bán đón sóng Google Trends hoặc chiến lược giá]
-- ↳ [Prompt người dùng 4: Yêu cầu tạo thêm prompt Midjourney hoặc tối ưu chi phí Fulfillment xưởng Printway]
+- ↳ [Prompt người dùng 4: Yêu cầu tối ưu chi phí Fulfillment và mở rộng biến thể sản phẩm xưởng Printway]
 </follow_up_questions>
 """
 

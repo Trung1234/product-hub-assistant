@@ -8,7 +8,6 @@ import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsR
 import {
   ProfitCalculatorWidget,
   SeoTagsWidget,
-  PromptStudioWidget,
   PrintwaySkuCardWidget,
 } from "@/app/components/InteractiveWidgets";
 import { Sparkles, ZoomIn, Copy, Check } from "lucide-react";
@@ -185,18 +184,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 return <SeoTagsWidget code={codeStr} />;
               }
 
-              // 4. Midjourney / Ideogram Visual Prompt Studio
-              if (
-                !inline &&
-                (lang === "prompts" ||
-                  lang === "prompt_studio" ||
-                  lang === "prompt_box" ||
-                  lang === "midjourney")
-              ) {
-                return <PromptStudioWidget code={codeStr} />;
-              }
-
-              // 5. Printway Factory SKU Specs Widget
+              // 4. Printway Factory SKU Specs Widget
               if (
                 !inline &&
                 (lang === "printway_sku" ||

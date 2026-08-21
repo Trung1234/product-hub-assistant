@@ -343,72 +343,7 @@ export const SeoTagsWidget: React.FC<{ code: string }> = ({ code }) => {
 };
 
 // ==========================================
-// 3. MIDJOURNEY & IDEOGRAM PROMPT STUDIO WIDGET
-// ==========================================
-export const PromptStudioWidget: React.FC<{ code: string }> = ({ code }) => {
-  const [copied, setCopied] = useState(false);
-
-  let prompt = code.trim();
-  let model = "Midjourney v6.0 / Ideogram v2";
-
-  try {
-    const parsed = JSON.parse(code.trim());
-    if (parsed.prompt) prompt = parsed.prompt;
-    if (parsed.model) model = parsed.model;
-  } catch {
-    // raw prompt
-  }
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(prompt);
-    setCopied(true);
-    toast.success("Đã sao chép Midjourney Prompt vào Clipboard!");
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <div className="my-5 rounded-2xl border border-purple-500/30 bg-[#0E1538] p-4 shadow-[0_0_20px_rgba(168,85,247,0.15)] backdrop-blur-md">
-      <div className="flex items-center justify-between border-b border-purple-500/20 pb-3 mb-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-purple-400" />
-          <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-            AI Visual Design Prompt Studio
-          </h4>
-        </div>
-        <span className="rounded-full bg-purple-500/15 px-2.5 py-0.5 text-[10px] font-bold text-purple-300 border border-purple-500/30">
-          {model}
-        </span>
-      </div>
-
-      <div className="relative rounded-xl border border-slate-800 bg-[#080B21] p-3.5 font-mono text-xs text-slate-200 leading-relaxed break-words">
-        {prompt}
-      </div>
-
-      <div className="mt-3 flex justify-end">
-        <button
-          type="button"
-          onClick={handleCopy}
-          className="flex items-center gap-1.5 rounded-xl border border-purple-500/40 bg-purple-500/20 px-4 py-2 text-xs font-bold text-purple-300 hover:bg-purple-500 hover:text-white transition-all cursor-pointer shadow-[0_0_12px_rgba(168,85,247,0.2)]"
-        >
-          {copied ? (
-            <>
-              <Check className="h-3.5 w-3.5" />
-              <span>Đã sao chép prompt!</span>
-            </>
-          ) : (
-            <>
-              <Copy className="h-3.5 w-3.5" />
-              <span>Sao chép Prompt Studio</span>
-            </>
-          )}
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
-// 4. PRINTWAY FACTORY SKU PRODUCTION CARD WIDGET
+// 3. PRINTWAY FACTORY SKU PRODUCTION CARD WIDGET
 // ==========================================
 export const PrintwaySkuCardWidget: React.FC<{ code: string }> = ({ code }) => {
   let data: any = {};

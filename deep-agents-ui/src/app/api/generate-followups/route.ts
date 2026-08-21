@@ -21,7 +21,7 @@ QUY TẮC VAI TRÒ TUYỆT ĐỐI (CRITICAL ROLE ENFORCEMENT):
   • "Phân tích chi tiết 5 shop bán chạy nhất ngách này trên Etsy"
   • "So sánh biên lợi nhuận giữa phôi Mica 3mm và Gỗ Plywood xưởng Printway"
   • "Lập kế hoạch chạy Ads TikTok Shop và thời điểm mở bán đón sóng Q4"
-  • "Tạo thêm 3 mẫu prompt Midjourney phong cách Watercolor và Vintage"
+  • "Tối ưu chi phí fulfillment và vận chuyển đơn hàng xưởng Printway"
 
 Quy tắc định dạng:
 Trả về DUY NHẤT một JSON array chứa đúng 4 chuỗi câu prompt:
