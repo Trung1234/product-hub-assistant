@@ -233,7 +233,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                         <Clock size={15} className="text-amber-400 animate-spin" />
                       )}
                       <span>
-                        Tasks: {groupedTodos.completed.length}/{todos.length} hoàn thành
+                        Nhiệm vụ R&D: {groupedTodos.completed.length}/{todos.length} đã xong
                       </span>
                       <ChevronDown size={14} className="text-[#00FF88]" />
                     </button>
@@ -246,7 +246,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                       className="flex items-center gap-1.5 text-xs text-[#00D2FF] hover:underline cursor-pointer"
                     >
                       <FileIcon size={14} />
-                      Files ({Object.keys(files).length})
+                      Tệp dữ liệu ({Object.keys(files).length})
                       <ChevronDown size={14} />
                     </button>
                   )}
@@ -269,7 +269,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                               : "text-[#94A3B8] hover:text-white"
                           )}
                         >
-                          Research Plan ({todos.length})
+                          Kế hoạch R&D ({todos.length})
                         </button>
                       )}
                       {hasFiles && (
@@ -283,7 +283,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                               : "text-[#94A3B8] hover:text-white"
                           )}
                         >
-                          State Files ({Object.keys(files).length})
+                          Tệp dữ liệu hệ thống ({Object.keys(files).length})
                         </button>
                       )}
                     </div>
@@ -360,7 +360,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                     <HelpCircle className="h-3.5 w-3.5 text-[#080B21]" />
                   </div>
                   <span className="text-xs font-extrabold uppercase tracking-wider text-amber-400">
-                    AI Copilot Cần Làm Rõ Thông Tin (Handoff To User)
+                    AI Copilot Cần Làm Rõ Thông Tin (Hỏi Ý Kiến Bạn)
                   </span>
                 </div>
                 <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40 animate-pulse">

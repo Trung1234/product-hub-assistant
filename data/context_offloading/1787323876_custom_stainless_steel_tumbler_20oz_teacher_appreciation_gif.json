@@ -1,0 +1,31 @@
+{
+  "keyword": "Custom Stainless Steel Tumbler 20oz Teacher Appreciation Gift",
+  "timestamp": 1787323876,
+  "created_at": "2026-08-21 21:51:16",
+  "data": {
+    "keyword": "Custom Stainless Steel Tumbler 20oz Teacher Appreciation Gift",
+    "category": "Drinkware",
+    "material": "Stainless Steel 304",
+    "recommended_product": "Custom 20oz stainless steel teacher appreciation tumbler with lid and straw",
+    "opportunity_score": 63.1,
+    "google_trend": 7.0,
+    "etsy": {
+      "search_volume": 12800,
+      "active_listings": 232,
+      "avg_price_usd": 15.86,
+      "monthly_sales": 1173
+    },
+    "amazon": {
+      "monthly_sales_units": 1237,
+      "price_range_usd": "$15.86 - $23.86",
+      "amazon_bsr": 15420
+    },
+    "scores": {
+      "demand": 64,
+      "competition": 72,
+      "sales_velocity": 59,
+      "google_trend": 7.0,
+      "opportunity": 63.1
+    }
+  }
+}

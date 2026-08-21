@@ -252,16 +252,16 @@ function HomePageContent() {
         <div className="flex h-screen items-center justify-center bg-[#080B21] text-white">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-[#00FF88] drop-shadow-[0_0_10px_rgba(0,255,136,0.5)]">
-              Cross Border AI Innovation Hub
+              Printway Product Opportunity Hub
             </h1>
             <p className="mt-2 text-sm text-[#94A3B8]">
-              Configure your Printway R&D deployment to get started
+              Cấu hình kết nối hệ thống Printway R&D để bắt đầu
             </p>
             <Button
               onClick={() => setConfigDialogOpen(true)}
-              className="mt-4 border border-[#00FF88] bg-[#00FF88] text-[#080B21] font-bold hover:bg-[#00FF88]/80 shadow-[0_0_15px_rgba(0,255,136,0.4)]"
+              className="mt-4 border border-[#00FF88] bg-[#00FF88] text-[#080B21] font-bold hover:bg-[#00FF88]/80 shadow-[0_0_15px_rgba(0,255,136,0.4)] cursor-pointer"
             >
-              Open Configuration
+              Mở bảng cấu hình
             </Button>
           </div>
         </div>
@@ -289,7 +289,7 @@ export default function HomePage() {
     <Suspense
       fallback={
         <div className="flex h-screen items-center justify-center bg-[#080B21]">
-          <p className="text-[#00FF88] font-mono animate-pulse">Initializing Printway Opportunity Hub UI...</p>
+          <p className="text-[#00FF88] font-mono animate-pulse">Đang khởi tạo giao diện Printway Opportunity Hub...</p>
         </div>
       }
     >

@@ -47,7 +47,7 @@ export function ConfigDialog({
 
   const handleSave = () => {
     if (!deploymentUrl || !assistantId) {
-      alert("Please fill in all required fields");
+      alert("Vui lòng điền đầy đủ các trường bắt buộc");
       return;
     }
 
@@ -64,37 +64,42 @@ export function ConfigDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="sm:max-w-[525px] bg-[#0E1538] border-[#00FF88]/30 text-white shadow-[0_0_40px_rgba(0,255,136,0.2)]">
         <DialogHeader>
-          <DialogTitle>Configuration</DialogTitle>
-          <DialogDescription>
-            Configure your LangGraph deployment settings. These settings are
-            saved in your browser&apos;s local storage.
+          <DialogTitle className="text-white text-base font-bold">Cấu hình hệ thống R&D</DialogTitle>
+          <DialogDescription className="text-slate-400 text-xs">
+            Cấu hình thông số kết nối LangGraph Server và định danh Agent R&D. Cài đặt được lưu an toàn trong trình duyệt của bạn.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="deploymentUrl">Deployment URL</Label>
+            <Label htmlFor="deploymentUrl" className="text-slate-300 text-xs font-semibold">
+              Địa chỉ máy chủ (Deployment URL)
+            </Label>
             <Input
               id="deploymentUrl"
-              placeholder="https://<deployment-url>"
+              placeholder="http://127.0.0.1:2024"
               value={deploymentUrl}
               onChange={(e) => setDeploymentUrl(e.target.value)}
+              className="bg-[#080B21] border-slate-800 text-white text-xs focus:border-[#00FF88]"
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="assistantId">Assistant ID</Label>
+            <Label htmlFor="assistantId" className="text-slate-300 text-xs font-semibold">
+              Mã Agent (Assistant / Graph ID)
+            </Label>
             <Input
               id="assistantId"
-              placeholder="<assistant-id>"
+              placeholder="product_opportunity_hub"
               value={assistantId}
               onChange={(e) => setAssistantId(e.target.value)}
+              className="bg-[#080B21] border-slate-800 text-white text-xs focus:border-[#00FF88]"
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="langsmithApiKey">
+            <Label htmlFor="langsmithApiKey" className="text-slate-300 text-xs font-semibold">
               LangSmith API Key{" "}
-              <span className="text-muted-foreground">(Optional)</span>
+              <span className="text-slate-500 font-normal">(Tùy chọn)</span>
             </Label>
             <Input
               id="langsmithApiKey"
@@ -102,17 +107,26 @@ export function ConfigDialog({
               placeholder="lsv2_pt_..."
               value={langsmithApiKey}
               onChange={(e) => setLangsmithApiKey(e.target.value)}
+              className="bg-[#080B21] border-slate-800 text-white text-xs focus:border-[#00FF88]"
             />
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="gap-2 sm:gap-0">
           <Button
+            type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
+            className="border-slate-700 bg-transparent text-slate-300 hover:bg-slate-800 text-xs"
           >
-            Cancel
+            Hủy bỏ
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button
+            type="button"
+            onClick={handleSave}
+            className="border border-[#00FF88] bg-[#00FF88] text-[#080B21] hover:bg-[#00FF88]/85 text-xs font-bold shadow-[0_0_15px_rgba(0,255,136,0.3)]"
+          >
+            Lưu cấu hình
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

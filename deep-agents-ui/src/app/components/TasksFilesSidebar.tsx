@@ -176,9 +176,9 @@ export const TasksFilesSidebar = React.memo<{
   }, [todos]);
 
   const groupedLabels = {
-    pending: "Pending",
-    in_progress: "In Progress",
-    completed: "Completed",
+    pending: "Chờ xử lý",
+    in_progress: "Đang thực thi",
+    completed: "Đã hoàn thành",
   };
 
   return (
@@ -187,7 +187,7 @@ export const TasksFilesSidebar = React.memo<{
         <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
           <div className="flex items-center justify-between px-3 pb-1.5 pt-2">
             <span className="text-xs font-semibold tracking-wide text-zinc-600">
-              AGENT TASKS
+              KẾ HOẠCH R&D
             </span>
             <button
               onClick={() => setTasksOpen((v) => !v)}
@@ -195,7 +195,7 @@ export const TasksFilesSidebar = React.memo<{
                 "flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-transform duration-200 hover:bg-muted",
                 tasksOpen ? "rotate-180" : "rotate-0"
               )}
-              aria-label="Toggle tasks panel"
+              aria-label="Đóng mở danh sách kế hoạch"
             >
               <ChevronDown size={14} />
             </button>
@@ -206,13 +206,13 @@ export const TasksFilesSidebar = React.memo<{
                 {todos.length === 0 ? (
                   <div className="flex h-full items-center justify-center p-4 text-center">
                     <p className="text-xs text-muted-foreground">
-                      No tasks created yet
+                      Chưa có nhiệm vụ nào
                     </p>
                   </div>
                 ) : (
                   <div className="ml-1 p-0.5">
                     {Object.entries(groupedTodos).map(([status, todos]) => (
-                      <div className="mb-4">
+                      <div className="mb-4" key={status}>
                         <h3 className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-tertiary">
                           {groupedLabels[status as keyof typeof groupedLabels]}
                         </h3>
@@ -237,7 +237,7 @@ export const TasksFilesSidebar = React.memo<{
 
           <div className="flex items-center justify-between px-3 pb-1.5 pt-2">
             <span className="text-xs font-semibold tracking-wide text-zinc-600">
-              FILE SYSTEM
+              TỆP HỆ THỐNG
             </span>
             <button
               onClick={() => setFilesOpen((v) => !v)}

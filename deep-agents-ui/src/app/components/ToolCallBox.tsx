@@ -121,7 +121,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
           </div>
           <div className="flex items-center gap-1.5 text-slate-400">
             <span className="text-[10px] uppercase tracking-wider text-slate-400">
-              {isExpanded ? "Collapse" : "Inspect"}
+              {isExpanded ? "Thu gọn" : "Chi tiết"}
             </span>
             {isExpanded ? (
               <ChevronUp
@@ -146,7 +146,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                   stream={stream}
                   message={uiComponent}
                   namespace={graphId}
-                  meta={{ status, args, result: result ?? "No Result Yet" }}
+                  meta={{ status, args, result: result ?? "Chưa có kết quả" }}
                 />
               </div>
             ) : actionRequest && onResume ? (
@@ -163,7 +163,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                 {Object.keys(args).length > 0 && (
                   <div>
                     <h4 className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#00FF88]">
-                      Input Arguments
+                      Tham số đầu vào
                     </h4>
                     <pre className="max-h-48 overflow-x-auto rounded-lg border border-[#00FF88]/15 bg-[#080B21]/80 p-2.5 font-mono text-[11px] leading-relaxed text-slate-300">
                       {JSON.stringify(args, null, 2)}
@@ -174,7 +174,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                 {result && (
                   <div>
                     <h4 className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[#00D2FF]">
-                      Tool Execution Output
+                      Kết quả thực thi công cụ
                     </h4>
                     <pre className="max-h-60 overflow-x-auto rounded-lg border border-[#00D2FF]/20 bg-[#080B21]/80 p-2.5 font-mono text-[11px] leading-relaxed text-slate-300">
                       {typeof result === "string" ? result : JSON.stringify(result, null, 2)}

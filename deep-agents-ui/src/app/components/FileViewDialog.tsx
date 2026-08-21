@@ -68,7 +68,7 @@ export const FileViewDialog = React.memo<{
     },
     {
       onSuccess: () => setIsEditingMode(false),
-      onError: (error) => toast.error(`Failed to save file: ${error}`),
+      onError: (error) => toast.error(`Lưu tệp thất bại: ${error}`),
     }
   );
 
@@ -94,6 +94,7 @@ export const FileViewDialog = React.memo<{
   const handleCopy = useCallback(() => {
     if (fileContent) {
       navigator.clipboard.writeText(fileContent);
+      toast.success("Đã sao chép nội dung tệp");
     }
   }, [fileContent]);
 
@@ -138,23 +139,23 @@ export const FileViewDialog = React.memo<{
       open={true}
       onOpenChange={onClose}
     >
-      <DialogContent className="flex h-[80vh] max-h-[80vh] min-w-[60vw] flex-col p-6">
+      <DialogContent className="flex h-[80vh] max-h-[80vh] min-w-[60vw] flex-col p-6 bg-[#0E1538] border-[#00FF88]/30 text-white">
         <DialogTitle className="sr-only">
-          {file?.path || "New File"}
+          {file?.path || "Tệp mới"}
         </DialogTitle>
-        <div className="mb-4 flex items-center justify-between border-b border-border pb-4">
+        <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-4">
           <div className="flex min-w-0 items-center gap-2">
-            <FileText className="text-primary/50 h-5 w-5 shrink-0" />
+            <FileText className="text-[#00FF88] h-5 w-5 shrink-0" />
             {isEditingMode && file === null ? (
               <Input
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
-                placeholder="Enter filename..."
-                className="text-base font-medium"
+                placeholder="Nhập tên tệp..."
+                className="text-base font-medium bg-[#080B21] border-slate-800 text-white"
                 aria-invalid={!fileNameIsValid}
               />
             ) : (
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium text-primary">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium text-[#00FF88]">
                 {file?.path}
               </span>
             )}
@@ -166,38 +167,38 @@ export const FileViewDialog = React.memo<{
                   onClick={handleEdit}
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2"
+                  className="h-8 px-2 text-slate-300 hover:text-white"
                   disabled={editDisabled}
                 >
                   <Edit
                     size={16}
                     className="mr-1"
                   />
-                  Edit
+                  Chỉnh sửa
                 </Button>
                 <Button
                   onClick={handleCopy}
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2"
+                  className="h-8 px-2 text-slate-300 hover:text-white"
                 >
                   <Copy
                     size={16}
                     className="mr-1"
                   />
-                  Copy
+                  Sao chép
                 </Button>
                 <Button
                   onClick={handleDownload}
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-2"
+                  className="h-8 px-2 text-slate-300 hover:text-white"
                 >
                   <Download
                     size={16}
                     className="mr-1"
                   />
-                  Download
+                  Tải về
                 </Button>
               </>
             )}
@@ -208,11 +209,11 @@ export const FileViewDialog = React.memo<{
             <Textarea
               value={fileContent}
               onChange={(e) => setFileContent(e.target.value)}
-              placeholder="Enter file content..."
-              className="h-full min-h-[400px] resize-none font-mono text-sm"
+              placeholder="Nhập nội dung tệp..."
+              className="h-full min-h-[400px] resize-none font-mono text-sm bg-[#080B21] border-slate-800 text-white"
             />
           ) : (
-            <ScrollArea className="bg-surface h-full rounded-md">
+            <ScrollArea className="bg-[#080B21] h-full rounded-md border border-slate-800/80">
               <div className="p-4">
                 {fileContent ? (
                   isMarkdown ? (
@@ -227,6 +228,7 @@ export const FileViewDialog = React.memo<{
                         margin: 0,
                         borderRadius: "0.5rem",
                         fontSize: "0.875rem",
+                        backgroundColor: "#080B21"
                       }}
                       showLineNumbers
                       wrapLines={true}
@@ -241,8 +243,8 @@ export const FileViewDialog = React.memo<{
                   )
                 ) : (
                   <div className="flex items-center justify-center p-12">
-                    <p className="text-sm text-muted-foreground">
-                      File is empty
+                    <p className="text-sm text-slate-500">
+                      Tệp rỗng
                     </p>
                   </div>
                 )}
@@ -251,21 +253,23 @@ export const FileViewDialog = React.memo<{
           )}
         </div>
         {isEditingMode && (
-          <div className="mt-4 flex justify-end gap-2 border-t border-border pt-4">
+          <div className="mt-4 flex justify-end gap-2 border-t border-slate-800 pt-4">
             <Button
               onClick={handleCancel}
               variant="outline"
               size="sm"
+              className="border-slate-700 text-slate-300 hover:bg-slate-800"
             >
               <X
                 size={16}
                 className="mr-1"
               />
-              Cancel
+              Hủy bỏ
             </Button>
             <Button
               onClick={() => fileUpdate.trigger()}
               size="sm"
+              className="border border-[#00FF88] bg-[#00FF88] text-[#080B21] font-bold hover:bg-[#00FF88]/85"
               disabled={
                 fileUpdate.isMutating ||
                 !fileName.trim() ||
@@ -284,7 +288,7 @@ export const FileViewDialog = React.memo<{
                   className="mr-1"
                 />
               )}
-              Save
+              Lưu lại
             </Button>
           </div>
         )}

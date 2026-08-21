@@ -238,7 +238,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                     <div className="w-full max-w-full">
                       <div className="bg-[#0E1538] border-[#00FF88]/20 rounded-xl border p-4 shadow-[0_0_15px_rgba(0,255,136,0.1)]">
                         <h4 className="text-[#00FF88] mb-2 text-xs font-semibold uppercase tracking-wider">
-                          Sub-Agent Input
+                          Dữ Liệu Đầu Vào Của Sub-Agent
                         </h4>
                         <div className="mb-4 text-xs text-[#94A3B8]">
                           <MarkdownContent
@@ -248,7 +248,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                         {subAgent.output && (
                           <>
                             <h4 className="text-[#00D2FF] mb-2 text-xs font-semibold uppercase tracking-wider">
-                              Sub-Agent Insights
+                              Thông Tin Phân Tích Của Sub-Agent
                             </h4>
                             <div className="text-xs text-[#94A3B8]">
                               <MarkdownContent

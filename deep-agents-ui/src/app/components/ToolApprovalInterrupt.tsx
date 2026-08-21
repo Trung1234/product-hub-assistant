@@ -105,45 +105,45 @@ export function ToolApprovalInterrupt({
   };
 
   return (
-    <div className="w-full rounded-md border border-border bg-muted/30 p-4">
+    <div className="w-full rounded-xl border border-amber-500/30 bg-[#0E1538] p-4 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
       {/* Header */}
-      <div className="mb-3 flex items-center gap-2 text-foreground">
+      <div className="mb-3 flex items-center gap-2 text-white">
         <AlertCircle
           size={16}
-          className="text-yellow-600 dark:text-yellow-400"
+          className="text-amber-400"
         />
-        <span className="text-xs font-semibold uppercase tracking-wider">
-          Approval Required
+        <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
+          Yêu cầu phê duyệt hành động
         </span>
       </div>
 
       {/* Description */}
       {actionRequest.description && (
-        <p className="mb-3 text-sm text-muted-foreground">
+        <p className="mb-3 text-xs text-slate-300">
           {actionRequest.description}
         </p>
       )}
 
       {/* Tool Info Card */}
-      <div className="mb-4 rounded-sm border border-border bg-background p-3">
+      <div className="mb-4 rounded-xl border border-slate-800 bg-[#080B21] p-3">
         <div className="mb-2">
-          <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Tool
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            Công cụ thực thi
           </span>
-          <p className="mt-1 font-mono text-sm font-medium text-foreground">
+          <p className="mt-1 font-mono text-xs font-semibold text-[#00FF88]">
             {actionRequest.name}
           </p>
         </div>
 
         {isEditing ? (
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Edit Arguments
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#00D2FF]">
+              Chỉnh sửa tham số
             </span>
             <div className="mt-2 space-y-3">
               {Object.entries(actionRequest.args).map(([key, value]) => (
                 <div key={key}>
-                  <label className="mb-1 block text-xs font-medium text-foreground">
+                  <label className="mb-1 block text-xs font-medium text-slate-300">
                     {key}
                   </label>
                   <Textarea
@@ -157,7 +157,7 @@ export function ToolApprovalInterrupt({
                         : JSON.stringify(value, null, 2)
                     }
                     onChange={(e) => updateEditedArg(key, e.target.value)}
-                    className="font-mono text-xs"
+                    className="font-mono text-xs bg-[#0E1538] border-slate-800 text-white"
                     rows={
                       typeof value === "string" && value.length < 100 ? 2 : 4
                     }
@@ -169,10 +169,10 @@ export function ToolApprovalInterrupt({
           </div>
         ) : (
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Arguments
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              Tham số đầu vào
             </span>
-            <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all rounded-sm border border-border bg-muted/40 p-2 font-mono text-xs text-foreground">
+            <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-slate-800 bg-[#0A0E2A] p-2 font-mono text-xs text-slate-300">
               {JSON.stringify(actionRequest.args, null, 2)}
             </pre>
           </div>
@@ -182,14 +182,14 @@ export function ToolApprovalInterrupt({
       {/* Rejection Message Input */}
       {showRejectionInput && !isEditing && (
         <div className="mb-4">
-          <label className="mb-2 block text-xs font-medium text-foreground">
-            Rejection Message (optional)
+          <label className="mb-2 block text-xs font-medium text-slate-300">
+            Lý do từ chối (tùy chọn)
           </label>
           <Textarea
             value={rejectionMessage}
             onChange={(e) => setRejectionMessage(e.target.value)}
-            placeholder="Explain why you're rejecting this action..."
-            className="text-sm"
+            placeholder="Giải thích lý do bạn từ chối hành động này..."
+            className="text-xs bg-[#080B21] border-slate-800 text-white"
             rows={2}
             disabled={isLoading}
           />
@@ -205,17 +205,18 @@ export function ToolApprovalInterrupt({
               size="sm"
               onClick={cancelEditing}
               disabled={isLoading}
+              className="border-slate-700 text-slate-300 text-xs"
             >
-              Cancel
+              Hủy bỏ
             </Button>
             <Button
               size="sm"
               onClick={handleEdit}
               disabled={isLoading}
-              className="bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
+              className="bg-[#00FF88] text-[#080B21] hover:bg-[#00FF88]/85 font-bold text-xs"
             >
-              <Check size={14} />
-              {isLoading ? "Saving..." : "Save & Approve"}
+              <Check size={14} className="mr-1" />
+              {isLoading ? "Đang lưu..." : "Lưu & Phê duyệt"}
             </Button>
           </>
         ) : showRejectionInput ? (
@@ -228,16 +229,18 @@ export function ToolApprovalInterrupt({
                 setRejectionMessage("");
               }}
               disabled={isLoading}
+              className="border-slate-700 text-slate-300 text-xs"
             >
-              Cancel
+              Hủy bỏ
             </Button>
             <Button
               variant="destructive"
               size="sm"
               onClick={handleRejectConfirm}
               disabled={isLoading}
+              className="text-xs font-bold"
             >
-              {isLoading ? "Rejecting..." : "Confirm Reject"}
+              {isLoading ? "Đang từ chối..." : "Xác nhận từ chối"}
             </Button>
           </>
         ) : (
@@ -248,10 +251,10 @@ export function ToolApprovalInterrupt({
                 size="sm"
                 onClick={handleReject}
                 disabled={isLoading}
-                className="text-destructive hover:bg-destructive/10"
+                className="border-rose-500/30 text-rose-400 hover:bg-rose-500/10 text-xs"
               >
-                <X size={14} />
-                Reject
+                <X size={14} className="mr-1" />
+                Từ chối
               </Button>
             )}
             {allowedDecisions.includes("edit") && (
@@ -260,9 +263,10 @@ export function ToolApprovalInterrupt({
                 size="sm"
                 onClick={startEditing}
                 disabled={isLoading}
+                className="border-slate-700 text-slate-300 hover:bg-slate-800 text-xs"
               >
-                <Pencil size={14} />
-                Edit
+                <Pencil size={14} className="mr-1" />
+                Chỉnh sửa
               </Button>
             )}
             {allowedDecisions.includes("approve") && (
@@ -270,13 +274,10 @@ export function ToolApprovalInterrupt({
                 size="sm"
                 onClick={handleApprove}
                 disabled={isLoading}
-                className={cn(
-                  "bg-green-600 text-white hover:bg-green-700",
-                  "dark:bg-green-600 dark:hover:bg-green-700"
-                )}
+                className="border border-[#00FF88] bg-[#00FF88] text-[#080B21] hover:bg-[#00FF88]/85 font-bold text-xs shadow-[0_0_15px_rgba(0,255,136,0.3)]"
               >
-                <Check size={14} />
-                {isLoading ? "Approving..." : "Approve"}
+                <Check size={14} className="mr-1" />
+                {isLoading ? "Đang phê duyệt..." : "Phê duyệt"}
               </Button>
             )}
           </>

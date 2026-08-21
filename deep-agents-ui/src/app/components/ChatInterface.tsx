@@ -29,24 +29,24 @@ interface ChatInterfaceProps {
 
 const QUICK_PROMPTS = [
   {
-    title: "Christmas 2026: Baby First Ornament",
+    title: "Giáng Sinh: Baby First Ornament",
     query: "Nghiên cứu xu hướng và cơ hội sản phẩm 'Baby First Christmas Ornament 2026 Custom Acrylic Keepsake' trên Etsy, Amazon, Google Trends và Pinterest.",
-    badge: "Holiday Campaign / Acrylic"
+    badge: "Chiến dịch Giáng Sinh / Mica 3mm"
   },
   {
-    title: "Father's Day: Grandpa Acrylic Desk Plaque",
+    title: "Ngày của Cha: Kỷ niệm chương Mica đế gỗ LED",
     query: "Phân tích tiềm năng ngách 'Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light' cho thị trường US.",
-    badge: "Gifts / Wood & Acrylic"
+    badge: "Quà tặng Cha / Gỗ & Mica LED"
   },
   {
-    title: "Mother's Day: Embroidered Mama Sweatshirt",
+    title: "Ngày của Mẹ: Áo nỉ thêu tên con",
     query: "Đánh giá cơ hội thị trường cho 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Phân tích nhu cầu tìm kiếm, cạnh tranh và gu thẩm mỹ Pinterest.",
-    badge: "Apparel / Cotton Embroidery"
+    badge: "Thời trang / Áo nỉ thêu vi tính"
   },
   {
-    title: "Everyday Drinkware: Teacher Tumbler 20oz",
-    query: "Kiểm tra tiềm năng sản phẩm 'Custom Stainless Steel Tumbler 20oz Teacher Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon và biên lợi nhuận xưởng Printway.",
-    badge: "Drinkware / Stainless Steel"
+    title: "Đồ uống hàng ngày: Ly giữ nhiệt 40oz quai cầm",
+    query: "Kiểm tra tiềm năng sản phẩm 'Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon và biên lợi nhuận xưởng Printway.",
+    badge: "Ly giữ nhiệt / Inox 304"
   }
 ];
 

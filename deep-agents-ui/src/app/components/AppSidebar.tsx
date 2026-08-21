@@ -42,7 +42,7 @@ function formatTime(date: Date, now = new Date()): string {
 }
 
 function truncateTitle(title: string, maxLength: number = 28): string {
-  if (!title) return "Research Session";
+  if (!title) return "Phiên nghiên cứu";
   const clean = title.trim();
   if (clean.length <= maxLength) return clean;
   return clean.slice(0, maxLength) + "...";
@@ -113,13 +113,13 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 <button
                   type="button"
                   onClick={onToggleCollapse}
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors"
+                  className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
                 >
                   <PanelLeftClose className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                Thu gọn Sidebar
+                Thu gọn thanh bên
               </TooltipContent>
             </Tooltip>
           )}
@@ -134,7 +134,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
               className="w-full justify-start gap-2.5 rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 px-3.5 py-2 text-xs font-bold text-[#00FF88] shadow-[0_0_12px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer"
             >
               <SquarePen className="h-4 w-4 shrink-0" />
-              <span className="truncate">New research</span>
+              <span className="truncate">Nghiên cứu mới</span>
             </Button>
           ) : (
             <Tooltip>
@@ -148,7 +148,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                New research
+                Nghiên cứu mới
               </TooltipContent>
             </Tooltip>
           )}
@@ -168,7 +168,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                Mở rộng Sidebar
+                Mở rộng thanh bên
               </TooltipContent>
             </Tooltip>
           </div>
@@ -204,10 +204,10 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           {!collapsed && (
             <div className="py-2 pb-6 space-y-1">
               <div className="px-2 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
-                <span>Recents</span>
+                <span>Gần đây</span>
                 {interruptCount > 0 && (
                   <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-400 border border-amber-500/40">
-                    {interruptCount} attention
+                    {interruptCount} cần phản hồi
                   </span>
                 )}
               </div>
@@ -215,7 +215,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
               {isLoading && (
                 <div className="flex items-center justify-center py-6 text-xs text-slate-400">
                   <Loader2 className="h-4 w-4 animate-spin mr-2 text-[#00FF88]" />
-                  Loading threads...
+                  Đang tải lịch sử nghiên cứu...
                 </div>
               )}
 
@@ -228,7 +228,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
               <div className="space-y-1">
                 {filteredThreads.map((thread) => {
                   const isActive = currentThreadId === thread.id;
-                  const rawTitle = thread.title || thread.description || "Research Session";
+                  const rawTitle = thread.title || thread.description || "Phiên nghiên cứu";
                   const displayTitle = truncateTitle(rawTitle, 28);
 
                   return (
@@ -282,7 +282,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
               className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-300 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
             >
               <Settings className="h-4 w-4" />
-              <span>Settings</span>
+              <span>Cài đặt hệ thống</span>
             </button>
           ) : (
             <Tooltip>
@@ -296,7 +296,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 </button>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                Settings
+                Cài đặt hệ thống
               </TooltipContent>
             </Tooltip>
           )}
