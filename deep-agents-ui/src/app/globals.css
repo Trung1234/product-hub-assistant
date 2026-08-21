@@ -331,3 +331,44 @@ pre {
     color: #1E293B !important;
   }
 }
+
+/* Sonner Cyberpunk Glassmorphism Toaster Enhancements */
+[data-sonner-toaster] {
+  z-index: 999999 !important;
+  font-family: inherit;
+}
+
+[data-sonner-toast] {
+  background: rgba(14, 21, 56, 0.95) !important;
+  backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 255, 136, 0.1) !important;
+  border-radius: 1rem !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  border-color: rgba(0, 255, 136, 0.4) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 255, 136, 0.2) !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  border-color: rgba(244, 63, 94, 0.4) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(244, 63, 94, 0.2) !important;
+}
+
+[data-sonner-toast][data-type="info"] {
+  border-color: rgba(0, 210, 255, 0.4) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 210, 255, 0.2) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 700 !important;
+  font-size: 0.8125rem !important;
+  color: #FFFFFF !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: #94A3B8 !important;
+  font-size: 0.75rem !important;
+}

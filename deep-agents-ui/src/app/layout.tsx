@@ -80,7 +80,7 @@ export const metadata: Metadata = {
       { url: "/favicon.png", type: "image/png" },
     ],
     shortcut: "/favicon.ico",
-    apple: "/printway-logo.png",
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.webmanifest",
 };

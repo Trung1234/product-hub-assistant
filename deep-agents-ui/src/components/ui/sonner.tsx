@@ -21,6 +21,7 @@ export const Toaster = ({ ...props }: ToasterProps) => {
       richColors={false}
       closeButton
       duration={3200}
+      style={{ zIndex: 99999 }}
       icons={{
         success: <CheckCircle2 className="h-4 w-4 text-[#00FF88]" />,
         info: <Info className="h-4 w-4 text-[#00D2FF]" />,
