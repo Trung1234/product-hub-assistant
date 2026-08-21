@@ -13,16 +13,22 @@ export interface ThreadItem {
   description: string;
   assistantId?: string;
   userId?: string;
+  isShared?: boolean;
+  shareToken?: string;
+  ownerName?: string;
+  ownerRole?: string;
 }
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 25;
 
-export function useThreads(props: {
+export function useThreads(props?: {
   status?: Thread["status"];
   limit?: number;
+  filterMode?: "all" | "mine" | "shared";
 }) {
-  const { user } = useAuth();
-  const pageSize = props.limit || DEFAULT_PAGE_SIZE;
+  const { user, profile } = useAuth();
+  const pageSize = props?.limit || DEFAULT_PAGE_SIZE;
+  const filterMode = props?.filterMode || "all";
   const userKey = user ? (user.id || user.email) : "anonymous";
 
   return useSWRInfinite(
@@ -45,6 +51,8 @@ export function useThreads(props: {
         kind: "threads" as const,
         userKey,
         userId: user?.id,
+        orgId: profile?.org_id || "printway_internal",
+        filterMode,
         pageIndex,
         pageSize,
         deploymentUrl: config.deploymentUrl,
@@ -59,6 +67,8 @@ export function useThreads(props: {
       apiKey,
       status,
       userId,
+      orgId,
+      filterMode,
       userKey,
       pageIndex,
       pageSize,
@@ -66,6 +76,8 @@ export function useThreads(props: {
       kind: "threads";
       userKey: string;
       userId?: string;
+      orgId?: string;
+      filterMode: "all" | "mine" | "shared";
       pageIndex: number;
       pageSize: number;
       deploymentUrl: string;
@@ -78,36 +90,72 @@ export function useThreads(props: {
         defaultHeaders: apiKey ? { "X-Api-Key": apiKey } : {},
       });
 
-      // 1. First, check User's private threads in Supabase / LocalStorage
-      let userThreadIds: string[] = [];
-      
-      if (isSupabaseConfigured && supabase && userId) {
-        try {
-          const { data } = await supabase
-            .from("user_sessions")
-            .select("thread_id, title, last_active")
-            .eq("user_id", userId)
-            .order("last_active", { ascending: false })
-            .limit(pageSize);
+      // 1. Fetch User's private threads & shared threads from Supabase
+      let ownedThreadIds: string[] = [];
+      const sharedThreadIds: string[] = [];
+      const sharedMetaMap = new Map<string, { shareToken?: string; ownerName?: string; ownerRole?: string }>();
 
-          if (data && data.length > 0) {
-            userThreadIds = data.map((d: any) => d.thread_id);
+      if (isSupabaseConfigured && supabase) {
+        try {
+          // A. Fetch Owned Sessions
+          if (userId && (filterMode === "mine" || filterMode === "all")) {
+            const { data: ownData } = await supabase
+              .from("user_sessions")
+              .select("thread_id, title, last_active")
+              .eq("user_id", userId)
+              .order("last_active", { ascending: false })
+              .limit(pageSize);
+
+            if (ownData && ownData.length > 0) {
+              ownedThreadIds = ownData.map((d: any) => d.thread_id);
+            }
           }
-        } catch {
-          // fallback to localStorage
+
+          // B. Fetch Shared Sessions (Org-level or direct collaborator)
+          if (filterMode === "shared" || filterMode === "all") {
+            const { data: sharedData } = await supabase
+              .from("thread_shares")
+              .select(`
+                thread_id,
+                share_token,
+                owner_id,
+                profiles:owner_id (full_name, email, role)
+              `)
+              .eq("is_active", true)
+              .or(`org_id.eq.${orgId || "printway_internal"},share_mode.eq.public_link`)
+              .neq("owner_id", userId || "")
+              .limit(pageSize);
+
+            if (sharedData && sharedData.length > 0) {
+              sharedData.forEach((s: any) => {
+                sharedThreadIds.push(s.thread_id);
+                sharedMetaMap.set(s.thread_id, {
+                  shareToken: s.share_token,
+                  ownerName: s.profiles?.full_name || s.profiles?.email?.split("@")[0] || "Đồng nghiệp R&D",
+                  ownerRole: s.profiles?.role || "analyst",
+                });
+              });
+            }
+          }
+        } catch (err) {
+          console.warn("Failed to fetch sessions from Supabase:", err);
         }
       }
 
       // Local storage fallback for user-scoped thread isolation
-      if (userThreadIds.length === 0 && typeof window !== "undefined") {
+      if (ownedThreadIds.length === 0 && typeof window !== "undefined" && (filterMode === "mine" || filterMode === "all")) {
         const localKey = `printway_threads_${userKey}`;
         const saved = localStorage.getItem(localKey);
         if (saved) {
           try {
-            userThreadIds = JSON.parse(saved);
-          } catch {}
+            ownedThreadIds = JSON.parse(saved);
+          } catch (e) {
+            console.debug("Error parsing localStorage threads:", e);
+          }
         }
       }
+
+      const combinedAllowedIds = Array.from(new Set([...ownedThreadIds, ...sharedThreadIds]));
 
       // 2. Fetch threads from LangGraph
       const isUUID =
@@ -125,23 +173,33 @@ export function useThreads(props: {
           status,
           ...(isUUID ? { metadata: { assistant_id: assistantId } } : {}),
         });
-      } catch (err) {
-        // Fallback: If LangGraph backend is waking up, use Supabase sessions
-        return userThreadIds.map((tid) => ({
-          id: tid,
-          updatedAt: new Date(),
-          status: "idle" as const,
-          title: "Phiên nghiên cứu",
-          description: "",
-          assistantId,
-          userId,
-        }));
+      } catch {
+        // Fallback: If LangGraph backend is waking up, map IDs directly
+        return combinedAllowedIds.map((tid) => {
+          const sharedMeta = sharedMetaMap.get(tid);
+          return {
+            id: tid,
+            updatedAt: new Date(),
+            status: "idle" as const,
+            title: "Phiên nghiên cứu",
+            description: "",
+            assistantId,
+            userId,
+            isShared: !!sharedMeta,
+            shareToken: sharedMeta?.shareToken,
+            ownerName: sharedMeta?.ownerName,
+            ownerRole: sharedMeta?.ownerRole,
+          };
+        });
       }
 
-      // 3. Filter strictly for this user if user-scoped threads are recorded
-      const visibleThreads = userThreadIds.length > 0
-        ? threads.filter((t) => userThreadIds.includes(t.thread_id))
-        : (userId ? [] : threads); // If brand new user with no threads, start clean!
+      // 3. Filter visible threads
+      let visibleThreads = threads;
+      if (combinedAllowedIds.length > 0) {
+        visibleThreads = threads.filter((t) => combinedAllowedIds.includes(t.thread_id));
+      } else if (userId && filterMode === "mine") {
+        visibleThreads = [];
+      }
 
       return visibleThreads.map((thread): ThreadItem => {
         let title = "Untitled Thread";
@@ -175,6 +233,8 @@ export function useThreads(props: {
           title = `Thread ${thread.thread_id.slice(0, 8)}`;
         }
 
+        const sharedMeta = sharedMetaMap.get(thread.thread_id);
+
         return {
           id: thread.thread_id,
           updatedAt: new Date(thread.updated_at),
@@ -183,6 +243,10 @@ export function useThreads(props: {
           description,
           assistantId,
           userId,
+          isShared: !!sharedMeta,
+          shareToken: sharedMeta?.shareToken,
+          ownerName: sharedMeta?.ownerName,
+          ownerRole: sharedMeta?.ownerRole,
         };
       });
     },
@@ -195,7 +259,12 @@ export function useThreads(props: {
   );
 }
 
-export async function recordUserThread(threadId: string, title: string, userId?: string, orgId?: string) {
+export async function recordUserThread(
+  threadId: string,
+  title: string,
+  userId?: string,
+  orgId?: string
+) {
   if (!threadId || !userId) return;
 
   // 1. Sync to Supabase user_sessions
@@ -208,7 +277,9 @@ export async function recordUserThread(threadId: string, title: string, userId?:
         title: title || "Phiên nghiên cứu mới",
         last_active: new Date().toISOString(),
       });
-    } catch {}
+    } catch (e) {
+      console.debug("Failed to record thread in Supabase:", e);
+    }
   }
 
   // 2. Sync to localStorage
@@ -219,7 +290,9 @@ export async function recordUserThread(threadId: string, title: string, userId?:
     if (existing) {
       try {
         ids = JSON.parse(existing);
-      } catch {}
+      } catch (e) {
+        console.debug("Failed to parse local storage thread ids:", e);
+      }
     }
     if (!ids.includes(threadId)) {
       ids.unshift(threadId);

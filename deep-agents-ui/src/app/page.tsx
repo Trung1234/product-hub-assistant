@@ -14,7 +14,7 @@ import { useUserSchedules } from "@/app/hooks/useUserSchedules";
 import { AuthButton } from "@/app/components/AuthButton";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { AuthScreen } from "@/app/components/AuthScreen";
-import { PanelLeft, SquarePen, Search, Loader2 } from "lucide-react";
+import { PanelLeft, SquarePen, Search, Share2 } from "lucide-react";
 
 // Lazy-loaded interactive modals with zero initial bundle overhead
 const CommandPalette = dynamic(
@@ -24,6 +24,11 @@ const CommandPalette = dynamic(
 
 const ImageLightboxModal = dynamic(
   () => import("@/app/components/ImageLightboxModal").then((m) => m.ImageLightboxModal),
+  { ssr: false }
+);
+
+const ShareThreadModal = dynamic(
+  () => import("@/app/components/ShareThreadModal").then((m) => m.ShareThreadModal),
   { ssr: false }
 );
 
@@ -40,11 +45,13 @@ function HomePageInner({ config }: HomePageInnerProps) {
 
   const { activeCount } = useUserSchedules();
   const [mutateThreads, setMutateThreads] = useState<(() => void) | null>(null);
-  const [interruptCount, setInterruptCount] = useState(0);
+  const [interruptCount] = useState(0);
   const [assistant, setAssistant] = useState<Assistant | null>(null);
 
-  // Command Palette & Image Lightbox state
+
+  // Command Palette, Image Lightbox & Share Modal state
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [lightboxData, setLightboxData] = useState<{
     isOpen: boolean;
     imageUrl: string;
@@ -54,6 +61,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
     isOpen: false,
     imageUrl: "",
   });
+
 
   // Global Keyboard shortcuts: Cmd+K / Ctrl+K and Cmd+Shift+N and Cmd+B
   useEffect(() => {
@@ -188,6 +196,15 @@ function HomePageInner({ config }: HomePageInnerProps) {
         />
       )}
 
+      {/* Share Thread Modal - Lazily Loaded */}
+      {shareModalOpen && (
+        <ShareThreadModal
+          isOpen={shareModalOpen}
+          onClose={() => setShareModalOpen(false)}
+          threadId={threadId}
+        />
+      )}
+
       <div className="flex h-screen w-screen overflow-hidden bg-[#080B21] text-white">
         {/* ChatGPT-Style Left Sidebar (Unified Navigation & History, Drawer on Mobile) */}
         <AppSidebar
@@ -199,6 +216,10 @@ function HomePageInner({ config }: HomePageInnerProps) {
           onNewResearch={() => {
             setThreadId(null);
             setCurrentView("chat");
+          }}
+          onOpenShareModal={(tId) => {
+            if (tId) setThreadId(tId);
+            setShareModalOpen(true);
           }}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -241,9 +262,20 @@ function HomePageInner({ config }: HomePageInnerProps) {
               </div>
             </div>
 
-            {/* Right Action Icons (Search Cmd+K, Auth, New Research) */}
+            {/* Right Action Icons (Share, Search Cmd+K, Auth, New Research) */}
             <div className="flex items-center gap-2">
               <AuthButton />
+              {threadId && (
+                <button
+                  type="button"
+                  onClick={() => setShareModalOpen(true)}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-purple-400 hover:bg-[#121A45] hover:text-purple-300 transition-colors cursor-pointer"
+                  title="Chia sẻ phiên nghiên cứu này"
+                  aria-label="Chia sẻ phiên nghiên cứu"
+                >
+                  <Share2 className="h-4 w-4" />
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => setCommandPaletteOpen(true)}
@@ -267,6 +299,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
               </button>
             </div>
           </header>
+
 
           {/* Conditional View Rendering: Schedule Management vs Chat Interface */}
           {currentView === "schedules" ? (

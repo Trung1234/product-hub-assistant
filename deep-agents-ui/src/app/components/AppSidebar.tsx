@@ -15,7 +15,11 @@ import {
   X,
   Trash2,
   ChevronDown,
-  LogOut
+  LogOut,
+  Share2,
+  Users,
+  User,
+  GitFork
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,6 +28,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useThreads, ThreadItem } from "@/app/hooks/useThreads";
 import { useClient } from "@/providers/ClientProvider";
 import { useAuth } from "@/providers/AuthProvider";
+import { ShareThreadModal } from "@/app/components/ShareThreadModal";
 
 interface AppSidebarProps {
   currentThreadId: string | null;
@@ -38,6 +43,7 @@ interface AppSidebarProps {
   currentView?: "chat" | "schedules";
   onChangeView?: (view: "chat" | "schedules") => void;
   activeScheduleCount?: number;
+  onOpenShareModal?: (threadId: string, title?: string) => void;
 }
 
 function formatTime(date: Date, now = new Date()): string {
@@ -69,13 +75,26 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
   currentView = "chat",
   onChangeView,
   activeScheduleCount = 0,
+  onOpenShareModal,
 }) => {
   const client = useClient();
   const { user, profile, signOut } = useAuth();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [threadFilter, setThreadFilter] = useState<"all" | "mine" | "shared">("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const threads = useThreads({ limit: 35 });
+
+  // Local Share Modal state
+  const [shareModalData, setShareModalData] = useState<{
+    isOpen: boolean;
+    threadId: string | null;
+    title?: string;
+  }>({
+    isOpen: false,
+    threadId: null,
+  });
+
+  const threads = useThreads({ limit: 35, filterMode: threadFilter });
 
   const flattened = useMemo(() => {
     return threads.data?.flat() ?? [];
@@ -103,6 +122,20 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
     onMobileClose?.();
   }, [onNewResearch, onMobileClose]);
 
+  const handleShareClick = useCallback((e: React.MouseEvent, thread: ThreadItem) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (onOpenShareModal) {
+      onOpenShareModal(thread.id, thread.title);
+    } else {
+      setShareModalData({
+        isOpen: true,
+        threadId: thread.id,
+        title: thread.title,
+      });
+    }
+  }, [onOpenShareModal]);
+
   const handleDeleteThread = useCallback(
     async (e: React.MouseEvent, threadId: string) => {
       e.stopPropagation();
@@ -126,6 +159,16 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
 
   return (
     <TooltipProvider delayDuration={200}>
+      {/* Standalone Share Modal */}
+      {shareModalData.isOpen && (
+        <ShareThreadModal
+          isOpen={shareModalData.isOpen}
+          onClose={() => setShareModalData({ isOpen: false, threadId: null })}
+          threadId={shareModalData.threadId}
+          threadTitle={shareModalData.title}
+        />
+      )}
+
       {/* Mobile Backdrop Overlay */}
       {mobileOpen && (
         <div
@@ -279,9 +322,9 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* SEARCH BAR (WHEN EXPANDED) */}
+        {/* SEARCH BAR & CATEGORY FILTER (WHEN EXPANDED) */}
         {(!collapsed || mobileOpen) && (
-          <div className="px-3 pb-2 shrink-0">
+          <div className="px-3 pb-2 shrink-0 space-y-2">
             <div className="relative flex items-center">
               <Search className="absolute left-2.5 h-3.5 w-3.5 text-slate-500" />
               <input
@@ -301,6 +344,48 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 </button>
               )}
             </div>
+
+            {/* QUICK FILTER PILLS (All, Mine, Shared) */}
+            <div className="grid grid-cols-3 gap-1 bg-[#080B21] p-1 rounded-xl border border-slate-800/80 text-[10px] font-semibold">
+              <button
+                type="button"
+                onClick={() => setThreadFilter("all")}
+                className={cn(
+                  "py-1 rounded-lg transition-all text-center cursor-pointer",
+                  threadFilter === "all"
+                    ? "bg-[#00FF88]/20 text-[#00FF88] font-bold border border-[#00FF88]/40 shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                Tất cả
+              </button>
+              <button
+                type="button"
+                onClick={() => setThreadFilter("mine")}
+                className={cn(
+                  "py-1 rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
+                  threadFilter === "mine"
+                    ? "bg-[#00D2FF]/20 text-[#00D2FF] font-bold border border-[#00D2FF]/40 shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                <User className="h-2.5 w-2.5" />
+                <span>Của tôi</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setThreadFilter("shared")}
+                className={cn(
+                  "py-1 rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
+                  threadFilter === "shared"
+                    ? "bg-purple-500/25 text-purple-300 font-bold border border-purple-500/40 shadow-sm"
+                    : "text-slate-400 hover:text-white"
+                )}
+              >
+                <Users className="h-2.5 w-2.5" />
+                <span>Được chia sẻ</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -309,7 +394,13 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           {(!collapsed || mobileOpen) && (
             <div className="py-2 pb-6 space-y-1">
               <div className="px-2 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
-                <span>Gần đây</span>
+                <span>
+                  {threadFilter === "mine"
+                    ? "Phiên của tôi"
+                    : threadFilter === "shared"
+                    ? "Được chia sẻ với tôi"
+                    : "Gần đây"}
+                </span>
                 {interruptCount > 0 && (
                   <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-400 border border-amber-500/40">
                     {interruptCount} cần phản hồi
@@ -326,7 +417,11 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
 
               {!isLoading && filteredThreads.length === 0 && (
                 <div className="px-2 py-4 text-center text-xs text-slate-500 italic">
-                  {searchQuery ? "Không tìm thấy kết quả" : "Chưa có lịch sử nghiên cứu"}
+                  {searchQuery
+                    ? "Không tìm thấy kết quả"
+                    : threadFilter === "shared"
+                    ? "Chưa có phiên nào được chia sẻ với bạn"
+                    : "Chưa có lịch sử nghiên cứu"}
                 </div>
               )}
 
@@ -334,8 +429,9 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 {filteredThreads.map((thread) => {
                   const isActive = currentThreadId === thread.id;
                   const rawTitle = thread.title || thread.description || "Phiên nghiên cứu";
-                  const displayTitle = truncateTitle(rawTitle, 26);
+                  const displayTitle = truncateTitle(rawTitle, 24);
                   const isDeleting = deletingId === thread.id;
+                  const isShared = thread.isShared;
 
                   return (
                     <div
@@ -349,12 +445,21 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                       )}
                     >
                       <div className="flex items-center gap-2 min-w-0 flex-1 pr-1">
-                        <MessageSquare
-                          className={cn(
-                            "h-3.5 w-3.5 shrink-0 transition-colors",
-                            isActive ? "text-[#00FF88]" : "text-slate-500 group-hover:text-slate-300"
-                          )}
-                        />
+                        {isShared ? (
+                          <Users
+                            className={cn(
+                              "h-3.5 w-3.5 shrink-0 transition-colors",
+                              isActive ? "text-purple-400" : "text-purple-400/80 group-hover:text-purple-300"
+                            )}
+                          />
+                        ) : (
+                          <MessageSquare
+                            className={cn(
+                              "h-3.5 w-3.5 shrink-0 transition-colors",
+                              isActive ? "text-[#00FF88]" : "text-slate-500 group-hover:text-slate-300"
+                            )}
+                          />
+                        )}
                         <span className="text-xs truncate block">
                           {displayTitle}
                         </span>
@@ -372,21 +477,33 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                           {formatTime(thread.updatedAt)}
                         </span>
 
-                        {/* Hover Delete Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => handleDeleteThread(e, thread.id)}
-                          disabled={isDeleting}
-                          className="hidden group-hover:flex h-5 w-5 items-center justify-center rounded text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
-                          title="Xóa phiên nghiên cứu"
-                          aria-label="Xóa phiên nghiên cứu"
-                        >
-                          {isDeleting ? (
-                            <Loader2 className="h-3 w-3 animate-spin text-red-400" />
-                          ) : (
-                            <Trash2 className="h-3 w-3" />
-                          )}
-                        </button>
+                        {/* Hover Action Buttons: Share & Delete */}
+                        <div className="hidden group-hover:flex items-center gap-0.5">
+                          <button
+                            type="button"
+                            onClick={(e) => handleShareClick(e, thread)}
+                            className="h-5 w-5 flex items-center justify-center rounded text-slate-400 hover:text-[#00FF88] hover:bg-[#00FF88]/10 transition-colors cursor-pointer"
+                            title="Chia sẻ phiên nghiên cứu này"
+                            aria-label="Chia sẻ phiên nghiên cứu"
+                          >
+                            <Share2 className="h-3 w-3" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={(e) => handleDeleteThread(e, thread.id)}
+                            disabled={isDeleting}
+                            className="h-5 w-5 flex items-center justify-center rounded text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            title="Xóa phiên nghiên cứu"
+                            aria-label="Xóa phiên nghiên cứu"
+                          >
+                            {isDeleting ? (
+                              <Loader2 className="h-3 w-3 animate-spin text-red-400" />
+                            ) : (
+                              <Trash2 className="h-3 w-3" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );

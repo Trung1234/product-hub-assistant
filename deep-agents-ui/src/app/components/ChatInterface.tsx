@@ -220,6 +220,16 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
     return Array.from(messageMap.values());
   }, [messages, isLoading]);
 
+  const hasAiResponseText = useMemo(() => {
+    if (processedMessages.length === 0) return false;
+    const last = processedMessages[processedMessages.length - 1];
+    if (last.message.type === "ai") {
+      const content = extractStringFromMessageContent(last.message);
+      return Boolean(content && content.trim().length > 0);
+    }
+    return false;
+  }, [processedMessages]);
+
   const clarificationData = useMemo(() => {
     if (!interrupt) return null;
     if (typeof interrupt === "string") {
@@ -372,23 +382,15 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 );
               })}
 
-              {isLoading && (
-                <div className="my-3 flex items-center gap-3 w-fit rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 px-4 py-2.5 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md animate-in fade-in slide-in-from-bottom-1">
-                  <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_10px_rgba(0,255,136,0.5)]">
-                    <Sparkles className="h-3.5 w-3.5 text-[#080B21] animate-spin" />
+              {isLoading && !hasAiResponseText && (
+                <div className="my-2.5 flex items-center gap-2.5 w-fit rounded-full border border-[#00FF88]/30 bg-[#0E1538]/90 px-3 py-1.5 shadow-[0_0_15px_rgba(0,255,136,0.15)] backdrop-blur-md animate-in fade-in slide-in-from-bottom-1">
+                  <div className="relative flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_8px_rgba(0,255,136,0.4)]">
+                    <Sparkles className="h-3 w-3 text-[#080B21] animate-spin" />
                   </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold text-white">AI Copilot đang suy luận & cào dữ liệu...</span>
-                      <div className="flex items-center gap-1">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#00FF88] animate-bounce [animation-delay:-0.3s]" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#00D2FF] animate-bounce [animation-delay:-0.15s]" />
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6] animate-bounce" />
-                      </div>
-                    </div>
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      Quét tín hiệu Etsy, Amazon, Pinterest & tính toán Opportunity Score
-                    </span>
+                  <div className="flex items-center gap-1.5 px-0.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00FF88] animate-bounce [animation-delay:-0.3s]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00D2FF] animate-bounce [animation-delay:-0.15s]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00FF88] animate-bounce" />
                   </div>
                 </div>
               )}

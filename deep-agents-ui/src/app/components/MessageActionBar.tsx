@@ -13,7 +13,9 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmailReportModal } from "@/app/components/EmailReportModal";
-import { toast } from "@/components/ui/sonner";
+import { ShareThreadModal } from "@/app/components/ShareThreadModal";
+import { toast } from "sonner";
+import { useQueryState } from "nuqs";
 
 interface MessageActionBarProps {
   content: string;
@@ -24,10 +26,11 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
   content,
   onFollowUpClick
 }) => {
+  const [threadId] = useQueryState("threadId");
   const [copied, setCopied] = useState(false);
-  const [shared, setShared] = useState(false);
   const [liked, setLiked] = useState<boolean | null>(null);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   // Extract keyword from markdown title or content
   const extractedKeyword = useMemo(() => {
@@ -83,21 +86,6 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
   const handlePrint = () => {
     if (typeof window !== "undefined") {
       window.print();
-    }
-  };
-
-  const handleShare = async () => {
-    try {
-      if (typeof window !== "undefined") {
-        await navigator.clipboard.writeText(window.location.href);
-        setShared(true);
-        toast.info("Đã sao chép liên kết", {
-          description: "Link phiên nghiên cứu đã được lưu vào khay nhớ tạm.",
-        });
-        setTimeout(() => setShared(false), 2000);
-      }
-    } catch {
-      toast.error("Không thể sao chép liên kết");
     }
   };
 
@@ -171,28 +159,15 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
             <span>In báo cáo</span>
           </button>
 
+          {/* Share Thread Modal Trigger */}
           <button
             type="button"
-            onClick={handleShare}
-            className={cn(
-              "flex items-center gap-1.5 rounded-lg border px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all cursor-pointer",
-              shared
-                ? "border-purple-500/50 bg-purple-500/15 text-purple-300"
-                : "border-slate-800 bg-[#0E1538]/60 text-slate-300 hover:border-purple-500/40 hover:bg-[#121A45] hover:text-purple-300"
-            )}
-            title="Sao chép liên kết chia sẻ phiên nghiên cứu"
+            onClick={() => setIsShareModalOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-purple-300 transition-all hover:border-purple-400 hover:bg-purple-500/20 cursor-pointer shadow-[0_0_10px_rgba(168,85,247,0.1)]"
+            title="Chia sẻ phiên nghiên cứu hoặc tạo liên kết bảo mật"
           >
-            {shared ? (
-              <>
-                <Check className="h-3.5 w-3.5 text-purple-400" />
-                <span>Đã sao chép link</span>
-              </>
-            ) : (
-              <>
-                <Share2 className="h-3.5 w-3.5" />
-                <span>Chia sẻ</span>
-              </>
-            )}
+            <Share2 className="h-3.5 w-3.5 text-purple-400" />
+            <span>Chia sẻ</span>
           </button>
         </div>
 
@@ -238,6 +213,21 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           recommendation: "RECOMMEND",
         }}
       />
+
+      {/* Share Thread Modal */}
+      {isShareModalOpen && (
+        <ShareThreadModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          threadId={threadId}
+          threadTitle={extractedKeyword}
+          opportunitySummary={{
+            keyword: extractedKeyword,
+            score: 88,
+            recommendation: "RECOMMEND",
+          }}
+        />
+      )}
     </>
   );
 });
