@@ -19,6 +19,7 @@ from src.tools.skill_tools import (
     consult_ecommerce_skill,
     list_available_ecommerce_skills
 )
+from src.tools.report_tools import generate_product_opportunity_pdf_report
 from src.tools.human_tools import ask_user_clarification
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
@@ -30,7 +31,7 @@ llm = ChatOpenAI(
     temperature=0.0
 )
 
-# Granular Specialized Tools with 5-Source Market Data, Visual Gallery & Skills
+# Granular Specialized Tools with 5-Source Market Data, Visual Gallery, Skills & Cloud PDF Generator
 orchestrator_tools = [
     ask_user_clarification,
     fetch_etsy_market_data,
@@ -40,6 +41,7 @@ orchestrator_tools = [
     fetch_trending_product_design_samples,
     evaluate_5d_opportunity_score,
     record_product_opportunity_matrix,
+    generate_product_opportunity_pdf_report,
     retrieve_offloaded_product_context,
     extract_ai_insights_from_opportunity_matrix,
     consult_ecommerce_skill,

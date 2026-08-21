@@ -157,11 +157,30 @@ def record_product_opportunity_matrix(
 | **Strategic R&D Reason**| *{row_dict['reason']}* | `[Skill-Ref]` |
 """
 
+    from src.db.supabase_storage import upload_file_to_supabase
+
+    # 4. Sync CSV to Supabase Storage for global CDN access
+    csv_cdn_url = upload_file_to_supabase(
+        local_file_path=OUTPUT_CSV_PATH,
+        bucket_name="reports",
+        destination_path="product_opportunities.csv",
+        content_type="text/csv"
+    ) or "https://cvhjqjttdupchyjwfgyq.supabase.co/storage/v1/object/public/reports/product_opportunities.csv"
+
+    # 5. Sync offloaded JSON payload to Supabase Storage
+    if os.path.exists(offloaded_file_path):
+        upload_file_to_supabase(
+            local_file_path=offloaded_file_path,
+            bucket_name="context-offloading",
+            destination_path=os.path.basename(offloaded_file_path),
+            content_type="application/json"
+        )
+
     return json.dumps({
         "status": "RECORDED_SUCCESSFULLY",
         "opportunity_row": row_dict,
         "offloaded_context_file": offloaded_file_path,
-        "csv_download_url": "http://127.0.0.1:8001/reports/product_opportunities.csv",
+        "csv_download_url": csv_cdn_url,
         "citations": citations_data["citations"],
         "markdown_table": markdown_row_table + "\n" + citations_data["markdown_citations_block"]
     }, indent=2, ensure_ascii=False)
