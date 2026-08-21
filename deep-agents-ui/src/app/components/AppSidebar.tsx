@@ -161,8 +161,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
         )}
 
-        {/* MIDDLE SECTION: RECENTS / HISTORY LIST */}
-        <ScrollArea className="flex-1 px-3">
+        {/* MIDDLE SECTION: RECENTS / HISTORY LIST (SCROLLABLE) */}
+        <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
           {!collapsed && (
             <div className="py-2 pb-6 space-y-1">
               <div className="px-2 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
@@ -215,7 +215,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               </div>
             </div>
           )}
-        </ScrollArea>
+        </div>
 
         {/* BOTTOM SECTION: SETTINGS & USER AVATAR */}
         <div className="shrink-0 border-t border-[#00FF88]/15 bg-[#0E1538]/90 p-3 space-y-1.5 z-40 backdrop-blur-md">
