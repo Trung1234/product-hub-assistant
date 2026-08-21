@@ -565,12 +565,12 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 {isLoading ? (
                   <>
                     <Square className="mr-1.5 h-3.5 w-3.5 fill-current" />
-                    Stop
+                    Dừng
                   </>
                 ) : (
                   <>
                     <ArrowUp className="mr-1.5 h-3.5 w-3.5" />
-                    Submit
+                    Gửi
                   </>
                 )}
               </Button>
