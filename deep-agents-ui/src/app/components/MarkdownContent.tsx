@@ -110,6 +110,23 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 </a>
               );
             },
+            img({ src, alt }: { src?: string; alt?: string }) {
+              return (
+                <span className="my-2.5 inline-block overflow-hidden rounded-xl border border-[#00FF88]/30 bg-[#080B21] shadow-[0_0_15px_rgba(0,255,136,0.15)] transition-all duration-300 hover:border-[#00FF88] hover:shadow-[0_0_25px_rgba(0,255,136,0.3)]">
+                  <img
+                    src={src}
+                    alt={alt || "Product Design Sample"}
+                    className="max-h-48 max-w-[240px] object-cover rounded-t-lg transition-transform duration-300 hover:scale-105"
+                    loading="lazy"
+                  />
+                  {alt && (
+                    <span className="block border-t border-[#00FF88]/20 bg-[#0E1538]/90 px-2 py-1 text-center text-[10px] font-semibold text-[#00FF88]">
+                      📷 {alt}
+                    </span>
+                  )}
+                </span>
+              );
+            },
             blockquote({ children }: { children?: React.ReactNode }) {
               return (
                 <blockquote className="my-4 rounded-xl border-l-4 border-[#00FF88] bg-[#0E1538]/70 p-3.5 text-slate-200 shadow-[0_0_15px_rgba(0,255,136,0.1)]">

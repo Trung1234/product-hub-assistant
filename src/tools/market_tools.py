@@ -2,9 +2,11 @@ import hashlib
 from langchain_core.tools import tool
 from src.providers.google_trends_provider import GoogleTrendsProvider
 from src.providers.pinterest_provider import PinterestTrendProvider
+from src.providers.product_visual_provider import ProductVisualProvider
 
 trends_provider = GoogleTrendsProvider()
 pinterest_provider = PinterestTrendProvider()
+visual_provider = ProductVisualProvider()
 
 def _derive_signals_from_keyword(keyword: str):
     """Generates instant, realistic, deterministic market signals from keyword without network delay (0ms latency)."""
@@ -87,6 +89,13 @@ def fetch_pinterest_trend_signals(keyword: str) -> str:
     persona = data.get("target_persona", "Nữ giới 20-45 tuổi")
     tips = data.get("design_tips", "In UV sắc nét, cá nhân hóa tên")
     return f"[TOON:PINTEREST] kw=\"{kw}\" | visual_styles=\"{styles}\" | pin_momentum=\"{momentum}\" | target_persona=\"{persona}\" | design_tips=\"{tips}\""
+
+@tool
+def fetch_trending_product_design_samples(keyword: str) -> str:
+    """
+    Retrieves real high-resolution trending product design mockups, visual specifications, and formatted Markdown Image Gallery for R&D proposals.
+    """
+    return visual_provider.format_markdown_gallery(keyword)
 
 # Backward compatibility aliases
 etsy_subagent_tool = fetch_etsy_market_data
