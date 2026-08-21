@@ -1,4 +1,5 @@
 import hashlib
+from typing import Optional
 from functools import lru_cache
 from langchain_core.tools import tool
 from src.providers.google_trends_provider import GoogleTrendsProvider
@@ -51,35 +52,75 @@ def _derive_signals_from_keyword(keyword: str):
     }
 
 @tool
-def fetch_etsy_market_data(keyword: str) -> str:
+def fetch_etsy_market_data(
+    keyword: str,
+    limit: int = 5,
+    sort_by: str = "relevance",
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None
+) -> str:
     """
     Harvests authentic, real-time Etsy marketplace intelligence using Apify Crawlee.
-    Extracts live active listing volume, average selling prices, review counts, and bestseller tags.
-    Output: [TOON:ETSY] kw="..." | vol=... | listings=... | avg_price=... | mo_sales=... | tags="..." | live=true
+    Supports filtering by:
+    - sort_by: 'relevance' (default), 'price_high' (top price), 'price_low' (bottom price), 'reviews_high', 'bestseller'
+    - limit: number of top products to retrieve (e.g. 3, 5, 10)
+    - min_price, max_price: price bracket in USD
+    Output: [TOON:ETSY] kw="..." | vol=... | listings=... | avg_price=... | mo_sales=... | tags="..." | products=[...]
     """
-    data = crawlee_etsy_scraper.scrape(keyword)
+    data = crawlee_etsy_scraper.scrape(keyword, limit=limit, sort_by=sort_by, min_price=min_price, max_price=max_price)
     kw = data.get("search_query", keyword).strip()
     vol = data.get("search_volume", 14500)
     listings = data.get("active_listings", 120)
     avg_price = data.get("avg_price_usd", 16.99)
     mo_sales = data.get("monthly_sales", 1160)
     tags = data.get("tags", "personalized gift, custom acrylic, handmade ornament")
-    return f"[TOON:ETSY] kw=\"{kw}\" | vol={vol} | listings={listings} | avg_price={avg_price} | mo_sales={mo_sales} | tags=\"{tags}\" | live=true"
+    
+    top_prods = data.get("top_products", [])
+    prod_summaries = []
+    for p in top_prods:
+        p_title = p.get("title", "")[:60]
+        p_price = p.get("price_usd", 0.0)
+        p_rev = p.get("reviews_count", 0)
+        p_best = " (Bestseller)" if p.get("is_bestseller") else ""
+        prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} reviews){p_best}")
+
+    prod_str = " ;; ".join(prod_summaries) if prod_summaries else "None"
+    return f"[TOON:ETSY] kw=\"{kw}\" | vol={vol} | listings={listings} | avg_price={avg_price} | mo_sales={mo_sales} | tags=\"{tags}\" | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit})\""
 
 @tool
-def fetch_amazon_market_data(keyword: str) -> str:
+def fetch_amazon_market_data(
+    keyword: str,
+    limit: int = 5,
+    sort_by: str = "relevance",
+    min_price: Optional[float] = None,
+    max_price: Optional[float] = None
+) -> str:
     """
     Harvests authentic, real-time Amazon US marketplace intelligence using Apify Crawlee.
-    Extracts real ASINs, monthly unit sales velocity, actual price ranges, BSR ranking, and review volume.
-    Output: [TOON:AMAZON] kw="..." | sales_units=... | price_range="..." | bsr=... | reviews=... | live=true
+    Supports filtering by:
+    - sort_by: 'relevance' (default), 'price_high' (top price), 'price_low' (bottom price), 'reviews_high', 'bestseller'
+    - limit: number of top products to retrieve (e.g. 3, 5, 10)
+    - min_price, max_price: price bracket in USD
+    Output: [TOON:AMAZON] kw="..." | sales_units=... | price_range="..." | bsr=... | reviews=... | products=[...]
     """
-    data = crawlee_amazon_scraper.scrape(keyword)
+    data = crawlee_amazon_scraper.scrape(keyword, limit=limit, sort_by=sort_by, min_price=min_price, max_price=max_price)
     kw = data.get("search_query", keyword).strip()
     sales_units = data.get("monthly_sales_units", 1250)
     price_range = data.get("price_range_usd", "$16.99 - $24.99")
     bsr = data.get("bsr", 12500)
     reviews = data.get("reviews", 145)
-    return f"[TOON:AMAZON] kw=\"{kw}\" | sales_units={sales_units} | price_range=\"{price_range}\" | bsr={bsr} | reviews={reviews} | live=true"
+
+    top_prods = data.get("top_products", [])
+    prod_summaries = []
+    for p in top_prods:
+        p_title = p.get("title", "")[:60]
+        p_price = p.get("price_usd", 0.0)
+        p_rev = p.get("reviews_count", 0)
+        p_bought = f" [{p.get('bought_past_month', 0)}+ bought]" if p.get("bought_past_month", 0) > 0 else ""
+        prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} reviews){p_bought} (ASIN: {p.get('asin', 'N/A')})")
+
+    prod_str = " ;; ".join(prod_summaries) if prod_summaries else "None"
+    return f"[TOON:AMAZON] kw=\"{kw}\" | sales_units={sales_units} | price_range=\"{price_range}\" | bsr={bsr} | reviews={reviews} | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit})\""
 
 @tool
 def fetch_google_trends_data(keyword: str) -> str:
