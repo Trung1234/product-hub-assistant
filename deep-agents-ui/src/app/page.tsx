@@ -267,13 +267,6 @@ function HomePageInner({ config }: HomePageInnerProps) {
 function HomePageContentInner() {
   const { user, loading } = useAuth();
   const [config] = useState<StandaloneConfig>(() => getConfig());
-  const [assistantId, setAssistantId] = useQueryState("assistantId");
-
-  useEffect(() => {
-    if (config && !assistantId) {
-      setAssistantId(config.assistantId);
-    }
-  }, [config, assistantId, setAssistantId]);
 
   if (loading) {
     return (
