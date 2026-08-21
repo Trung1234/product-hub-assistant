@@ -22,6 +22,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
   onFollowUpClick
 }) => {
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
   const [liked, setLiked] = useState<boolean | null>(null);
 
   const handleCopy = async () => {
@@ -42,6 +43,28 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const handleDownloadPdf = () => {
+    const link = document.createElement("a");
+    link.href = "http://127.0.0.1:8001/reports/product_opportunity_report.pdf";
+    link.download = "product_opportunity_report.pdf";
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleShare = async () => {
+    try {
+      if (typeof window !== "undefined") {
+        await navigator.clipboard.writeText(window.location.href);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch {
+      // ignore
+    }
   };
 
   return (
@@ -67,7 +90,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           ) : (
             <>
               <Copy className="h-3.5 w-3.5" />
-              <span>Sao chép báo cáo</span>
+              <span>Sao chép</span>
             </>
           )}
         </button>
@@ -79,7 +102,41 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           title="Tải bảng ma trận 23 cột file CSV"
         >
           <Download className="h-3.5 w-3.5" />
-          <span>Tải file CSV (23 cột)</span>
+          <span>Tải CSV (23 cột)</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleDownloadPdf}
+          className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-slate-300 transition-all hover:border-[#00FF88]/40 hover:bg-[#121A45] hover:text-[#00FF88] cursor-pointer"
+          title="Tải bản báo cáo PDF chính thức"
+        >
+          <Download className="h-3.5 w-3.5" />
+          <span>Tải PDF</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleShare}
+          className={cn(
+            "flex items-center gap-1.5 rounded-lg border px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all cursor-pointer",
+            shared
+              ? "border-purple-500/50 bg-purple-500/15 text-purple-300"
+              : "border-slate-800 bg-[#0E1538]/60 text-slate-300 hover:border-purple-500/40 hover:bg-[#121A45] hover:text-purple-300"
+          )}
+          title="Sao chép liên kết chia sẻ phiên nghiên cứu"
+        >
+          {shared ? (
+            <>
+              <Check className="h-3.5 w-3.5 text-purple-400" />
+              <span>Đã sao chép link</span>
+            </>
+          ) : (
+            <>
+              <Share2 className="h-3.5 w-3.5" />
+              <span>Chia sẻ</span>
+            </>
+          )}
         </button>
       </div>
 
