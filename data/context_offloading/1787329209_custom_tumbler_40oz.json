@@ -1,31 +1,31 @@
 {
   "keyword": "custom tumbler 40oz",
-  "timestamp": 1787329368,
-  "created_at": "2026-08-21 23:22:48",
+  "timestamp": 1787329209,
+  "created_at": "2026-08-21 23:20:09",
   "data": {
     "keyword": "custom tumbler 40oz",
     "category": "Drinkware",
-    "material": "Inox 304",
-    "recommended_product": "custom 40oz stainless steel tumbler with handle and straw",
-    "opportunity_score": 66.0,
+    "material": "Inox 304 40oz có quai",
+    "recommended_product": "custom engraved 40oz stainless steel tumbler with handle and straw",
+    "opportunity_score": 56.8,
     "google_trend": 7.0,
     "etsy": {
       "search_volume": 13200,
-      "active_listings": 105,
-      "avg_price_usd": 18.41,
+      "active_listings": 490,
+      "avg_price_usd": 13.06,
       "monthly_sales": 1136
     },
     "amazon": {
       "monthly_sales_units": 1150,
-      "price_range_usd": "$9.14 - $23.10",
+      "price_range_usd": "$10.25 - $15.99",
       "amazon_bsr": 15420
     },
     "scores": {
       "demand": 66,
-      "competition": 87,
+      "competition": 41,
       "sales_velocity": 56,
       "google_trend": 7.0,
-      "opportunity": 66.0
+      "opportunity": 56.8
     }
   }
 }

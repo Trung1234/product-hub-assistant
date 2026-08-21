@@ -28,10 +28,10 @@ export function ConfigDialog({
   initialConfig,
 }: ConfigDialogProps) {
   const [deploymentUrl, setDeploymentUrl] = useState(
-    initialConfig?.deploymentUrl || ""
+    initialConfig?.deploymentUrl || "http://127.0.0.1:2024"
   );
   const [assistantId, setAssistantId] = useState(
-    initialConfig?.assistantId || ""
+    initialConfig?.assistantId || "product_opportunity_hub"
   );
   const [langsmithApiKey, setLangsmithApiKey] = useState(
     initialConfig?.langsmithApiKey || ""
