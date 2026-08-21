@@ -175,8 +175,12 @@ export async function POST(req: NextRequest) {
 
     const data = await res.json();
     if (!res.ok) {
+      let friendlyError = data.message || "Không thể gửi email qua Resend.";
+      if (friendlyError.includes("You can only send testing emails to your own email address")) {
+        friendlyError = `Lưu ý Resend Sandbox: Ở chế độ dùng thử, Resend chỉ chuyển phát tới email tài khoản chính của bạn (nhphuong.code@gmail.com). Để gửi tới email tùy ý khác, hãy xác thực domain tại resend.com/domains.`;
+      }
       return NextResponse.json(
-        { error: data.message || "Không thể gửi email qua Resend." },
+        { error: friendlyError },
         { status: res.status }
       );
     }

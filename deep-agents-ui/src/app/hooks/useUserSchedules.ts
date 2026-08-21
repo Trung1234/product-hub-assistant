@@ -25,7 +25,7 @@ const STORAGE_PREFIX = "printway_nexus_schedules_";
 export function useUserSchedules() {
   const { user } = useAuth();
   const userId = user?.id || "guest_user";
-  const userEmail = user?.email || "phuong.nguyen@printway.io";
+  const userEmail = user?.email || "nhphuong.code@gmail.com";
 
   const storageKey = `${STORAGE_PREFIX}${userId}`;
 

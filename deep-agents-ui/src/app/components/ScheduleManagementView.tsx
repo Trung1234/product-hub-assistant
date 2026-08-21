@@ -79,7 +79,7 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
   // Form State
   const [formKeyword, setFormKeyword] = useState("");
   const [formFrequency, setFormFrequency] = useState<ScheduleFrequency>("daily");
-  const [formEmail, setFormEmail] = useState(user?.email || "phuong.nguyen@printway.io");
+  const [formEmail, setFormEmail] = useState(user?.email || "nhphuong.code@gmail.com");
   const [formProductType, setFormProductType] = useState("Mica Trong Suốt 3mm");
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
@@ -502,6 +502,11 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
                 <div className="mt-1 text-[11px] text-[#64748B]">
                   Báo cáo HTML cao cấp sẽ được chuyển phát trực tiếp qua hạ tầng Resend.
                 </div>
+              </div>
+
+              {/* Resend Sandbox Notice */}
+              <div className="rounded-xl border border-[#00D4FF]/20 bg-[#00D4FF]/5 p-2.5 text-[11px] text-[#94A3B8] leading-relaxed">
+                <span className="font-bold text-[#00D4FF]">💡 Chế độ Sandbox Resend:</span> Resend mặc định chuyển phát tới email tài khoản chính (<b className="text-white">nhphuong.code@gmail.com</b>). Để gửi tới email tùy ý khác, bạn chỉ cần xác minh tên miền tại <a href="https://resend.com/domains" target="_blank" rel="noreferrer" className="text-[#00FF88] underline font-semibold">resend.com/domains</a>.
               </div>
 
               {/* Action Buttons */}

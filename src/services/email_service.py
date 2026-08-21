@@ -221,10 +221,15 @@ def send_opportunity_report_email(
                     "subject": subject
                 }
             else:
-                logger.warning(f"⚠️ Resend API returned error: {data}")
+                raw_err = data.get("message", str(data))
+                if "You can only send testing emails to your own email address" in raw_err:
+                    err_msg = f"Lưu ý Resend Sandbox: Ở chế độ dùng thử, Resend chỉ chuyển phát tới email tài khoản chính ({to_email}). Để gửi tới email tùy ý khác, hãy xác thực domain tại resend.com/domains."
+                else:
+                    err_msg = raw_err
+                logger.warning(f"⚠️ Resend API returned error: {err_msg}")
                 return {
                     "status": "error",
-                    "error": data.get("message", str(data)),
+                    "error": err_msg,
                     "recipient": to_email
                 }
         except Exception as e:

@@ -160,6 +160,11 @@ export function EmailReportModal({
               </button>
             </div>
           </div>
+
+          {/* Sandbox Info Note */}
+          <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-2.5 text-[11px] text-slate-400 leading-relaxed">
+            <span className="font-bold text-cyan-300">💡 Chế độ Sandbox Resend:</span> Resend mặc định gửi tới email tài khoản chính của bạn (<b className="text-white">nhphuong.code@gmail.com</b>). Để chuyển phát tới các domain khác, bạn chỉ cần xác minh tên miền tại <a href="https://resend.com/domains" target="_blank" rel="noreferrer" className="text-[#00FF88] underline font-semibold">resend.com/domains</a>.
+          </div>
         </div>
 
         <DialogFooter className="flex gap-2 sm:gap-0">
