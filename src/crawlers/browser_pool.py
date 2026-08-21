@@ -1,7 +1,7 @@
 """
 BROWSER POOL & BROWSERLESS CLOUD INTEGRATION MODULE
 Connects to Browserless.io Cloud via Chrome DevTools Protocol (CDP)
-with built-in Residential Proxies, Captcha Solving, and automatic fallback to local Chromium.
+with built-in US Residential Proxies, AI Captcha Solving, and automatic fallback to local Chromium.
 """
 
 import os
@@ -17,14 +17,14 @@ logger = logging.getLogger("BrowserPool")
 def get_browserless_cdp_url() -> Optional[str]:
     """
     Constructs Browserless CDP WebSocket URL with built-in:
-    - Residential / Datacenter Proxy
-    - Stealth Anti-Detection
-    - Ad & Asset Blocking
-    - Captcha Solving
+    - US Residential Proxy (&proxy=residential&proxyCountry=us)
+    - Stealth Anti-Detection (&stealth=true)
+    - Ad & Asset Blocking (&blockAds=true)
+    - Automatic AI Captcha Solving
     """
     api_key = os.getenv("BROWSERLESS_API_KEY", "").strip()
     if api_key:
-        use_residential = os.getenv("BROWSERLESS_USE_RESIDENTIAL", "false").lower() == "true"
+        use_residential = os.getenv("BROWSERLESS_USE_RESIDENTIAL", "true").lower() != "false"
         proxy_param = "&proxy=residential&proxyCountry=us" if use_residential else ""
         return f"wss://chrome.browserless.io?token={api_key}{proxy_param}&stealth=true&blockAds=true"
 
@@ -59,11 +59,11 @@ async def create_browser_session(
     """
     browserless_cdp = get_browserless_cdp_url()
     
-    # 1. Try Browserless Remote Cloud Cluster via CDP
+    # 1. Try Browserless Remote Cloud Cluster via CDP with Built-in Residential Proxy
     if browserless_cdp:
         try:
             browser = await p.chromium.connect_over_cdp(browserless_cdp, timeout=15000)
-            return browser, "REMOTE_BROWSERLESS_CLOUD"
+            return browser, "REMOTE_BROWSERLESS_RESIDENTIAL_CLOUD"
         except Exception as e:
             print(f"[BrowserPool Warning] Failed to connect to Browserless Cloud: {e}. Falling back to local Chromium.")
 
