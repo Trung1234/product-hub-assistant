@@ -36,6 +36,11 @@ ENV/
 .system_generated/
 *.log
 
+# Pinterest raw API data is ephemeral (SPEC-001: TTL <= 6 hours)
+data/pinterest_cache/
+data/pinterest_signals.json
+data/pinterest_signals.json.tmp
+
 # Node & Next.js frontend
 node_modules/
 deep-agents-ui/node_modules/

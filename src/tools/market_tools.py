@@ -2,6 +2,7 @@ import hashlib
 from langchain_core.tools import tool
 from src.providers.google_trends_provider import GoogleTrendsProvider
 from src.providers.pinterest_provider import PinterestTrendProvider
+from src.pinterest_ingestion.pinterest_client import PinterestError
 from src.providers.product_visual_provider import ProductVisualProvider
 
 trends_provider = GoogleTrendsProvider()
@@ -79,16 +80,26 @@ def fetch_google_trends_data(keyword: str) -> str:
 @tool
 def fetch_pinterest_trend_signals(keyword: str) -> str:
     """
-    Harvests Pinterest visual trend aesthetics, design tips, buyer persona, and pin momentum ($0 Free).
-    Output: [TOON:PINTEREST] kw="..." | visual_styles="..." | pin_momentum="..." | target_persona="..." | design_tips="..."
+    Fetches official Pinterest demand-interest evidence (no scraping).
+    Output: [TOON:PINTEREST] kw="..." | type="..." | demand_score=... | interest=... | growth_mom=... | growth_yoy=... | confidence=...
     """
-    data = pinterest_provider.fetch_pinterest_signals(keyword)
+    try:
+        data = pinterest_provider.fetch_pinterest_signals(keyword)
+    except PinterestError as exc:
+        return f"[TOON:PINTEREST] kw=\"{keyword.strip()}\" | status=\"UNAVAILABLE\" | error=\"{str(exc)}\""
     kw = data.get("keyword", keyword)
-    styles = data.get("visual_styles", "Minimalist, Aesthetic")
-    momentum = data.get("pin_momentum", "+50% Saves")
-    persona = data.get("target_persona", "Nữ giới 20-45 tuổi")
-    tips = data.get("design_tips", "In UV sắc nét, cá nhân hóa tên")
-    return f"[TOON:PINTEREST] kw=\"{kw}\" | visual_styles=\"{styles}\" | pin_momentum=\"{momentum}\" | target_persona=\"{persona}\" | design_tips=\"{tips}\""
+    product_type = data.get("canonical_product_type", "UNMAPPED")
+    demand_score = _toon_optional(data.get("pinterest_demand_score"))
+    interest = _toon_optional(data.get("current_interest_index"))
+    growth_mom = _toon_optional(data.get("growth_mom"))
+    growth_yoy = _toon_optional(data.get("growth_yoy"))
+    confidence = _toon_optional(data.get("confidence"))
+    status = data.get("status", "OK")
+    return f"[TOON:PINTEREST] kw=\"{kw}\" | type=\"{product_type}\" | demand_score={demand_score} | interest={interest} | growth_mom={growth_mom} | growth_yoy={growth_yoy} | confidence={confidence} | status=\"{status}\""
+
+
+def _toon_optional(value):
+    return "NA" if value is None else value
 
 @tool
 def fetch_trending_product_design_samples(keyword: str) -> str:

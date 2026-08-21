@@ -2,6 +2,28 @@
 
 AI Product Research Copilot dành cho đội R&D Printway: Chuyển đổi dữ liệu từ 7+ nguồn marketplace (Etsy, Amazon, Shopee, Google Trends) thành 01 **Opportunity Score** duy nhất kèm **bản đề xuất sản phẩm hành động được**.
 
+## Pinterest demand-signal adapter
+
+Pinterest is connected through the official v5 Trends API with OAuth,
+rate-limiting, retry rules, explainable scoring, a six-hour raw-data TTL, and a
+manual 403 Plan B. It never scrapes Pinterest pages or fabricates marketplace
+sales data.
+
+Setup, OAuth checks, offline tests, live smoke tests, full ingestion, and Plan B
+are documented in [the Pinterest integration guide](docs/PINTEREST_INTEGRATION_GUIDE.md).
+
+Quick offline verification:
+
+```powershell
+python -m unittest -v test_pinterest_ingestion
+```
+
+Mandatory live entitlement probe after adding an ignored `.env` token:
+
+```powershell
+python probe_access.py
+```
+
 ---
 
 ## 🏛️ Kiến Trúc Hệ Thống & Giải Pháp Anti-Detect Browser CDP ($0 Scraping Cost)

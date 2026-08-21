@@ -1,107 +1,118 @@
-import re
-import random
-import requests
-from bs4 import BeautifulSoup
-from typing import Dict, Any, List
-from functools import lru_cache
+"""Compatibility provider backed only by Pinterest's official v5 Trends API."""
 
-AESTHETIC_KNOWLEDGE_BASE = {
-    "ornament": {
-        "styles": "Stained Glass Effect, Botanical Floral, 3D Laser Layered, Vintage Rustic Wood",
-        "momentum": "Bùng nổ sớm (+65% Pin Saves từ T9)",
-        "persona": "Nữ giới 25-45 (Mẹ bỉm sữa, người mua quà gia đình)",
-        "design_tips": "Ưu tiên viền trong suốt hoặc giả kính màu, in kèm tên/năm kỷ niệm nổi bật"
-    },
-    "tumbler": {
-        "styles": "Laser Engraved Minimalist, Pastel Gradient, Retro Wavy Font, Floral Line Art",
-        "momentum": "Duy trì cao quanh năm (+40% Pin Saves)",
-        "persona": "Nữ sinh, giáo viên, nhân viên văn phòng (18-35 tuổi)",
-        "design_tips": "Khắc laser 360 độ hoặc in UV tràn viền phong cách thẩm mỹ tối giản"
-    },
-    "sweatshirt": {
-        "styles": "Embroidered Sleeve Names, Spooky Mama Retro, Vintage Varsity Chenille",
-        "momentum": "Tăng mạnh từ cuối hè (+80% Pin Saves)",
-        "persona": "Phụ nữ có con (Cat Mom, Dog Mom, New Mama 22-38 tuổi)",
-        "design_tips": "Thêu chữ nghệ thuật ở cổ áo hoặc cổ tay áo (cá nhân hóa tên con/thú cưng)"
-    },
-    "plaque": {
-        "styles": "LED Warm Light Base, Minimalist Typography, Spotify Code Song, Architectural Cutout",
-        "momentum": "Tăng trưởng đều đặn (+45% Pin Saves)",
-        "persona": "Đồng nghiệp, vợ/chồng tặng đối tác (25-50 tuổi)",
-        "design_tips": "Kết hợp chân đế gỗ sồi tự nhiên có đèn LED vàng ấm và mặt mica dày 5mm"
-    },
-    "mug": {
-        "styles": "Custom Pet Portrait, Campfire Enamel Look, Cozy Autumn Aesthetic, Funny Quote",
-        "momentum": "Quanh năm, cao điểm quà tặng Q4 (+50% Pin Saves)",
-        "persona": "Người yêu thú cưng, đồng nghiệp văn phòng",
-        "design_tips": "Hình minh họa thú cưng theo phong cách vẽ tay màu nước (Watercolor)"
-    }
-}
+from __future__ import annotations
+
+import os
+from collections.abc import Callable
+from typing import Any
+
+from src.pinterest_ingestion.keyword_mapper import KeywordMapper
+from src.pinterest_ingestion.pipeline import load_manual_signals, trend_to_signal
+from src.pinterest_ingestion.pinterest_client import PinterestAPIError, PinterestClient
+
 
 class PinterestTrendProvider:
+    """Lazy facade used by the existing LangChain market tool.
+
+    Construction performs no network call and does not require credentials, so
+    importing the agent graph remains safe. The first fetch requires the
+    environment-configured token. A 403 consults only the human-entered Plan B
+    CSV; it never falls back to scraping.
     """
-    100% Free Pinterest Visual Trend & Aesthetic Intelligence Provider.
-    Extracts trending pin aesthetics, design niches, buyer personas, and visual suggestions.
-    """
-    def __init__(self):
-        self.headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            "Accept-Language": "en-US,en;q=0.9"
-        }
 
-    def _match_category_concept(self, keyword: str) -> str:
-        kw_lower = keyword.lower()
-        if any(w in kw_lower for w in ["ornament", "christmas", "xmas"]):
-            return "ornament"
-        elif any(w in kw_lower for w in ["tumbler", "cup", "drinkware"]):
-            return "tumbler"
-        elif any(w in kw_lower for w in ["sweatshirt", "hoodie", "shirt", "apparel"]):
-            return "sweatshirt"
-        elif any(w in kw_lower for w in ["plaque", "sign", "acrylic desk", "name plate"]):
-            return "plaque"
-        elif any(w in kw_lower for w in ["mug", "coffee"]):
-            return "mug"
-        return "ornament"
+    def __init__(
+        self,
+        *,
+        client: PinterestClient | None = None,
+        client_factory: Callable[[], PinterestClient] = PinterestClient,
+        mapper: KeywordMapper | None = None,
+        region: str | None = None,
+        seasonality_fit: float | None = None,
+        manual_path: str = "data/manual_pins_snapshot.csv",
+    ) -> None:
+        self._client = client
+        self._client_factory = client_factory
+        self._mapper = mapper or KeywordMapper()
+        self._region = region
+        self._seasonality_fit = seasonality_fit
+        self._manual_path = manual_path
 
-    @lru_cache(maxsize=128)
-    def fetch_pinterest_signals(self, keyword: str) -> Dict[str, Any]:
-        """Fetches Pinterest visual trends and aesthetic design intelligence."""
-        clean_kw = keyword.strip()
-        concept = self._match_category_concept(clean_kw)
-        knowledge = AESTHETIC_KNOWLEDGE_BASE.get(concept, AESTHETIC_KNOWLEDGE_BASE["ornament"])
-
-        # Try live DuckDuckGo Pinterest Pin index search (0.5s timeout)
-        scraped_titles = []
+    def fetch_pinterest_signals(self, keyword: str) -> dict[str, Any]:
+        clean_keyword = keyword.strip()
+        if not clean_keyword:
+            raise ValueError("keyword cannot be empty")
+        mapping_hint = self._mapper.map_keyword(clean_keyword)
+        client = self._get_client()
+        region = (self._region or os.getenv("PINTEREST_REGION", "US")).strip().upper()
         try:
-            url = "https://html.duckduckgo.com/html/"
-            resp = requests.post(
-                url,
-                data={"q": f'site:pinterest.com/pin/ "{clean_kw}" ideas aesthetic'},
-                headers=self.headers,
-                timeout=2.0
+            records = client.fetch_trends(
+                region,
+                "growing",
+                include_keywords=[clean_keyword],
+                limit=50,
             )
-            if resp.status_code == 200:
-                soup = BeautifulSoup(resp.text, "html.parser")
-                results = soup.select(".result__title")
-                for r in results[:3]:
-                    text = r.get_text(strip=True).replace(" - Pinterest", "").replace(" | Pinterest", "")
-                    if text and len(text) > 8:
-                        scraped_titles.append(text)
-        except Exception:
-            pass
+        except PinterestAPIError as exc:
+            if exc.status_code != 403:
+                raise
+            manual = [
+                signal
+                for signal in load_manual_signals(self._manual_path)
+                if signal["keyword"].casefold() == clean_keyword.casefold()
+                and signal["market"] == region
+            ]
+            if manual:
+                return manual[0]
+            return {
+                "source": "pinterest_manual_snapshot",
+                "keyword": clean_keyword,
+                "canonical_product_type": mapping_hint.canonical_product_type,
+                "pinterest_demand_score": None,
+                "current_interest_index": None,
+                "growth_mom": None,
+                "growth_yoy": None,
+                "confidence": 0.0,
+                "status": "ACCESS_DENIED_403_NO_MANUAL_MATCH",
+            }
 
-        trending_pins = scraped_titles if scraped_titles else [
-            f"Aesthetic {clean_kw} Design Ideas",
-            f"Personalized {clean_kw} for Gifts",
-            f"Handmade Modern {clean_kw} Decor"
-        ]
+        signals = []
+        for record in records:
+            mapping = (
+                self._mapper.mapping_for_seed(
+                    mapping_hint.canonical_product_type,
+                    record.keyword,
+                )
+                if mapping_hint.method == "seed"
+                else self._mapper.map_keyword(record.keyword)
+            )
+            signals.append(
+                trend_to_signal(
+                    record,
+                    mapping,
+                    seasonality_fit=self._seasonality_fit,
+                )
+            )
+        if not signals:
+            return {
+                "source": "pinterest_trends",
+                "keyword": clean_keyword,
+                "canonical_product_type": mapping_hint.canonical_product_type,
+                "pinterest_demand_score": None,
+                "current_interest_index": None,
+                "growth_mom": None,
+                "growth_yoy": None,
+                "confidence": 0.0,
+                "status": "NO_TRENDS_RETURNED",
+            }
+        return max(
+            signals,
+            key=lambda signal: (
+                signal["pinterest_demand_score"] is not None,
+                signal["pinterest_demand_score"] or 0.0,
+                signal["current_interest_index"] or 0,
+            ),
+        )
 
-        return {
-            "keyword": clean_kw,
-            "visual_styles": knowledge["styles"],
-            "pin_momentum": knowledge["momentum"],
-            "target_persona": knowledge["persona"],
-            "design_tips": knowledge["design_tips"],
-            "top_trending_pins": trending_pins[:2],
-            "data_source": "Pinterest Visual Index & Design Intelligence (Free)"
-        }
+    def _get_client(self) -> PinterestClient:
+        if self._client is None:
+            self._client = self._client_factory()
+        return self._client

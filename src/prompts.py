@@ -18,7 +18,7 @@ PARALLEL FAST WORKFLOW:
    • Visual Chart in ```chart format (Bar / Radar).
    • 🖼️ **Visual Design Gallery (Mẫu Thiết Kế Thịnh Hành)** returned by `fetch_trending_product_design_samples`.
    • The 23-Column Opportunity Matrix Markdown Table (with inline citations).
-   • Strategic R&D Analysis (Niche demand, competition moats, price tiers, launch window, Pinterest aesthetic trends, Printway margin fit).
+   • Strategic R&D Analysis (Niche demand, competition moats, price tiers, launch window, Pinterest demand-interest evidence, Printway margin fit).
    • The Verifiable Citations Table.
    • Direct download link: `http://127.0.0.1:8001/reports/product_opportunities.csv`.
    • Conclude ALWAYS with 4 highly relevant, contextual follow-up questions in ```suggestions format:
