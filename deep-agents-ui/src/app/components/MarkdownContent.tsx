@@ -3,20 +3,71 @@
 import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { CyberpunkChartRenderer } from "@/app/components/CyberpunkChartRenderer";
 import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsRenderer";
-import { Sparkles, ZoomIn } from "lucide-react";
+import {
+  ProfitCalculatorWidget,
+  SeoTagsWidget,
+  PromptStudioWidget,
+  PrintwaySkuCardWidget,
+} from "@/app/components/InteractiveWidgets";
+import { Sparkles, ZoomIn, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MarkdownContentProps {
   content: string;
   className?: string;
+  isStreaming?: boolean;
 }
 
+// Lightweight, ultra-fast code renderer that avoids heavy Prism thread blocking during streaming
+const FastCodeBlock = React.memo<{
+  codeStr: string;
+  lang: string;
+}>(({ codeStr, lang }) => {
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(codeStr);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="relative my-3 overflow-hidden rounded-xl border border-slate-800 bg-[#060919]">
+      <div className="flex items-center justify-between border-b border-slate-800/80 bg-[#0A0E2A]/70 px-3 py-1.5 text-[11px] text-slate-400">
+        <span className="font-mono text-[10px] uppercase font-bold text-[#00D2FF]">
+          {lang || "code"}
+        </span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex items-center gap-1 text-[10px] text-slate-400 hover:text-white transition-colors cursor-pointer"
+        >
+          {copied ? (
+            <>
+              <Check className="h-3 w-3 text-[#00FF88]" />
+              <span className="text-[#00FF88]">Đã sao chép</span>
+            </>
+          ) : (
+            <>
+              <Copy className="h-3 w-3" />
+              <span>Sao chép</span>
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-3.5 font-mono text-xs text-slate-200 leading-relaxed break-words whitespace-pre-wrap">
+        {codeStr}
+      </pre>
+    </div>
+  );
+});
+
+FastCodeBlock.displayName = "FastCodeBlock";
+
 export const MarkdownContent = React.memo<MarkdownContentProps>(
-  ({ content, className }) => {
+  ({ content, className, isStreaming }) => {
     return (
       <div
         className={cn(
@@ -55,42 +106,75 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
               const lang = match ? match[1].toLowerCase() : "";
               const codeStr = String(children).replace(/\n$/, "");
 
-              // Intercept chart code blocks for visual rendering
-              if (!inline && (lang === "chart" || lang.startsWith("chart:") || lang === "radar" || lang === "gauge")) {
+              // 1. Chart Widgets (Radar, Gauge, Horizontal Bars)
+              if (
+                !inline &&
+                (lang === "chart" ||
+                  lang.startsWith("chart:") ||
+                  lang === "radar" ||
+                  lang === "gauge")
+              ) {
                 return <CyberpunkChartRenderer code={codeStr} />;
               }
 
-              // Intercept suggestions / follow-up question blocks for interactive action chips
-              if (!inline && (lang === "suggestions" || lang.startsWith("suggestion") || lang === "followup" || lang === "questions")) {
+              // 2. Interactive Profit & Break-Even Calculator Widget
+              if (
+                !inline &&
+                (lang === "profit_calc" ||
+                  lang === "calculator" ||
+                  lang === "calc" ||
+                  lang === "profit")
+              ) {
+                return <ProfitCalculatorWidget code={codeStr} />;
+              }
+
+              // 3. 13 SEO Keywords & Tags Copier Widget
+              if (
+                !inline &&
+                (lang === "seo_tags" ||
+                  lang === "tags" ||
+                  lang === "keywords" ||
+                  lang === "seo")
+              ) {
+                return <SeoTagsWidget code={codeStr} />;
+              }
+
+              // 4. Midjourney / Ideogram Visual Prompt Studio
+              if (
+                !inline &&
+                (lang === "prompts" ||
+                  lang === "prompt_studio" ||
+                  lang === "prompt_box" ||
+                  lang === "midjourney")
+              ) {
+                return <PromptStudioWidget code={codeStr} />;
+              }
+
+              // 5. Printway Factory SKU Specs Widget
+              if (
+                !inline &&
+                (lang === "printway_sku" ||
+                  lang === "sku_specs" ||
+                  lang === "factory_specs" ||
+                  lang === "specs")
+              ) {
+                return <PrintwaySkuCardWidget code={codeStr} />;
+              }
+
+              // 6. Interactive follow-up question action chips
+              if (
+                !inline &&
+                (lang === "suggestions" ||
+                  lang.startsWith("suggestion") ||
+                  lang === "followup" ||
+                  lang === "questions")
+              ) {
                 return <SuggestedQuestionsRenderer code={codeStr} />;
               }
 
+              // Standard code block
               return !inline && match ? (
-                <SyntaxHighlighter
-                  style={oneDark}
-                  language={lang}
-                  PreTag="div"
-                  className="max-w-full rounded-xl text-xs border border-slate-800"
-                  wrapLines={true}
-                  wrapLongLines={true}
-                  lineProps={{
-                    style: {
-                      wordBreak: "break-all",
-                      whiteSpace: "pre-wrap",
-                      overflowWrap: "break-word",
-                    },
-                  }}
-                  customStyle={{
-                    margin: 0,
-                    maxWidth: "100%",
-                    overflowX: "auto",
-                    fontSize: "0.82rem",
-                    backgroundColor: "#060919",
-                    padding: "1rem",
-                  }}
-                >
-                  {codeStr}
-                </SyntaxHighlighter>
+                <FastCodeBlock codeStr={codeStr} lang={lang} />
               ) : (
                 <code
                   className="bg-[#121A45] text-[#00FF88] rounded px-1.5 py-0.5 font-mono text-[0.88em] border border-[#00FF88]/20"
@@ -108,7 +192,10 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                     if (typeof window !== "undefined") {
                       window.dispatchEvent(
                         new CustomEvent("open-image-lightbox", {
-                          detail: { imageUrl: src, alt: alt || "Product Visual Design" },
+                          detail: {
+                            imageUrl: src,
+                            alt: alt || "Product Visual Design",
+                          },
                         })
                       );
                     }

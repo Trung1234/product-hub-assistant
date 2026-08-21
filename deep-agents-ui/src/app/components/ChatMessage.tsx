@@ -178,36 +178,35 @@ export const ChatMessage = React.memo<ChatMessageProps>(
             name: toolCall.name,
             subAgentName: subagentType,
             input: toolCall.args,
-            output: toolCall.result ? { result: toolCall.result } : undefined,
-            status: toolCall.status,
-          } as SubAgent;
+            output: toolCall.result,
+          };
         });
     }, [toolCalls]);
 
     const [expandedSubAgents, setExpandedSubAgents] = useState<
       Record<string, boolean>
     >({});
-    const isSubAgentExpanded = useCallback(
-      (id: string) => expandedSubAgents[id] ?? true,
-      [expandedSubAgents]
-    );
+
     const toggleSubAgent = useCallback((id: string) => {
       setExpandedSubAgents((prev) => ({
         ...prev,
-        [id]: prev[id] === undefined ? false : !prev[id],
+        [id]: !prev[id],
       }));
     }, []);
 
-    // For user messages: display simple user bubble
+    const isSubAgentExpanded = useCallback(
+      (id: string) => {
+        return expandedSubAgents[id] ?? false;
+      },
+      [expandedSubAgents]
+    );
+
+    // If human message: Render User Bubble
     if (isUser) {
       return (
-        <div className="flex w-full max-w-full overflow-x-hidden my-3 flex-row-reverse">
-          <div className="min-w-0 max-w-[75%]">
-            <div className="overflow-hidden break-words rounded-2xl rounded-br-sm border border-[#00D2FF]/40 bg-[#00D2FF]/15 px-4 py-3 text-white shadow-[0_0_15px_rgba(0,210,255,0.2)] backdrop-blur-sm">
-              <p className="m-0 whitespace-pre-wrap break-words text-sm font-medium leading-relaxed">
-                {rawMessageContent}
-              </p>
-            </div>
+        <div className="flex w-full justify-end my-3">
+          <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/30 px-4 py-3 text-sm text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed">
+            <p className="whitespace-pre-wrap font-medium">{rawMessageContent}</p>
           </div>
         </div>
       );
@@ -296,10 +295,13 @@ export const ChatMessage = React.memo<ChatMessageProps>(
           {hasContent && (
             <div className="relative flex flex-col w-full mt-2">
               <div className="overflow-hidden break-words text-sm font-normal leading-relaxed text-white w-full">
-                <MarkdownContent content={trimmedContent} />
+                <MarkdownContent
+                  content={trimmedContent}
+                  isStreaming={isLoading && isLastMessage}
+                />
                 
                 {/* 4. Follow-Up Questions rendered in clean ↳ UI (Last response only) */}
-                {isLastMessage && finalQuestions.length > 0 && (
+                {isLastMessage && !isLoading && finalQuestions.length > 0 && (
                   <SuggestedQuestionsRenderer questions={finalQuestions} />
                 )}
 
