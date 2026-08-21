@@ -111,24 +111,6 @@ function HomePageInner({
         {/* Cross Border AI Innovation Summit 2026 Header */}
         <header className="relative flex h-16 items-center justify-between border-b border-[#00FF88]/20 bg-[#0E1538]/80 px-6 backdrop-blur-md">
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_15px_rgba(0,255,136,0.5)]">
-                <Sparkles className="h-5 w-5 text-[#080B21]" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF] text-base">
-                    CROSS BORDER AI
-                  </span>
-                  <span className="rounded bg-[#00FF88]/15 px-1.5 py-0.5 text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
-                    2026 SUMMIT
-                  </span>
-                </div>
-                <div className="text-[10px] font-medium text-[#94A3B8]">
-                  PRINTWAY PRODUCT OPPORTUNITY HUB
-                </div>
-              </div>
-            </div>
 
             {!sidebar && (
               <Button
