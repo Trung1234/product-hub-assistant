@@ -3,11 +3,13 @@
 import React, {
   useCallback,
   useMemo,
-  useEffect
+  useEffect,
+  useState
 } from "react";
 import {
   Sparkles,
   Zap,
+  ArrowDown
 } from "lucide-react";
 import { ChatMessage } from "@/app/components/ChatMessage";
 import { ChatInput } from "@/app/components/ChatInput";
@@ -49,7 +51,8 @@ const QUICK_PROMPTS = [
 ];
 
 export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
-  const { scrollRef, contentRef } = useStickToBottom();
+  const { scrollRef, contentRef, scrollToBottom } = useStickToBottom();
+  const [showScrollBottom, setShowScrollBottom] = useState(false);
 
   const {
     stream,
@@ -67,6 +70,25 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   } = useChatContext();
 
   const submitDisabled = isLoading || !assistant;
+
+  // Handle scroll detection to toggle scroll-to-bottom button
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const distanceToBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setShowScrollBottom(distanceToBottom > 180);
+  }, [scrollRef]);
+
+  const handleScrollToBottom = useCallback(() => {
+    if (scrollToBottom) {
+      scrollToBottom();
+    } else if (scrollRef.current) {
+      scrollRef.current.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
+  }, [scrollToBottom, scrollRef]);
 
   const handleQuickPromptClick = useCallback(
     (query: string) => {
@@ -232,10 +254,11 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   );
 
   return (
-    <div className="flex flex-1 flex-col overflow-hidden bg-[#080B21]">
+    <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080B21]">
       <div
         className="flex-1 overflow-y-auto overflow-x-hidden overscroll-contain scrollbar-pretty"
         ref={scrollRef}
+        onScroll={handleScroll}
       >
         <div
           className="mx-auto w-full max-w-[1024px] px-6 pb-6 pt-4"
@@ -338,6 +361,19 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
           )}
         </div>
       </div>
+
+      {/* FLOATING SCROLL-TO-BOTTOM BUTTON WHEN SCROLLED UP */}
+      {showScrollBottom && (
+        <button
+          type="button"
+          onClick={handleScrollToBottom}
+          className="absolute bottom-28 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 rounded-full border border-[#00FF88]/40 bg-[#0E1538]/95 px-4 py-2 text-xs font-bold text-white shadow-[0_0_25px_rgba(0,255,136,0.35)] backdrop-blur-md hover:bg-[#121A45] hover:border-[#00FF88] hover:shadow-[0_0_30px_rgba(0,255,136,0.55)] hover:scale-105 transition-all duration-200 animate-in fade-in zoom-in-95 cursor-pointer"
+          title="Cuộn xuống tin nhắn mới nhất"
+        >
+          <ArrowDown className="h-3.5 w-3.5 text-[#00FF88] animate-bounce" />
+          <span className="text-[12px] font-semibold text-[#00FF88]">Cuộn xuống mới nhất</span>
+        </button>
+      )}
 
       {/* ISOLATED ZERO-LAG CHAT INPUT */}
       <ChatInput
