@@ -170,7 +170,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               id,
               name,
               args,
-              status: "completed",
+              status: "pending", // Initially pending while waiting for the tool execution response
             } as ToolCall;
           }
         );
@@ -186,7 +186,10 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
           const parentMsg = messageMap.get(aiMsgId);
           if (parentMsg && parentMsg.toolCalls[tcIdx]) {
             const result: string = typeof message.content === "string" ? message.content : extractStringFromMessageContent(message);
-            const status: "completed" | "error" | "pending" | "interrupted" = message.status === "error" ? "error" : "completed";
+            const isError =
+              message.status === "error" ||
+              (typeof result === "string" && (result.toLowerCase().startsWith("error:") || result.toLowerCase().startsWith("traceback")));
+            const status: "completed" | "error" | "pending" | "interrupted" = isError ? "error" : "completed";
 
             parentMsg.toolCalls[tcIdx] = {
               ...parentMsg.toolCalls[tcIdx],
@@ -203,8 +206,19 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       }
     });
 
+    // If stream is completely finished, convert any lingering pending tools without results
+    if (!isLoading) {
+      messageMap.forEach((entry) => {
+        entry.toolCalls.forEach((tc) => {
+          if (tc.status === "pending") {
+            tc.status = tc.result ? "completed" : "interrupted";
+          }
+        });
+      });
+    }
+
     return Array.from(messageMap.values());
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const clarificationData = useMemo(() => {
     if (!interrupt) return null;

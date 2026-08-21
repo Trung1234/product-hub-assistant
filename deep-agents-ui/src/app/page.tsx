@@ -9,6 +9,8 @@ import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import { ChatProvider } from "@/providers/ChatProvider";
 import { ChatInterface } from "@/app/components/ChatInterface";
 import { AppSidebar } from "@/app/components/AppSidebar";
+import { ScheduleManagementView } from "@/app/components/ScheduleManagementView";
+import { useUserSchedules } from "@/app/hooks/useUserSchedules";
 import { AuthButton } from "@/app/components/AuthButton";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { AuthScreen } from "@/app/components/AuthScreen";
@@ -34,7 +36,9 @@ function HomePageInner({ config }: HomePageInnerProps) {
   const [threadId, setThreadId] = useQueryState("threadId");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<"chat" | "schedules">("chat");
 
+  const { activeCount } = useUserSchedules();
   const [mutateThreads, setMutateThreads] = useState<(() => void) | null>(null);
   const [interruptCount, setInterruptCount] = useState(0);
   const [assistant, setAssistant] = useState<Assistant | null>(null);
@@ -188,14 +192,23 @@ function HomePageInner({ config }: HomePageInnerProps) {
         {/* ChatGPT-Style Left Sidebar (Unified Navigation & History, Drawer on Mobile) */}
         <AppSidebar
           currentThreadId={threadId}
-          onThreadSelect={(id) => setThreadId(id)}
-          onNewResearch={() => setThreadId(null)}
+          onThreadSelect={(id) => {
+            setThreadId(id);
+            setCurrentView("chat");
+          }}
+          onNewResearch={() => {
+            setThreadId(null);
+            setCurrentView("chat");
+          }}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           interruptCount={interruptCount}
           onMutateReady={(fn) => setMutateThreads(() => fn)}
           mobileOpen={mobileSidebarOpen}
           onMobileClose={() => setMobileSidebarOpen(false)}
+          currentView={currentView}
+          onChangeView={(view) => setCurrentView(view)}
+          activeScheduleCount={activeCount}
         />
 
         {/* Main Full-Height Workspace Area */}
@@ -242,7 +255,10 @@ function HomePageInner({ config }: HomePageInnerProps) {
               </button>
               <button
                 type="button"
-                onClick={() => setThreadId(null)}
+                onClick={() => {
+                  setThreadId(null);
+                  setCurrentView("chat");
+                }}
                 className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#00FF88]/30 bg-[#00FF88]/10 text-[#00FF88] hover:bg-[#00FF88] hover:text-[#080B21] transition-colors cursor-pointer"
                 title="Tạo phiên nghiên cứu mới"
                 aria-label="Tạo phiên nghiên cứu mới"
@@ -252,12 +268,27 @@ function HomePageInner({ config }: HomePageInnerProps) {
             </div>
           </header>
 
-          <ChatProvider
-            activeAssistant={assistant}
-            onHistoryRevalidate={() => mutateThreads?.()}
-          >
-            <ChatInterface assistant={assistant} />
-          </ChatProvider>
+          {/* Conditional View Rendering: Schedule Management vs Chat Interface */}
+          {currentView === "schedules" ? (
+            <ScheduleManagementView
+              onOpenChatWithPrompt={(prompt) => {
+                setCurrentView("chat");
+                setThreadId(null);
+                setTimeout(() => {
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent("send-chat-prompt", { detail: prompt }));
+                  }
+                }, 100);
+              }}
+            />
+          ) : (
+            <ChatProvider
+              activeAssistant={assistant}
+              onHistoryRevalidate={() => mutateThreads?.()}
+            >
+              <ChatInterface assistant={assistant} />
+            </ChatProvider>
+          )}
         </main>
       </div>
     </>

@@ -135,29 +135,56 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
     const [copied, setCopied] = useState(false);
 
     const { name, args, result, status } = useMemo(() => {
+      let resolvedStatus: "completed" | "error" | "pending" | "interrupted" =
+        toolCall.status || (toolCall.result ? "completed" : isLoading ? "pending" : "completed");
+
+      // Double-check if result indicates error
+      if (typeof toolCall.result === "string" && (toolCall.result.toLowerCase().startsWith("error:") || toolCall.result.toLowerCase().startsWith("traceback"))) {
+        resolvedStatus = "error";
+      }
+
       return {
         name: toolCall.name || "Unknown Tool",
         args: toolCall.args || {},
         result: toolCall.result,
-        status: toolCall.status || "completed",
+        status: resolvedStatus,
       };
-    }, [toolCall]);
+    }, [toolCall, isLoading]);
 
     const meta = useMemo(() => getToolMeta(name), [name]);
     const ToolIcon = meta.icon;
 
-    const statusIcon = useMemo(() => {
+    const statusBadge = useMemo(() => {
       switch (status) {
-        case "completed":
-          return <CircleCheckBigIcon className="h-3.5 w-3.5 text-[#00FF88] shrink-0" />;
-        case "error":
-          return <AlertCircle size={14} className="text-red-400 shrink-0" />;
         case "pending":
-          return <Loader2 size={14} className="animate-spin text-[#00D2FF] shrink-0" />;
+          return (
+            <span className="flex items-center gap-1.5 rounded-full border border-[#00D2FF]/40 bg-[#00D2FF]/15 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#00D2FF] animate-pulse">
+              <Loader2 size={11} className="animate-spin text-[#00D2FF]" />
+              <span>Đang chạy...</span>
+            </span>
+          );
+        case "error":
+          return (
+            <span className="flex items-center gap-1 rounded-full border border-rose-500/40 bg-rose-500/15 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-rose-400">
+              <AlertCircle size={11} className="text-rose-400" />
+              <span>Lỗi</span>
+            </span>
+          );
         case "interrupted":
-          return <StopCircle size={14} className="text-amber-400 shrink-0" />;
+          return (
+            <span className="flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-300">
+              <StopCircle size={11} className="text-amber-400" />
+              <span>Chờ duyệt</span>
+            </span>
+          );
+        case "completed":
         default:
-          return <Terminal size={14} className="text-slate-400 shrink-0" />;
+          return (
+            <span className="flex items-center gap-1 rounded-full border border-[#00FF88]/30 bg-[#00FF88]/10 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#00FF88]">
+              <CircleCheckBigIcon size={11} className="text-[#00FF88]" />
+              <span>Hoàn tất</span>
+            </span>
+          );
       }
     }, [status]);
 
@@ -177,13 +204,20 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
       setTimeout(() => setCopied(false), 2000);
     }, [name, args, result]);
 
+    const isRunning = status === "pending";
+    const isError = status === "error";
+
     return (
       <div
         className={cn(
-          "w-full overflow-hidden rounded-xl border bg-[#0E1538]/75 transition-all duration-200 backdrop-blur-md",
-          isExpanded
+          "w-full overflow-hidden rounded-xl border transition-all duration-200 backdrop-blur-md",
+          isRunning
+            ? "border-[#00D2FF]/50 bg-[#0E1538]/90 shadow-[0_0_15px_rgba(0,210,255,0.15)] ring-1 ring-[#00D2FF]/20"
+            : isError
+            ? "border-rose-500/40 bg-rose-950/20"
+            : isExpanded
             ? "border-[#00FF88]/40 bg-[#0E1538]/95 shadow-[0_0_15px_rgba(0,255,136,0.1)]"
-            : "border-slate-800/90 hover:border-[#00FF88]/30 hover:bg-[#121A45]/80"
+            : "border-slate-800/90 bg-[#0E1538]/75 hover:border-[#00FF88]/30 hover:bg-[#121A45]/80"
         )}
       >
         <button
@@ -209,12 +243,9 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
           </div>
 
           <div className="flex items-center gap-2 shrink-0 text-slate-400">
-            {statusIcon}
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 hidden xs:inline">
-              {isExpanded ? "Đóng" : "Chi tiết"}
-            </span>
+            {statusBadge}
             {isExpanded ? (
-              <ChevronUp size={13} className="text-[#00FF88]" />
+              <ChevronUp size={13} className={cn(isRunning ? "text-[#00D2FF]" : "text-[#00FF88]")} />
             ) : (
               <ChevronDown size={13} className="text-slate-400" />
             )}
@@ -223,6 +254,12 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
 
         {isExpanded && (
           <div className="border-t border-slate-800 px-3.5 py-3 text-xs bg-[#080B21]/60">
+            {isRunning && (
+              <div className="mb-3 flex items-center gap-2 rounded-lg bg-[#00D2FF]/10 border border-[#00D2FF]/30 p-2.5 text-xs text-[#00D2FF] animate-pulse">
+                <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0 text-[#00D2FF]" />
+                <span className="font-mono text-[11px]">Đang thực thi công cụ & cào dữ liệu thời gian thực...</span>
+              </div>
+            )}
             {uiComponent && stream && graphId ? (
               <div className="mt-2">
                 <LoadExternalComponent
