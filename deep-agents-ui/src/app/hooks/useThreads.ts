@@ -115,14 +115,28 @@ export function useThreads(props: {
           assistantId
         );
 
-      const threads = await client.threads.search({
-        limit: pageSize,
-        offset: pageIndex * pageSize,
-        sortBy: "updated_at" as const,
-        sortOrder: "desc" as const,
-        status,
-        ...(isUUID ? { metadata: { assistant_id: assistantId } } : {}),
-      });
+      let threads: any[] = [];
+      try {
+        threads = await client.threads.search({
+          limit: pageSize,
+          offset: pageIndex * pageSize,
+          sortBy: "updated_at" as const,
+          sortOrder: "desc" as const,
+          status,
+          ...(isUUID ? { metadata: { assistant_id: assistantId } } : {}),
+        });
+      } catch (err) {
+        // Fallback: If LangGraph backend is waking up, use Supabase sessions
+        return userThreadIds.map((tid) => ({
+          id: tid,
+          updatedAt: new Date(),
+          status: "idle" as const,
+          title: "Phiên nghiên cứu",
+          description: "",
+          assistantId,
+          userId,
+        }));
+      }
 
       // 3. Filter strictly for this user if user-scoped threads are recorded
       const visibleThreads = userThreadIds.length > 0
