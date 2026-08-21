@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useMemo, useCallback } from "react";
 import {
   Calculator,
@@ -15,7 +13,19 @@ import {
   Flame,
   CheckCircle2,
   Clock,
-  Truck
+  Truck,
+  TrendingUp,
+  TrendingDown,
+  Target,
+  ShieldCheck,
+  AlertCircle,
+  Calendar,
+  ShoppingBag,
+  Store,
+  Globe,
+  Award,
+  CheckSquare,
+  Square
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -441,3 +451,319 @@ export const PrintwaySkuCardWidget = React.memo<{ code: string }>(({ code }) => 
 });
 
 PrintwaySkuCardWidget.displayName = "PrintwaySkuCardWidget";
+
+// ==========================================
+// 4. EXECUTIVE SCORECARD & KPI GRID WIDGET
+// ==========================================
+export const ExecutiveScorecardWidget = React.memo<{ code: string }>(({ code }) => {
+  const parsed = useMemo(() => {
+    try {
+      return JSON.parse(code.trim());
+    } catch {
+      return {};
+    }
+  }, [code]);
+
+  const score = parseNumeric(parsed.score || parsed.opportunity_score, 75);
+  const recommendation = parsed.recommendation || (score >= 70 ? "RECOMMEND" : score >= 50 ? "RECOMMEND WITH CAUTION" : "NOT RECOMMEND");
+  const demandVol = parsed.demand || parsed.search_volume || "14,500/mo";
+  const competition = parsed.competition || parsed.active_listings || "105 listings";
+  const growth = parsed.growth || parsed.yoy_growth || "+45% YoY";
+  const estMargin = parsed.margin || parsed.profit_margin || "68% - 75%";
+
+  const isPositive = recommendation.toUpperCase().includes("RECOMMEND") && !recommendation.toUpperCase().includes("NOT");
+  const isCaution = recommendation.toUpperCase().includes("CAUTION");
+
+  return (
+    <div className="my-4 sm:my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-3.5 sm:p-5 shadow-[0_0_25px_rgba(0,255,136,0.15)] backdrop-blur-md">
+      {/* Header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00FF88]/20 pb-3 mb-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#00FF88]/15 border border-[#00FF88]/40 text-[#00FF88] shrink-0">
+            <Award className="h-4 w-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+              Bảng Tổng Quan Chỉ Số Cơ Hội (Executive Scorecard)
+            </h4>
+            <span className="text-[10px] text-[#94A3B8]">Tóm tắt 4 trụ cột R&D quyết định mở bán</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn(
+              "px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider border",
+              !isPositive
+                ? "bg-rose-500/20 text-rose-400 border-rose-500/40"
+                : isCaution
+                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                : "bg-[#00FF88]/20 text-[#00FF88] border-[#00FF88]/50 shadow-[0_0_10px_rgba(0,255,136,0.3)]"
+            )}
+          >
+            {recommendation}
+          </span>
+        </div>
+      </div>
+
+      {/* 4-KPI Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+        {/* KPI 1: Score */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-slate-800 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase">Opportunity Score</span>
+            <Target className="h-3.5 w-3.5 text-[#00FF88]" />
+          </div>
+          <div className="flex items-baseline gap-1 my-1">
+            <span className="text-xl sm:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#00D2FF]">
+              {score}
+            </span>
+            <span className="text-[10px] text-slate-400">/100</span>
+          </div>
+          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+            <div
+              className="bg-gradient-to-r from-[#00FF88] to-[#00D2FF] h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+            />
+          </div>
+        </div>
+
+        {/* KPI 2: Demand */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-slate-800 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase">Nhu Cầu Tìm Kiếm</span>
+            <ShoppingBag className="h-3.5 w-3.5 text-cyan-400" />
+          </div>
+          <div className="my-1">
+            <span className="text-base sm:text-lg font-bold text-white block truncate">
+              {demandVol}
+            </span>
+          </div>
+          <span className="text-[10px] text-cyan-400 font-medium">Etsy & Amazon US Index</span>
+        </div>
+
+        {/* KPI 3: Competition */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-slate-800 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase">Mức Cạnh Tranh</span>
+            <ShieldCheck className="h-3.5 w-3.5 text-amber-400" />
+          </div>
+          <div className="my-1">
+            <span className="text-base sm:text-lg font-bold text-white block truncate">
+              {competition}
+            </span>
+          </div>
+          <span className="text-[10px] text-amber-400 font-medium">Mật độ listing active</span>
+        </div>
+
+        {/* KPI 4: Margin */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-slate-800 flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-400 mb-1">
+            <span className="text-[9px] sm:text-[10px] font-bold uppercase">Biên Lợi Nhuận</span>
+            <TrendingUp className="h-3.5 w-3.5 text-purple-400" />
+          </div>
+          <div className="my-1">
+            <span className="text-base sm:text-lg font-bold text-[#00FF88] block truncate">
+              {estMargin}
+            </span>
+          </div>
+          <span className="text-[10px] text-purple-400 font-medium">Xưởng Printway VN</span>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+ExecutiveScorecardWidget.displayName = "ExecutiveScorecardWidget";
+
+// ==========================================
+// 5. MARKETPLACE MULTI-CHANNEL MATRIX WIDGET
+// ==========================================
+export const MarketplaceComparisonWidget = React.memo<{ code: string }>(({ code }) => {
+  const data = useMemo(() => {
+    try {
+      return JSON.parse(code.trim());
+    } catch {
+      return {
+        etsy: { score: 88, note: "Top 1 ngách cá nhân hóa quà tặng, AOV cao, chi phí list thấp" },
+        amazon: { score: 62, note: "Cạnh tranh giá mạnh ở tier dưới $15, nên test FBM Printway" },
+        tiktok_shop: { score: 78, note: "Viral video visual unboxing rất tốt đón sóng mùa vụ Q4" },
+        pinterest: { score: 85, note: "Pin saves tăng mạnh từ T8-T9 cho dòng sản phẩm Mica/Gỗ" },
+      };
+    }
+  }, [code]);
+
+  return (
+    <div className="my-4 sm:my-5 rounded-2xl border border-cyan-500/30 bg-[#0E1538] p-3.5 sm:p-5 shadow-[0_0_20px_rgba(0,210,255,0.15)] backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-cyan-500/20 pb-3 mb-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 shrink-0">
+            <Globe className="h-4 w-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+              Đánh Giá Độ Phù Hợp Kênh Bán Hàng (Marketplace Matrix)
+            </h4>
+            <span className="text-[10px] text-[#94A3B8]">Etsy • Amazon • TikTok Shop • Pinterest</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-xs">
+        {/* Etsy */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-orange-500/20">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-bold text-orange-400 flex items-center gap-1.5">
+              <Store className="h-3.5 w-3.5" />
+              Etsy Marketplace
+            </span>
+            <span className="font-mono font-bold text-[#00FF88]">{data.etsy?.score || 85}/100</span>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed">{data.etsy?.note || "Kênh chủ lực cá nhân hóa quà tặng gia đình."}</p>
+        </div>
+
+        {/* Amazon */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-amber-500/20">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-bold text-amber-400 flex items-center gap-1.5">
+              <ShoppingBag className="h-3.5 w-3.5" />
+              Amazon Marketplace
+            </span>
+            <span className="font-mono font-bold text-amber-300">{data.amazon?.score || 65}/100</span>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed">{data.amazon?.note || "Tập trung BSR top và tối ưu thời gian ship FBM Printway."}</p>
+        </div>
+
+        {/* TikTok Shop */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-rose-500/20">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-bold text-rose-400 flex items-center gap-1.5">
+              <Flame className="h-3.5 w-3.5" />
+              TikTok Shop US
+            </span>
+            <span className="font-mono font-bold text-rose-300">{data.tiktok_shop?.score || 80}/100</span>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed">{data.tiktok_shop?.note || "Phù hợp chạy video unboxing và kết nối Affiliate Creator."}</p>
+        </div>
+
+        {/* Pinterest */}
+        <div className="rounded-xl bg-[#080B21] p-3 border border-purple-500/20">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-bold text-purple-400 flex items-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5" />
+              Pinterest Visual Trends
+            </span>
+            <span className="font-mono font-bold text-purple-300">{data.pinterest?.score || 85}/100</span>
+          </div>
+          <p className="text-[11px] text-slate-300 leading-relaxed">{data.pinterest?.note || "Tín hiệu lưu Pin sớm từ tệp khách hàng nữ 25-45 tuổi."}</p>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+MarketplaceComparisonWidget.displayName = "MarketplaceComparisonWidget";
+
+// ==========================================
+// 6. INTERACTIVE 30-DAY LAUNCH TIMELINE ROADMAP WIDGET
+// ==========================================
+export const TimelineActionPlanWidget = React.memo<{ code: string }>(({ code }) => {
+  const [completedSteps, setCompletedSteps] = useState<Record<number, boolean>>({});
+
+  const toggleStep = (idx: number) => {
+    setCompletedSteps((prev) => ({
+      ...prev,
+      [idx]: !prev[idx],
+    }));
+  };
+
+  const steps = useMemo(() => {
+    try {
+      const parsed = JSON.parse(code.trim());
+      if (Array.isArray(parsed)) return parsed;
+    } catch {
+      // ignore
+    }
+    return [
+      {
+        week: "Tuần 1: R&D & Thiết Kế Sản Phẩm",
+        desc: "Chuẩn bị 5 concept thiết kế (Mica 3mm / Gỗ Plywood), xuất file in UV 300 DPI và test render mockup.",
+        tag: "R&D Phase"
+      },
+      {
+        week: "Tuần 2: Chuẩn Hóa Listing & 13 SEO Tags",
+        desc: "Đăng 3 listing Etsy thử nghiệm, cấu hình bộ 13 SEO tags, giá launch $16.99 và bật personalization.",
+        tag: "Listing Launch"
+      },
+      {
+        week: "Tuần 3: Pinterest Pinning & Etsy Ads Thử Nghiệm",
+        desc: "Đăng 15 Pin visual assets theo gu thẩm mỹ Stained Glass / Floral, set ngân sách Etsy Ads $5/ngày.",
+        tag: "Traffic Drive"
+      },
+      {
+        week: "Tuần 4: Tối Ưu Chiến Dịch & Quy Mô Đơn Hàng",
+        desc: "Đo lường CTR/CR, mở rộng bundle combo quà tặng, tăng ngân sách ads đón đỉnh sóng mùa vụ.",
+        tag: "Scale Phase"
+      },
+    ];
+  }, [code]);
+
+  return (
+    <div className="my-4 sm:my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-3.5 sm:p-5 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00FF88]/20 pb-3 mb-4">
+        <div className="flex items-center gap-2">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-[#00FF88]/40 text-[#00FF88] shrink-0">
+            <Calendar className="h-4 w-4" />
+          </div>
+          <div>
+            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+              Lộ Trình Mở Bán 30 Ngày (Action Roadmap)
+            </h4>
+            <span className="text-[10px] text-[#94A3B8]">Tích chọn các đầu việc đã hoàn thành để theo dõi tiến độ</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2.5">
+        {steps.map((step: any, idx: number) => {
+          const isDone = !!completedSteps[idx];
+          return (
+            <div
+              key={idx}
+              onClick={() => toggleStep(idx)}
+              className={cn(
+                "flex items-start gap-3 rounded-xl p-3 border transition-all cursor-pointer select-none",
+                isDone
+                  ? "bg-[#00FF88]/10 border-[#00FF88]/40 text-slate-300"
+                  : "bg-[#080B21] border-slate-800 hover:border-[#00FF88]/30 text-white"
+              )}
+            >
+              <div className="mt-0.5 shrink-0 text-[#00FF88]">
+                {isDone ? (
+                  <CheckSquare className="h-4 w-4 text-[#00FF88]" />
+                ) : (
+                  <Square className="h-4 w-4 text-slate-500" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className={cn("text-xs font-bold", isDone && "line-through text-[#00FF88]/80")}>
+                    {step.week || `Bước ${idx + 1}`}
+                  </span>
+                  <span className="text-[9px] font-bold uppercase px-2 py-0.5 rounded-full bg-[#121A45] text-slate-400 border border-slate-700">
+                    {step.tag || "Milestone"}
+                  </span>
+                </div>
+                <p className={cn("text-[11px] text-slate-300 leading-relaxed", isDone && "line-through text-slate-500")}>
+                  {step.desc}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
+TimelineActionPlanWidget.displayName = "TimelineActionPlanWidget";

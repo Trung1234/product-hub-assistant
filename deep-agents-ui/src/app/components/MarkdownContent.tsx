@@ -54,6 +54,42 @@ const PrintwaySkuCardWidget = dynamic(
   }
 );
 
+const ExecutiveScorecardWidget = dynamic(
+  () => import("@/app/components/InteractiveWidgets").then((m) => m.ExecutiveScorecardWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-36 w-full animate-pulse rounded-2xl border border-[#00FF88]/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-[#00FF88] font-mono">Đang tải bảng chỉ số Executive Scorecard...</span>
+      </div>
+    ),
+  }
+);
+
+const MarketplaceComparisonWidget = dynamic(
+  () => import("@/app/components/InteractiveWidgets").then((m) => m.MarketplaceComparisonWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-36 w-full animate-pulse rounded-2xl border border-cyan-500/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-cyan-400 font-mono">Đang tải ma trận kênh bán...</span>
+      </div>
+    ),
+  }
+);
+
+const TimelineActionPlanWidget = dynamic(
+  () => import("@/app/components/InteractiveWidgets").then((m) => m.TimelineActionPlanWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-48 w-full animate-pulse rounded-2xl border border-[#00FF88]/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-[#00FF88] font-mono">Đang tải lộ trình 30 ngày mở bán...</span>
+      </div>
+    ),
+  }
+);
+
 const SuggestedQuestionsRenderer = dynamic(
   () => import("@/app/components/SuggestedQuestionsRenderer").then((m) => m.SuggestedQuestionsRenderer),
   { ssr: false }
@@ -248,7 +284,42 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 return <PrintwaySkuCardWidget code={codeStr} />;
               }
 
-              // 5. Interactive follow-up question action chips
+              // 5. Executive Scorecard & 4-KPI Grid Widget
+              if (
+                !inline &&
+                (lang === "executive_kpi" ||
+                  lang === "scorecard" ||
+                  lang === "kpi_grid" ||
+                  lang === "metrics_summary" ||
+                  lang === "kpi_cards")
+              ) {
+                return <ExecutiveScorecardWidget code={codeStr} />;
+              }
+
+              // 6. Marketplace Multi-Channel Matrix Widget
+              if (
+                !inline &&
+                (lang === "channel_comparison" ||
+                  lang === "channels" ||
+                  lang === "marketplace_matrix" ||
+                  lang === "marketplaces")
+              ) {
+                return <MarketplaceComparisonWidget code={codeStr} />;
+              }
+
+              // 7. Interactive 30-Day Launch Roadmap Widget
+              if (
+                !inline &&
+                (lang === "action_plan" ||
+                  lang === "timeline" ||
+                  lang === "launch_plan" ||
+                  lang === "roadmap" ||
+                  lang === "action_roadmap")
+              ) {
+                return <TimelineActionPlanWidget code={codeStr} />;
+              }
+
+              // 8. Interactive follow-up question action chips
               if (
                 !inline &&
                 (lang === "suggestions" ||
