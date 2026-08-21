@@ -29,6 +29,7 @@ import { TodoItem } from "@/app/types/types";
 import { cn } from "@/lib/utils";
 import { FilesPopover } from "@/app/components/TasksFilesSidebar";
 import type { UploadedFileItem } from "@/app/components/FilePreviewModal";
+import { useSpeechRecognition } from "@/app/hooks/useSpeechRecognition";
 
 const FilePreviewModal = dynamic(
   () => import("@/app/components/FilePreviewModal").then((m) => m.FilePreviewModal),
@@ -84,8 +85,6 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const [previewingFile, setPreviewingFile] = useState<UploadedFileItem | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
 
   // Real-time LLM-generated dynamic completion
   const [llmSuggestion, setLlmSuggestion] = useState<string>("");
@@ -96,59 +95,12 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const tasksContainerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const toggleListening = useCallback(() => {
-    if (typeof window === "undefined") return;
-
-    const SpeechRecognition =
-      (window as any).SpeechRecognition ||
-      (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      toast.error("Trình duyệt hiện tại chưa hỗ trợ nhận diện giọng nói Web Speech.");
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-
-    try {
-      const recognition = new SpeechRecognition();
-      recognition.lang = "vi-VN";
-      recognition.continuous = false;
-      recognition.interimResults = false;
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        toast.info("Đang lắng nghe giọng nói... Hãy nói từ khóa hoặc ý tưởng POD của bạn.");
-      };
-
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
-          toast.success("Đã ghi nhận giọng nói!");
-        }
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error("Speech recognition error:", event.error);
-        setIsListening(false);
-      };
-
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-
-      recognitionRef.current = recognition;
-      recognition.start();
-    } catch (err) {
-      console.error("Speech recognition init error:", err);
-      setIsListening(false);
-    }
-  }, [isListening]);
+  // Hook-based Voice Dictation
+  const { isListening, toggleListening } = useSpeechRecognition({
+    onTranscript: useCallback((transcript: string) => {
+      setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+    }, []),
+  });
 
   const hasTasks = todos.length > 0;
   const hasFiles = Object.keys(files).length > 0;

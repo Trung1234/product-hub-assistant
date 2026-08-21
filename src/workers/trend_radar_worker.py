@@ -15,8 +15,9 @@ from src.crawlers.market_crawler import MarketCrawler
 from src.scorers.opportunity_scorer import OpportunityScorer
 from src.tools.dataset_tools import record_product_opportunity_matrix
 from src.tools.report_tools import generate_product_opportunity_pdf_report
-from src.db.supabase_client import get_supabase_client
+from src.db.supabase_client import supabase_repo
 from src.db.supabase_storage import upload_file_to_supabase
+from src.config import market_config
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -40,7 +41,7 @@ class TrendRadarWorker:
     def __init__(self):
         self.crawler = MarketCrawler()
         self.scorer = OpportunityScorer()
-        self.supabase = get_supabase_client()
+        self.supabase = supabase_repo.client
         self.is_running = True
 
     async def execute_radar_cycle(self):

@@ -4,14 +4,17 @@ Provides seamless connection to Supabase Cloud PostgreSQL & Auth
 with automatic local SQLite fallback for offline development.
 """
 
-import os
-import json
 import logging
 from typing import Optional, Dict, Any, List
-from dotenv import load_dotenv
+from src.config import (
+    supabase_config,
+    SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
+    SUPABASE_KEY
+)
 
-load_dotenv()
 logger = logging.getLogger("SupabaseClient")
+
 
 class SupabaseRepository:
     """
@@ -20,8 +23,8 @@ class SupabaseRepository:
     otherwise falls back to local SQLite database repository.
     """
     def __init__(self):
-        self.supabase_url = os.getenv("SUPABASE_URL", "").strip()
-        self.supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_KEY", "").strip()
+        self.supabase_url = SUPABASE_URL.strip() if SUPABASE_URL else ""
+        self.supabase_key = (SUPABASE_SERVICE_ROLE_KEY or SUPABASE_KEY or "").strip()
         self.client = None
         self._init_client()
 
@@ -116,6 +119,7 @@ class SupabaseRepository:
 
         from src.db.opportunity_repository import db_repo
         return db_repo.get_user_opportunities(user_id=user_id or "usr_default_admin", limit=limit)
+
 
 # Global singleton repository instance
 supabase_repo = SupabaseRepository()

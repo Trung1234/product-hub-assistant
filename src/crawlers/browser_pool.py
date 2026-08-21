@@ -7,12 +7,18 @@ with built-in US Residential Proxies, AI Captcha Solving, and automatic fallback
 import os
 import random
 import logging
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Tuple
 from playwright.async_api import Playwright, Browser
-from dotenv import load_dotenv
 
-load_dotenv()
+from src.config import (
+    browserless_config,
+    BROWSERLESS_API_KEY,
+    BROWSERLESS_USE_RESIDENTIAL,
+    BROWSERLESS_WS_ENDPOINT
+)
+
 logger = logging.getLogger("BrowserPool")
+
 
 def get_browserless_cdp_url() -> Optional[str]:
     """
@@ -22,21 +28,19 @@ def get_browserless_cdp_url() -> Optional[str]:
     - Ad & Asset Blocking (&blockAds=true)
     - Automatic AI Captcha Solving
     """
-    api_key = os.getenv("BROWSERLESS_API_KEY", "").strip()
-    if api_key:
-        use_residential = os.getenv("BROWSERLESS_USE_RESIDENTIAL", "true").lower() != "false"
-        proxy_param = "&proxy=residential&proxyCountry=us" if use_residential else ""
-        return f"wss://chrome.browserless.io?token={api_key}{proxy_param}&stealth=true&blockAds=true"
+    if BROWSERLESS_API_KEY:
+        proxy_param = "&proxy=residential&proxyCountry=us" if BROWSERLESS_USE_RESIDENTIAL else ""
+        return f"wss://chrome.browserless.io?token={BROWSERLESS_API_KEY}{proxy_param}&stealth=true&blockAds=true"
 
-    endpoint = os.getenv("BROWSERLESS_WS_ENDPOINT") or os.getenv("BROWSERLESS_URL")
-    if endpoint:
-        endpoint = endpoint.strip()
+    if BROWSERLESS_WS_ENDPOINT:
+        endpoint = BROWSERLESS_WS_ENDPOINT.strip()
         if endpoint.startswith("http://"):
             endpoint = endpoint.replace("http://", "ws://", 1)
         elif endpoint.startswith("https://"):
             endpoint = endpoint.replace("https://", "wss://", 1)
         return endpoint
     return None
+
 
 def get_proxy_config() -> Optional[Dict[str, str]]:
     """Retrieves random residential proxy from CRAWLEE_PROXIES if available."""
@@ -48,24 +52,28 @@ def get_proxy_config() -> Optional[Dict[str, str]]:
             return {"server": chosen}
     return None
 
+
 async def create_browser_session(
     p: Playwright,
-    headless: bool = True
+    headless: Optional[bool] = None
 ) -> Tuple[Browser, str]:
     """
     Connects to Browserless remote cluster over CDP if configured,
     otherwise launches high-performance local Chromium.
     Returns (browser_instance, mode_str).
     """
+    if headless is None:
+        headless = browserless_config.headless
+
     browserless_cdp = get_browserless_cdp_url()
-    
+
     # 1. Try Browserless Remote Cloud Cluster via CDP with Built-in Residential Proxy
     if browserless_cdp:
         try:
             browser = await p.chromium.connect_over_cdp(browserless_cdp, timeout=15000)
             return browser, "REMOTE_BROWSERLESS_RESIDENTIAL_CLOUD"
         except Exception as e:
-            print(f"[BrowserPool Warning] Failed to connect to Browserless Cloud: {e}. Falling back to local Chromium.")
+            logger.warning(f"[BrowserPool] Failed to connect to Browserless Cloud: {e}. Falling back to local Chromium.")
 
     # 2. Local High-Performance Chromium Fallback
     launch_args = [

@@ -23,7 +23,7 @@ Your mission is to empower cross-border e-commerce sellers, brand owners, and pr
 
 3. **TRÍCH DẪN MINH BẠCH & LƯU BẢNG MA TRẬN CSV THỰC TẾ**:
    - Mọi luận điểm phân tích phải gắn nhãn nguồn kiểm chứng: `[Etsy-1]`, `[Amazon-1]`, `[pytrends]`, `[Pinterest]`, `[Printway-Catalog]`.
-   - Luôn gọi `record_product_opportunity_matrix(...)` để ghi nhận dữ liệu thật vào file CSV tải về tại `http://127.0.0.1:8001/reports/product_opportunities.csv`.
+   - Luôn gọi `record_product_opportunity_matrix(...)` để ghi nhận dữ liệu thật vào cơ sở dữ liệu và xuất file ma trận CSV tải về.
 
 ---
 
