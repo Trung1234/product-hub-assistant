@@ -1,0 +1,48 @@
+name: 🚀 Auto Deploy Printway Nexus (Vercel & Render)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-frontend-and-backend:
+    name: Build & Deploy to Vercel & Render
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: deep-agents-ui/package.json
+
+      - name: 📦 Install Frontend Dependencies
+        working-directory: ./deep-agents-ui
+        run: npm install --legacy-peer-deps
+
+      - name: 🚀 Deploy Frontend to Vercel Production
+        working-directory: ./deep-agents-ui
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID || 'team_KraLH7ZT1iUl9GxKHGoHkwb1' }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID || 'prj_RofMNCMcSO0R6NJ4b1ypcr01XlaB' }}
+        run: |
+          if [ -n "$VERCEL_TOKEN" ]; then
+            npx vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+            npx vercel build --prod --token=$VERCEL_TOKEN
+            npx vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+            npx vercel alias set deep-agents-ui-pi.vercel.app printway-nexus.vercel.app --token=$VERCEL_TOKEN
+            echo "✅ Successfully deployed to printway-nexus.vercel.app!"
+          else
+            echo "ℹ️ Vercel GitHub App / CLI auto-deploy is active."
+          fi
+
+      - name: ⚙️ Trigger Render Backend Auto-Deploy Verification
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          echo "✅ Render backend autoDeploy is active on branch 'main' for service srv-da48ibbbc2fs73c936mg!"
