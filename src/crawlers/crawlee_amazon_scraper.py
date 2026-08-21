@@ -73,9 +73,10 @@ class CrawleeAmazonScraper:
 
         headless_mode = os.getenv("CRAWLEE_HEADLESS", "true").lower() != "false"
 
+        from src.crawlers.browser_pool import create_browser_session
+
         async with async_playwright() as p:
-            launch_args = ["--disable-blink-features=AutomationControlled", "--no-sandbox"]
-            browser = await p.chromium.launch(headless=headless_mode, args=launch_args)
+            browser, engine_mode = await create_browser_session(p, headless=headless_mode)
             
             context_kwargs = {
                 "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",

@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
 import { useQueryState } from "nuqs";
-import { getConfig, saveConfig, StandaloneConfig } from "@/lib/config";
-import { ConfigDialog } from "@/app/components/ConfigDialog";
-import { Button } from "@/components/ui/button";
+import { getConfig, StandaloneConfig } from "@/lib/config";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import { ChatProvider } from "@/providers/ChatProvider";
@@ -12,21 +10,13 @@ import { ChatInterface } from "@/app/components/ChatInterface";
 import { AppSidebar } from "@/app/components/AppSidebar";
 import { ImageLightboxModal } from "@/app/components/ImageLightboxModal";
 import { CommandPalette } from "@/app/components/CommandPalette";
-import { PanelLeft, SquarePen, Search, Settings } from "lucide-react";
+import { PanelLeft, SquarePen, Search } from "lucide-react";
 
 interface HomePageInnerProps {
   config: StandaloneConfig;
-  configDialogOpen: boolean;
-  setConfigDialogOpen: (open: boolean) => void;
-  handleSaveConfig: (config: StandaloneConfig) => void;
 }
 
-function HomePageInner({
-  config,
-  configDialogOpen,
-  setConfigDialogOpen,
-  handleSaveConfig,
-}: HomePageInnerProps) {
+function HomePageInner({ config }: HomePageInnerProps) {
   const client = useClient();
   const [threadId, setThreadId] = useQueryState("threadId");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -159,20 +149,12 @@ function HomePageInner({
 
   return (
     <>
-      <ConfigDialog
-        open={configDialogOpen}
-        onOpenChange={setConfigDialogOpen}
-        onSave={handleSaveConfig}
-        initialConfig={config}
-      />
-
       {/* Command Palette (Cmd + K) */}
       <CommandPalette
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
         onSelectPrompt={handleSelectPalettePrompt}
         onNewResearch={() => setThreadId(null)}
-        onOpenSettings={() => setConfigDialogOpen(true)}
         onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
 
@@ -191,7 +173,6 @@ function HomePageInner({
           currentThreadId={threadId}
           onThreadSelect={(id) => setThreadId(id)}
           onNewResearch={() => setThreadId(null)}
-          onOpenSettings={() => setConfigDialogOpen(true)}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           interruptCount={interruptCount}
@@ -230,7 +211,7 @@ function HomePageInner({
               </div>
             </div>
 
-            {/* Right Action Icons (Search Cmd+K, New Research, Settings) */}
+            {/* Right Action Icons (Search Cmd+K, New Research) */}
             <div className="flex items-center gap-1">
               <button
                 type="button"
@@ -250,15 +231,6 @@ function HomePageInner({
               >
                 <SquarePen className="h-4 w-4" />
               </button>
-              <button
-                type="button"
-                onClick={() => setConfigDialogOpen(true)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-white transition-colors cursor-pointer"
-                title="Cài đặt hệ thống"
-                aria-label="Cài đặt hệ thống"
-              >
-                <Settings className="h-4 w-4" />
-              </button>
             </div>
           </header>
 
@@ -275,21 +247,8 @@ function HomePageInner({
 }
 
 function HomePageContent() {
-  const [config, setConfig] = useState<StandaloneConfig | null>(null);
-  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [config] = useState<StandaloneConfig>(() => getConfig());
   const [assistantId, setAssistantId] = useQueryState("assistantId");
-
-  useEffect(() => {
-    const savedConfig = getConfig();
-    if (savedConfig) {
-      setConfig(savedConfig);
-      if (!assistantId) {
-        setAssistantId(savedConfig.assistantId);
-      }
-    } else {
-      setConfigDialogOpen(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (config && !assistantId) {
@@ -297,53 +256,15 @@ function HomePageContent() {
     }
   }, [config, assistantId, setAssistantId]);
 
-  const handleSaveConfig = useCallback((newConfig: StandaloneConfig) => {
-    saveConfig(newConfig);
-    setConfig(newConfig);
-  }, []);
-
   const langsmithApiKey =
-    config?.langsmithApiKey || process.env.NEXT_PUBLIC_LANGSMITH_API_KEY || "";
-
-  if (!config) {
-    return (
-      <>
-        <ConfigDialog
-          open={configDialogOpen}
-          onOpenChange={setConfigDialogOpen}
-          onSave={handleSaveConfig}
-        />
-        <div className="flex h-screen items-center justify-center bg-[#080B21] text-white">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-[#00FF88] drop-shadow-[0_0_10px_rgba(0,255,136,0.5)]">
-              Printway Product Opportunity Hub
-            </h1>
-            <p className="mt-2 text-sm text-[#94A3B8]">
-              Cấu hình kết nối hệ thống Printway R&D để bắt đầu
-            </p>
-            <Button
-              onClick={() => setConfigDialogOpen(true)}
-              className="mt-4 border border-[#00FF88] bg-[#00FF88] text-[#080B21] font-bold hover:bg-[#00FF88]/80 shadow-[0_0_15px_rgba(0,255,136,0.4)] cursor-pointer"
-            >
-              Mở bảng cấu hình
-            </Button>
-          </div>
-        </div>
-      </>
-    );
-  }
+    config.langsmithApiKey || process.env.NEXT_PUBLIC_LANGSMITH_API_KEY || "";
 
   return (
     <ClientProvider
       deploymentUrl={config.deploymentUrl}
       apiKey={langsmithApiKey}
     >
-      <HomePageInner
-        config={config}
-        configDialogOpen={configDialogOpen}
-        setConfigDialogOpen={setConfigDialogOpen}
-        handleSaveConfig={handleSaveConfig}
-      />
+      <HomePageInner config={config} />
     </ClientProvider>
   );
 }

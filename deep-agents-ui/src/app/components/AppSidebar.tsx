@@ -4,7 +4,6 @@ import React, { useMemo, useState, useCallback } from "react";
 import { format } from "date-fns";
 import {
   SquarePen,
-  Settings,
   Sparkles,
   MessageSquare,
   PanelLeftClose,
@@ -25,7 +24,6 @@ interface AppSidebarProps {
   currentThreadId: string | null;
   onThreadSelect: (id: string | null) => void;
   onNewResearch: () => void;
-  onOpenSettings: () => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
   interruptCount?: number;
@@ -54,7 +52,6 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
   currentThreadId,
   onThreadSelect,
   onNewResearch,
-  onOpenSettings,
   collapsed,
   onToggleCollapse,
   interruptCount = 0,
@@ -90,11 +87,6 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
     onNewResearch();
     onMobileClose?.();
   }, [onNewResearch, onMobileClose]);
-
-  const handleOpenSettingsClick = useCallback(() => {
-    onOpenSettings();
-    onMobileClose?.();
-  }, [onOpenSettings, onMobileClose]);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -316,35 +308,8 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* BOTTOM SECTION: USER PROFILE & SETTINGS */}
+        {/* BOTTOM SECTION: USER PROFILE */}
         <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 flex flex-col gap-2">
-          {/* Settings Button */}
-          {(!collapsed || mobileOpen) ? (
-            <button
-              type="button"
-              onClick={handleOpenSettingsClick}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-300 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Cài đặt hệ thống</span>
-            </button>
-          ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={handleOpenSettingsClick}
-                  className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
-                >
-                  <Settings className="h-4 w-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                Cài đặt hệ thống
-              </TooltipContent>
-            </Tooltip>
-          )}
-
           {/* User Profile Card */}
           {(!collapsed || mobileOpen) ? (
             <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-[#080B21]/70 border border-slate-800/80">

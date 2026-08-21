@@ -5,7 +5,6 @@ import {
   Search,
   Sparkles,
   Plus,
-  Settings,
   Download,
   Zap,
   ArrowRight,
@@ -19,7 +18,6 @@ interface CommandPaletteProps {
   onClose: () => void;
   onSelectPrompt: (prompt: string) => void;
   onNewResearch: () => void;
-  onOpenSettings: () => void;
   onToggleSidebar: () => void;
 }
 
@@ -79,12 +77,6 @@ const COMMAND_ITEMS = [
         title: "Đóng / Mở thanh Sidebar",
         subtitle: "Thu gọn không gian làm việc (Cmd + B)",
         action: "toggle_sidebar"
-      },
-      {
-        icon: Settings,
-        title: "Cấu hình hệ thống & API Key",
-        subtitle: "Mở cài đặt Endpoint và Model (Cmd + ,)",
-        action: "open_settings"
       }
     ]
   }
@@ -95,7 +87,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   onClose,
   onSelectPrompt,
   onNewResearch,
-  onOpenSettings,
   onToggleSidebar,
 }) => {
   const [query, setQuery] = useState("");
@@ -143,9 +134,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      onClose();
-    } else if (item.action === "open_settings") {
-      onOpenSettings();
       onClose();
     } else if (item.action === "toggle_sidebar") {
       onToggleSidebar();

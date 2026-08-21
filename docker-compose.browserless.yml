@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  # =========================================================================
+  # High-Performance Browserless Chromium Cluster for Multi-User Scraping
+  # =========================================================================
+  browserless:
+    image: ghcr.io/browserless/chromium:latest
+    container_name: printway_browserless_cluster
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      # Concurrency & Pool Limits
+      - CONCURRENT=20
+      - QUEUE_LENGTH=50
+      - TIMEOUT=30000
+      - PREBOOT_CHROME=true
+      - KEEP_ALIVE=true
+      
+      # Resource Guardrails
+      - MAX_CONCURRENT_SESSIONS=20
+      - CHROME_REFRESH_TIME=3600000 # Refresh chrome every hour to prevent memory leaks
+      - WORKER_TIMEOUT=60000
+      
+      # Anti-Bot & Stealth Capabilities
+      - ENABLE_CORS=true
+      - ENABLE_DEBUGGER=false
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_STEALTH=true
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+    shm_size: "2gb" # Crucial for Chromium performance under heavy load
+    deploy:
+      resources:
+        limits:
+          cpus: "4.0"
+          memory: 4096M
+        reservations:
+          cpus: "1.0"
+          memory: 1024M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/pressure"]
+      interval: 15s
+      timeout: 5s
+      retries: 3

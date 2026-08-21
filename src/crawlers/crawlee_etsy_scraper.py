@@ -63,13 +63,11 @@ class CrawleeEtsyScraper:
     ) -> List[Dict[str, Any]]:
         listings: List[Dict[str, Any]] = []
         headless_mode = os.getenv("CRAWLEE_HEADLESS", "true").lower() != "false"
+        from src.crawlers.browser_pool import create_browser_session
 
         try:
             async with async_playwright() as p:
-                browser = await p.chromium.launch(
-                    headless=headless_mode,
-                    args=["--disable-blink-features=AutomationControlled", "--no-sandbox"]
-                )
+                browser, engine_mode = await create_browser_session(p, headless=headless_mode)
                 context = await browser.new_context(
                     viewport={"width": 1280, "height": 800},
                     locale="en-US",
