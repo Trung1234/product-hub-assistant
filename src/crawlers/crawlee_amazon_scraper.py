@@ -379,7 +379,12 @@ class CrawleeAmazonScraper:
         include_keywords: Optional[str] = None,
         exclude_keywords: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Dual-Engine Scrape: Direct Playwright -> Search Engine Fallback -> Deterministic."""
+        from src.cache.market_cache import market_cache
+
+        cached = market_cache.get("amazon", query, sort_by)
+        if cached:
+            return cached
+
         products = []
 
         try:
@@ -452,7 +457,7 @@ class CrawleeAmazonScraper:
             monthly_units = 1250
             estimated_bsr = 12500
 
-        return {
+        final_result = {
             "source": f"Apify Crawlee Amazon US Scraper ({mode})",
             "marketplace": "Amazon US",
             "search_query": query,
@@ -479,6 +484,8 @@ class CrawleeAmazonScraper:
             "data_mode": mode,
             "top_products": sliced_products
         }
+        market_cache.set("amazon", query, final_result, sort_by)
+        return final_result
 
 if __name__ == "__main__":
     scraper = CrawleeAmazonScraper()

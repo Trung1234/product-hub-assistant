@@ -225,6 +225,16 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 </code>
               );
             },
+            blockquote({ children, ...props }) {
+              return (
+                <blockquote
+                  className="my-3.5 rounded-xl border-l-4 border-[#00FF88] bg-[#0E1538]/80 px-4 py-3 text-xs leading-relaxed text-slate-300 shadow-sm"
+                  {...props}
+                >
+                  {children}
+                </blockquote>
+              );
+            },
             table({ children, ...props }) {
               return (
                 <div className="my-4 w-full overflow-x-auto rounded-xl border border-slate-800/80 bg-[#080B21]/40 scrollbar-pretty -mx-0.5 sm:mx-0">

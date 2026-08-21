@@ -29,30 +29,62 @@ interface ChatInterfaceProps {
 
 const QUICK_PROMPTS = [
   {
+    id: 1,
+    category: "christmas",
     title: "Giáng Sinh: Baby First Ornament",
     query: "Nghiên cứu xu hướng và cơ hội sản phẩm 'Baby First Christmas Ornament 2026 Custom Acrylic Keepsake' trên Etsy, Amazon, Google Trends và Pinterest.",
-    badge: "Chiến dịch Giáng Sinh / Mica 3mm"
+    badge: "Giáng Sinh / Mica 3mm",
   },
   {
+    id: 2,
+    category: "family",
     title: "Ngày của Cha: Kỷ niệm chương Mica đế gỗ LED",
     query: "Phân tích tiềm năng ngách 'Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light' cho thị trường US.",
-    badge: "Quà tặng Cha / Gỗ & Mica LED"
+    badge: "Quà tặng Cha / Gỗ & LED",
   },
   {
+    id: 3,
+    category: "apparel",
     title: "Ngày của Mẹ: Áo nỉ thêu tên con",
     query: "Đánh giá cơ hội thị trường cho 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Phân tích nhu cầu tìm kiếm, cạnh tranh và gu thẩm mỹ Pinterest.",
-    badge: "Thời trang / Áo nỉ thêu vi tính"
+    badge: "Thời trang / Áo nỉ thêu",
   },
   {
-    title: "Đồ uống hàng ngày: Ly giữ nhiệt 40oz quai cầm",
+    id: 4,
+    category: "drinkware",
+    title: "Đồ uống: Ly giữ nhiệt 40oz quai cầm",
     query: "Kiểm tra tiềm năng sản phẩm 'Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon và biên lợi nhuận xưởng Printway.",
-    badge: "Ly giữ nhiệt / Inox 304"
-  }
+    badge: "Ly giữ nhiệt / Inox 304",
+  },
+  {
+    id: 5,
+    category: "pets",
+    title: "Thú cưng: Mặt dây chuyền Mica treo xe ô tô",
+    query: "Phân tích cơ hội ngách 'Personalized Dog Photo Acrylic Car Rearview Mirror Hanging Ornament' trên Etsy, Amazon và TikTok Shop US.",
+    badge: "Pet Decor / Mica Cắt CNC",
+  },
+  {
+    id: 6,
+    category: "christmas",
+    title: "Giáng Sinh: Acrylic Suncatcher 2 Lớp",
+    query: "Phân tích xu hướng sản phẩm 'Custom Family Stained Glass Effect Acrylic Suncatcher Ornament' cho mùa Q4 tại thị trường Mỹ.",
+    badge: "Mica In UV Xuyên Sáng",
+  },
+];
+
+const CATEGORIES = [
+  { key: "all", label: "Tất cả gợi ý" },
+  { key: "christmas", label: "🎄 Giáng Sinh Q4" },
+  { key: "family", label: "👨‍👩‍👧 Quà Tặng Gia Đình" },
+  { key: "apparel", label: "👕 Áo Nỉ & Thêu" },
+  { key: "drinkware", label: "🥤 Ly Giữ Nhiệt 40oz" },
+  { key: "pets", label: "🐾 Thú Cưng / Pet" },
 ];
 
 export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   const { scrollRef, contentRef, scrollToBottom } = useStickToBottom();
   const [showScrollBottom, setShowScrollBottom] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("all");
 
   const {
     stream,
@@ -71,7 +103,11 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
 
   const submitDisabled = isLoading || !assistant;
 
-  // Handle scroll detection to toggle scroll-to-bottom button
+  const filteredPrompts = useMemo(() => {
+    if (activeCategory === "all") return QUICK_PROMPTS;
+    return QUICK_PROMPTS.filter((p) => p.category === activeCategory);
+  }, [activeCategory]);
+
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -98,7 +134,6 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
     [isLoading, sendMessage, submitDisabled]
   );
 
-  // Listen for 1-click follow-up prompt events from SuggestedQuestionsRenderer
   useEffect(() => {
     const handleSendPromptEvent = (e: Event) => {
       const customEvent = e as CustomEvent<string>;
@@ -114,57 +149,27 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   }, [isLoading, sendMessage]);
 
   const processedMessages = useMemo(() => {
-    const messageMap = new Map<
-      string,
-      {
-        message: Message;
-        toolCalls: ToolCall[];
-      }
-    >();
-
-    // O(1) Index Map to find the parent AI message and tool call index
-    const toolCallIndexMap = new Map<
-      string,
-      { aiMsgId: string; tcIdx: number }
-    >();
+    const messageMap = new Map<string, { message: Message; toolCalls: ToolCall[] }>();
+    const toolCallIndexMap = new Map<string, { aiMsgId: string; tcIdx: number }>();
 
     messages.forEach((message: Message) => {
       if (message.type === "ai") {
         const rawToolCalls = message.tool_calls || [];
         const toolCallsWithStatus: ToolCall[] = rawToolCalls.map(
-          (
-            toolCall: {
-              id?: string;
-              name?: string;
-              function?: { name?: string; arguments?: unknown };
-              args?: unknown;
-              type?: string;
-              input?: unknown;
-            },
-            tcIdx: number
-          ) => {
-            const name =
-              toolCall.function?.name ||
-              toolCall.name ||
-              toolCall.type ||
-              "unknown";
-            const args =
-              toolCall.function?.arguments ||
-              toolCall.args ||
-              toolCall.input ||
-              {};
-            const tcId = toolCall.id || `tc-${message.id}-${tcIdx}`;
+          (toolCall: any, tcIdx: number) => {
+            const name = toolCall.function?.name || toolCall.name || toolCall.type || "unknown";
+            const args = typeof toolCall.function?.arguments === "string"
+                ? JSON.parse(toolCall.function.arguments || "{}")
+                : toolCall.function?.arguments || toolCall.args || toolCall.input || {};
+            const id = toolCall.id || `${message.id}-tc-${tcIdx}`;
 
-            toolCallIndexMap.set(tcId, {
-              aiMsgId: message.id!,
-              tcIdx,
-            });
+            toolCallIndexMap.set(id, { aiMsgId: message.id!, tcIdx });
 
             return {
-              id: tcId,
+              id,
               name,
               args,
-              status: interrupt ? "interrupted" : ("pending" as const),
+              status: "completed",
             } as ToolCall;
           }
         );
@@ -175,20 +180,28 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         });
       } else if (message.type === "tool") {
         const toolCallId = message.tool_call_id;
-        if (!toolCallId) return;
+        if (toolCallId && toolCallIndexMap.has(toolCallId)) {
+          const { aiMsgId, tcIdx } = toolCallIndexMap.get(toolCallId)!;
+          const parentMsg = messageMap.get(aiMsgId);
+          if (parentMsg && parentMsg.toolCalls[tcIdx]) {
+            let result: unknown = message.content;
+            if (typeof message.content === "string") {
+              try {
+                result = JSON.parse(message.content);
+              } catch {
+                result = message.content;
+              }
+            }
+            const status = message.status === "error" ? "error" : message.status === "interrupted" ? "interrupted" : "completed";
 
-        const lookup = toolCallIndexMap.get(toolCallId);
-        if (lookup) {
-          const parentAi = messageMap.get(lookup.aiMsgId);
-          if (parentAi && parentAi.toolCalls[lookup.tcIdx]) {
-            parentAi.toolCalls[lookup.tcIdx] = {
-              ...parentAi.toolCalls[lookup.tcIdx],
-              status: "completed" as const,
-              result: extractStringFromMessageContent(message),
+            parentMsg.toolCalls[tcIdx] = {
+              ...parentMsg.toolCalls[tcIdx],
+              result,
+              status,
             };
           }
         }
-      } else if (message.type === "human") {
+      } else {
         messageMap.set(message.id!, {
           message,
           toolCalls: [],
@@ -196,76 +209,46 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       }
     });
 
-    const processedArray = Array.from(messageMap.values());
-    return processedArray.map((data, index) => {
-      const prevMessage = index > 0 ? processedArray[index - 1].message : null;
-      return {
-        ...data,
-        showAvatar: data.message.type !== prevMessage?.type,
-      };
-    });
-  }, [messages, interrupt]);
+    return Array.from(messageMap.values());
+  }, [messages]);
 
-  const actionRequestsMap: Map<string, ActionRequest> | null = useMemo(() => {
-    const actionRequests =
-      interrupt?.value && (interrupt.value as any)["action_requests"];
-    if (!actionRequests) return new Map<string, ActionRequest>();
-    return new Map(actionRequests.map((ar: ActionRequest) => [ar.name, ar]));
+  const clarificationData = useMemo(() => {
+    if (!interrupt) return null;
+    if (typeof interrupt === "string") {
+      return { question: interrupt, options: [] };
+    }
+    if (typeof interrupt === "object") {
+      const val = interrupt as any;
+      const q = val.question || val.prompt || val.message || JSON.stringify(val);
+      const opts = Array.isArray(val.options) ? val.options : [];
+      return { question: q, options: opts };
+    }
+    return null;
   }, [interrupt]);
 
-  const reviewConfigsMap: Map<string, ReviewConfig> | null = useMemo(() => {
-    const reviewConfigs =
-      interrupt?.value && (interrupt.value as any)["review_configs"];
-    if (!reviewConfigs) return new Map<string, ReviewConfig>();
+  const handleClarificationSubmit = useCallback(
+    (response: string) => {
+      resumeInterrupt({ response });
+    },
+    [resumeInterrupt]
+  );
+
+  const actionRequestsMap = useMemo(() => {
+    if (!interrupt || typeof interrupt !== 'object' || !('action_requests' in interrupt)) return undefined;
     return new Map(
-      reviewConfigs.map((rc: ReviewConfig) => [rc.actionName, rc])
+      (interrupt as any).action_requests.map((req: ActionRequest) => [req.name, req])
     );
   }, [interrupt]);
 
-  // Extract Clarification / Handoff Question and Options when interrupt occurs
-  const clarificationData = useMemo(() => {
-    if (!interrupt && (!actionRequestsMap || actionRequestsMap.size === 0)) return null;
-
-    let question = "AI Copilot cần làm rõ thông tin từ bạn để tiếp tục nghiên cứu:";
-    let options: string[] = [];
-
-    if (interrupt?.value) {
-      const val = interrupt.value as any;
-      if (typeof val === "string") {
-        question = val;
-      } else if (val?.question) {
-        question = val.question;
-        if (Array.isArray(val.options)) options = val.options;
-      } else if (val?.action_requests && Array.isArray(val.action_requests)) {
-        const req = val.action_requests[0];
-        if (req?.args?.question) question = req.args.question;
-        if (Array.isArray(req?.args?.options)) options = req.args.options;
-      }
-    }
-
-    const askUserReq = actionRequestsMap?.get("ask_user_clarification");
-    if (askUserReq?.args) {
-      const args = askUserReq.args as any;
-      if (args.question) question = args.question;
-      if (Array.isArray(args.options)) options = args.options;
-    }
-
-    return { question, options };
-  }, [interrupt, actionRequestsMap]);
-
-  const handleClarificationSubmit = useCallback(
-    (responseVal: string) => {
-      const clean = responseVal.trim();
-      if (!clean) return;
-
-      if (resumeInterrupt) {
-        resumeInterrupt(clean);
-      } else {
-        sendMessage(clean);
-      }
-    },
-    [resumeInterrupt, sendMessage]
-  );
+  const reviewConfigsMap = useMemo(() => {
+    if (!interrupt || typeof interrupt !== 'object' || !('review_configs' in interrupt)) return undefined;
+    return new Map(
+      (interrupt as any).review_configs.map((config: ReviewConfig) => [
+        config.name,
+        config,
+      ])
+    );
+  }, [interrupt]);
 
   return (
     <div className="relative flex flex-1 flex-col overflow-hidden bg-[#080B21]">
@@ -283,18 +266,17 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               <p className="text-[#00FF88] font-mono animate-pulse text-xs sm:text-sm">Đang tải cuộc trò chuyện...</p>
             </div>
           ) : processedMessages.length === 0 ? (
-            /* Welcome Hero Section */
-            <div className="my-4 sm:my-6 flex flex-col items-center justify-center text-center">
-              <div className="relative mb-4 sm:mb-6 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+            <div className="my-3 sm:my-6 flex flex-col items-center justify-center text-center">
+              <div className="relative mb-3 sm:mb-5 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
                 <img
                   src="/banner_crossborder.png"
                   alt="Cross Border AI Innovation Summit 2026"
-                  className="h-auto w-full max-h-[160px] sm:max-h-[220px] object-cover object-center"
+                  className="h-auto w-full max-h-[150px] sm:max-h-[200px] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
               </div>
 
-              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+              <div className="flex items-center justify-center gap-3 mb-2.5 sm:mb-3">
                 <div className="flex items-center justify-center px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white shadow-[0_0_25px_rgba(255,255,255,0.2)]">
                   <img
                     src="/logo_header.png"
@@ -309,15 +291,32 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                   PRINTWAY PRODUCT OPPORTUNITY HUB
                 </span>
               </h2>
-              <p className="mt-1.5 sm:mt-2 max-w-xl text-xs sm:text-sm text-[#94A3B8] px-2">
+              <p className="mt-1.5 sm:mt-2 max-w-xl text-xs sm:text-sm text-[#94A3B8] px-2 leading-relaxed">
                 AI Copilot tự động cào tín hiệu thị trường Etsy, Amazon & Pinterest, tính toán Opportunity Score và tự suy luận chiến lược R&D sản phẩm POD xưởng Printway.
               </p>
 
-              {/* Quick Prompt Cards */}
-              <div className="mt-4 sm:mt-6 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2 text-left">
-                {QUICK_PROMPTS.map((p, idx) => (
+              <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-2xl px-2">
+                {CATEGORIES.map((cat) => (
                   <button
-                    key={idx}
+                    key={cat.key}
+                    type="button"
+                    onClick={() => setActiveCategory(cat.key)}
+                    className={cn(
+                      "px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border",
+                      activeCategory === cat.key
+                        ? "bg-[#00FF88] text-[#080B21] border-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.4)]"
+                        : "bg-[#0E1538] text-slate-400 border-slate-800 hover:border-[#00FF88]/40 hover:text-white"
+                    )}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3.5 sm:mt-5 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2 text-left">
+                {filteredPrompts.map((p) => (
+                  <button
+                    key={p.id}
                     type="button"
                     onClick={() => handleQuickPromptClick(p.query)}
                     className="group relative flex flex-col justify-between rounded-xl border border-[#00FF88]/20 bg-[#0E1538]/80 p-3 sm:p-4 transition-all duration-300 hover:border-[#00FF88] hover:bg-[#121A45] hover:shadow-[0_0_20px_rgba(0,255,136,0.2)] text-left cursor-pointer"
@@ -354,12 +353,8 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                     toolCalls={data.toolCalls}
                     isLoading={isLoading}
                     isLastMessage={isLastMessage}
-                    actionRequestsMap={
-                      isLastMessage ? actionRequestsMap : undefined
-                    }
-                    reviewConfigsMap={
-                      isLastMessage ? reviewConfigsMap : undefined
-                    }
+                    actionRequestsMap={isLastMessage ? actionRequestsMap : undefined}
+                    reviewConfigsMap={isLastMessage ? reviewConfigsMap : undefined}
                     ui={messageUi}
                     stream={stream}
                     onResumeInterrupt={resumeInterrupt}
@@ -368,16 +363,23 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 );
               })}
 
-              {/* MINIMALIST THINKING: LOGO + 3 ANIMATED DOTS ONLY */}
               {isLoading && (
-                <div className="my-3 flex items-center gap-3 w-fit rounded-full border border-[#00FF88]/30 bg-[#0E1538]/80 px-3.5 py-1.5 shadow-[0_0_15px_rgba(0,255,136,0.15)] backdrop-blur-md">
-                  <div className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_8px_rgba(0,255,136,0.5)]">
-                    <Sparkles className="h-3 w-3 text-[#080B21]" />
+                <div className="my-3 flex items-center gap-3 w-fit rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 px-4 py-2.5 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md animate-in fade-in slide-in-from-bottom-1">
+                  <div className="relative flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_10px_rgba(0,255,136,0.5)]">
+                    <Sparkles className="h-3.5 w-3.5 text-[#080B21] animate-spin" />
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-[#00FF88] animate-bounce [animation-delay:-0.3s]" />
-                    <span className="h-2 w-2 rounded-full bg-[#00D2FF] animate-bounce [animation-delay:-0.15s]" />
-                    <span className="h-2 w-2 rounded-full bg-[#8B5CF6] animate-bounce" />
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-white">AI Copilot đang suy luận & cào dữ liệu...</span>
+                      <div className="flex items-center gap-1">
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#00FF88] animate-bounce [animation-delay:-0.3s]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#00D2FF] animate-bounce [animation-delay:-0.15s]" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6] animate-bounce" />
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      Quét tín hiệu Etsy, Amazon, Pinterest & tính toán Opportunity Score
+                    </span>
                   </div>
                 </div>
               )}

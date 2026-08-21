@@ -255,7 +255,12 @@ class CrawleeEtsyScraper:
         include_keywords: Optional[str] = None,
         exclude_keywords: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Harvests authentic Etsy listings with comprehensive granular filters."""
+        from src.cache.market_cache import market_cache
+
+        cached = market_cache.get("etsy", query, sort_by)
+        if cached:
+            return cached
+
         listings = []
 
         # 1. Try Playwright
@@ -331,7 +336,7 @@ class CrawleeEtsyScraper:
         est_search_volume = max(int(total_active * 15), 14200)
         est_monthly_sales = int(est_search_volume * 0.08)
 
-        return {
+        final_result = {
             "source": f"Apify Crawlee Etsy Scraper ({mode})",
             "marketplace": "Etsy",
             "search_query": query,
@@ -360,6 +365,8 @@ class CrawleeEtsyScraper:
             "data_mode": mode,
             "top_products": sliced_listings
         }
+        market_cache.set("etsy", query, final_result, sort_by)
+        return final_result
 
 if __name__ == "__main__":
     scraper = CrawleeEtsyScraper()
