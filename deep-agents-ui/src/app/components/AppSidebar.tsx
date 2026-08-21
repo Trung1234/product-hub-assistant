@@ -177,20 +177,20 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         {/* SEARCH THREADS INPUT (WHEN EXPANDED) */}
         {!collapsed && (
           <div className="px-3 pb-2 shrink-0">
-            <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-[#080B21]/80 px-2.5 py-1.5 text-xs">
-              <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+            <div className="group flex items-center gap-2 rounded-xl border border-slate-800/80 bg-[#0E1538]/60 px-3 py-1.5 text-xs transition-all duration-200 focus-within:border-[#00FF88]/50 focus-within:bg-[#0E1538] focus-within:shadow-[0_0_15px_rgba(0,255,136,0.15)]">
+              <Search className="h-3.5 w-3.5 text-slate-500 group-focus-within:text-[#00FF88] transition-colors shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm kiếm phiên nghiên cứu..."
-                className="w-full bg-transparent text-[11px] text-white placeholder:text-slate-500 focus:outline-none"
+                className="w-full bg-transparent text-[11px] text-white placeholder:text-slate-500 outline-none focus:outline-none focus:ring-0 border-0 p-0 shadow-none ring-0 leading-normal"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="text-slate-500 hover:text-white"
+                  className="rounded-full p-0.5 text-slate-500 hover:text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer"
                 >
                   <X className="h-3 w-3" />
                 </button>
