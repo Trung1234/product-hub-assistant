@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/providers/AuthProvider";
+import { useClient } from "@/providers/ClientProvider";
 import type { ShareMode, SharePermission, ThreadCollaborator } from "@/app/types/types";
-
 
 interface ShareThreadModalProps {
   isOpen: boolean;
@@ -46,6 +46,7 @@ export function ShareThreadModal({
   messages = [],
   opportunitySummary,
 }: ShareThreadModalProps) {
+  const client = useClient();
   const { user, profile } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -118,6 +119,27 @@ export function ShareThreadModal({
     try {
       const activeToSave = explicitActiveState !== undefined ? explicitActiveState : isActive;
 
+      // 1. Resolve messages: from props, or fetch from LangGraph client if empty
+      let resolvedMessages = messages && messages.length > 0 ? messages : [];
+      let resolvedTodos = [];
+      let resolvedFiles = {};
+      let resolvedUi = null;
+
+      if (resolvedMessages.length === 0 && client && threadId) {
+        try {
+          const state = await client.threads.getState(threadId);
+          const vals = state?.values as any;
+          if (vals?.messages && Array.isArray(vals.messages)) {
+            resolvedMessages = vals.messages;
+            resolvedTodos = vals.todos || [];
+            resolvedFiles = vals.files || {};
+            resolvedUi = vals.ui || null;
+          }
+        } catch (clientErr) {
+          console.debug("LangGraph client getState notice:", clientErr);
+        }
+      }
+
       const snapshotData = {
         title: displayTitle,
         threadId,
@@ -125,7 +147,10 @@ export function ShareThreadModal({
         authorEmail: user?.email || "analyst@printway.io",
         authorRole: profile?.role || "lead_rd",
         createdAt: new Date().toISOString(),
-        messages: messages.slice(-20), // capture last 20 messages with results & widgets
+        messages: resolvedMessages,
+        todos: resolvedTodos,
+        files: resolvedFiles,
+        ui: resolvedUi,
         opportunitySummary: opportunitySummary || {
           keyword: displayTitle,
           score: 88,

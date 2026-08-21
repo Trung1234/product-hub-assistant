@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { v4 as uuidv4 } from "uuid";
+import { Client } from "@langchain/langgraph-sdk";
 
 function generateShareToken(): string {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
 
             const fallbackShare = {
               id: sessionData.thread_id,
-              thread_id: sessionData.thread_id,
+              thread_id: parsedSnapshot?.threadId || sessionData.thread_id,
               owner_id: sessionData.user_id,
               org_id: sessionData.org_id || "printway_internal",
               share_token: token,
@@ -175,7 +176,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
+    let {
       threadId,
       shareMode = "public_link",
       permission = "view",
@@ -191,6 +192,41 @@ export async function POST(request: NextRequest) {
         { error: "Thiếu threadId bắt buộc." },
         { status: 400 }
       );
+    }
+
+    // If snapshotData has no messages, fetch directly from LangGraph server
+    if ((!snapshotData?.messages || snapshotData.messages.length === 0) && threadId) {
+      const deploymentUrl =
+        process.env.NEXT_PUBLIC_DEPLOYMENT_URL ||
+        process.env.DEPLOYMENT_URL ||
+        process.env.LANGGRAPH_API_URL ||
+        process.env.NEXT_PUBLIC_LANGGRAPH_API_URL ||
+        "https://printway-product-hub-backend.onrender.com";
+
+      const apiKey =
+        process.env.LANGSMITH_API_KEY ||
+        process.env.NEXT_PUBLIC_LANGSMITH_API_KEY ||
+        "";
+
+      try {
+        const client = new Client({
+          apiUrl: deploymentUrl,
+          defaultHeaders: apiKey ? { "X-Api-Key": apiKey } : {},
+        });
+        const state = await client.threads.getState(threadId);
+        const vals = state?.values as any;
+        if (vals?.messages && Array.isArray(vals.messages) && vals.messages.length > 0) {
+          if (!snapshotData) {
+            snapshotData = { title: "Phiên nghiên cứu" };
+          }
+          snapshotData.messages = vals.messages;
+          snapshotData.todos = vals.todos || [];
+          snapshotData.files = vals.files || {};
+          snapshotData.ui = vals.ui || null;
+        }
+      } catch (lgErr) {
+        console.debug("[Share Route]: LangGraph state fetch note:", lgErr);
+      }
     }
 
     const shareToken = body.shareToken || memoryThreadToShare.get(threadId) || generateShareToken();

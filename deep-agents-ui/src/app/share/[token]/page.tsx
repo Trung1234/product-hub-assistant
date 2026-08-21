@@ -83,6 +83,7 @@ function SharedViewContent({ token }: SharedViewContentProps) {
           targetUserEmail: user.email,
           orgId: profile?.org_id || "printway_internal",
           customTitle: snapshot?.title ? `Bản sao: ${snapshot.title}` : undefined,
+          snapshotData: snapshot || shareData?.snapshot_data,
         }),
       });
 

@@ -6,13 +6,14 @@ import { Client } from "@langchain/langgraph-sdk";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const {
+    let {
       sourceThreadId,
       shareToken,
       targetUserId,
       targetUserEmail,
       orgId = "printway_internal",
       customTitle,
+      snapshotData: directSnapshot,
     } = body;
 
     if (!targetUserId && !targetUserEmail) {
@@ -22,11 +23,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let snapshotData: any = null;
-    let originalTitle = "Phiên nghiên cứu";
+    let snapshotData: any = directSnapshot || null;
+    let originalTitle = directSnapshot?.title || "Phiên nghiên cứu";
 
-    // 1. Fetch source snapshot from Supabase or session fallback
-    if (shareToken && isSupabaseConfigured && supabase) {
+    // 1. Fetch source snapshot from Supabase if not provided directly
+    if (!snapshotData && shareToken && isSupabaseConfigured && supabase) {
       try {
         const { data } = await supabase
           .from("thread_shares")
@@ -37,6 +38,7 @@ export async function POST(request: NextRequest) {
         if (data?.snapshot_data) {
           snapshotData = data.snapshot_data;
           originalTitle = snapshotData.title || originalTitle;
+          if (!sourceThreadId) sourceThreadId = data.thread_id;
         }
       } catch {}
 
@@ -58,28 +60,48 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 2. Generate a new thread ID
-    const newThreadId = uuidv4();
-    const forkedTitle = customTitle || (originalTitle.startsWith("Bản sao:") ? originalTitle : `Bản sao: ${originalTitle}`);
-
-    // 3. Try to initialize state on LangGraph API Server if available
+    // 2. Setup LangGraph Client with robust cloud backend URL
     const deploymentUrl =
+      process.env.NEXT_PUBLIC_DEPLOYMENT_URL ||
+      process.env.DEPLOYMENT_URL ||
       process.env.LANGGRAPH_API_URL ||
       process.env.NEXT_PUBLIC_LANGGRAPH_API_URL ||
-      "http://localhost:2024";
+      "https://printway-product-hub-backend.onrender.com";
 
     const apiKey =
       process.env.LANGSMITH_API_KEY ||
       process.env.NEXT_PUBLIC_LANGSMITH_API_KEY ||
       "";
 
-    try {
-      const client = new Client({
-        apiUrl: deploymentUrl,
-        defaultHeaders: apiKey ? { "X-Api-Key": apiKey } : {},
-      });
+    const client = new Client({
+      apiUrl: deploymentUrl,
+      defaultHeaders: apiKey ? { "X-Api-Key": apiKey } : {},
+    });
 
-      // Create new thread on LangGraph
+    // 3. If snapshotData has no messages, try fetching state directly from source thread on LangGraph
+    if ((!snapshotData?.messages || snapshotData.messages.length === 0) && sourceThreadId) {
+      try {
+        const srcState = await client.threads.getState(sourceThreadId);
+        const vals = srcState?.values as any;
+        if (vals?.messages && Array.isArray(vals.messages) && vals.messages.length > 0) {
+          if (!snapshotData) snapshotData = {};
+          snapshotData.messages = vals.messages;
+          snapshotData.todos = vals.todos || [];
+          snapshotData.files = vals.files || {};
+          snapshotData.ui = vals.ui || null;
+        }
+      } catch (srcErr) {
+        console.warn("[Fork Route]: Source thread state retrieval note:", srcErr);
+      }
+    }
+
+    // 4. Generate new thread ID and clean Title
+    const newThreadId = uuidv4();
+    const cleanOrig = originalTitle.replace(/^Bản sao:\s*/, "");
+    const forkedTitle = customTitle || `Bản sao: ${cleanOrig}`;
+
+    // 5. Create new thread and seed state on LangGraph Server
+    try {
       await client.threads.create({
         threadId: newThreadId,
         metadata: {
@@ -89,7 +111,7 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // If we have messages from snapshot, seed the new thread state
+      // Seed messages, todos, files, and widgets into the new thread
       if (snapshotData?.messages && snapshotData.messages.length > 0) {
         await client.threads.updateState(newThreadId, {
           values: {
@@ -102,15 +124,15 @@ export async function POST(request: NextRequest) {
       }
     } catch (lgError) {
       console.warn(
-        "[LangGraph Client Notice]: Could not reach LangGraph server during fork. Thread ID registered for client-side connection.",
+        "[LangGraph Client Notice]: Could not update LangGraph thread state during fork:",
         lgError
       );
     }
 
-    // 4. Save to Supabase user_sessions
+    // 6. Save to Supabase user_sessions so it shows up in user's sidebar
     if (isSupabaseConfigured && supabase && targetUserId) {
       try {
-        await supabase.from("user_sessions").insert({
+        await supabase.from("user_sessions").upsert({
           thread_id: newThreadId,
           user_id: targetUserId.length === 36 ? targetUserId : null,
           org_id: orgId,
@@ -126,6 +148,7 @@ export async function POST(request: NextRequest) {
       success: true,
       newThreadId,
       title: forkedTitle,
+      messagesCount: snapshotData?.messages?.length || 0,
       message: "Đã nhân bản phiên nghiên cứu thành công vào không gian làm việc của bạn.",
     });
   } catch (error: any) {
