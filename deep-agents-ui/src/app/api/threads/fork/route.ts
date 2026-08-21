@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
     let snapshotData: any = directSnapshot || null;
     let originalTitle = directSnapshot?.title || "Phiên nghiên cứu";
 
-    // 1. Fetch source snapshot from Supabase if not provided directly
-    if (!snapshotData && shareToken && isSupabaseConfigured && supabase) {
+    // 1. Resolve source thread ID & snapshot data from Supabase if not provided
+    if (shareToken && isSupabaseConfigured && supabase) {
       try {
         const { data } = await supabase
           .from("thread_shares")
@@ -35,14 +35,14 @@ export async function POST(request: NextRequest) {
           .eq("share_token", shareToken)
           .single();
 
-        if (data?.snapshot_data) {
-          snapshotData = data.snapshot_data;
-          originalTitle = snapshotData.title || originalTitle;
-          if (!sourceThreadId) sourceThreadId = data.thread_id;
+        if (data) {
+          if (!sourceThreadId && data.thread_id) sourceThreadId = data.thread_id;
+          if (!snapshotData && data.snapshot_data) snapshotData = data.snapshot_data;
+          if (snapshotData?.title) originalTitle = snapshotData.title;
         }
       } catch {}
 
-      if (!snapshotData) {
+      if (!sourceThreadId || !snapshotData) {
         try {
           const { data: sessionData } = await supabase
             .from("user_sessions")
@@ -52,8 +52,10 @@ export async function POST(request: NextRequest) {
 
           if (sessionData?.title) {
             try {
-              snapshotData = JSON.parse(sessionData.title);
-              originalTitle = snapshotData.title || originalTitle;
+              const parsed = JSON.parse(sessionData.title);
+              if (!snapshotData) snapshotData = parsed;
+              if (parsed?.title) originalTitle = parsed.title;
+              if (!sourceThreadId && parsed?.threadId) sourceThreadId = parsed.threadId;
             } catch {}
           }
         } catch {}
@@ -78,58 +80,45 @@ export async function POST(request: NextRequest) {
       defaultHeaders: apiKey ? { "X-Api-Key": apiKey } : {},
     });
 
-    // 3. If snapshotData has no messages, try fetching state directly from source thread on LangGraph
-    if ((!snapshotData?.messages || snapshotData.messages.length === 0) && sourceThreadId) {
-      try {
-        const srcState = await client.threads.getState(sourceThreadId);
-        const vals = srcState?.values as any;
-        if (vals?.messages && Array.isArray(vals.messages) && vals.messages.length > 0) {
-          if (!snapshotData) snapshotData = {};
-          snapshotData.messages = vals.messages;
-          snapshotData.todos = vals.todos || [];
-          snapshotData.files = vals.files || {};
-          snapshotData.ui = vals.ui || null;
-        }
-      } catch (srcErr) {
-        console.warn("[Fork Route]: Source thread state retrieval note:", srcErr);
-      }
-    }
-
-    // 4. Generate new thread ID and clean Title
-    const newThreadId = uuidv4();
     const cleanOrig = originalTitle.replace(/^Bản sao:\s*/, "");
     const forkedTitle = customTitle || `Bản sao: ${cleanOrig}`;
 
-    // 5. Create new thread and seed state on LangGraph Server
-    try {
-      await client.threads.create({
-        threadId: newThreadId,
-        metadata: {
-          forked_from: sourceThreadId || shareToken,
-          forked_by: targetUserId,
-          title: forkedTitle,
-        },
-      });
+    let newThreadId = uuidv4();
 
-      // Seed messages, todos, files, and widgets into the new thread
-      if (snapshotData?.messages && snapshotData.messages.length > 0) {
-        await client.threads.updateState(newThreadId, {
-          values: {
-            messages: snapshotData.messages,
-            todos: snapshotData.todos || [],
-            files: snapshotData.files || {},
-            ui: snapshotData.ui || null,
-          },
-        });
+    // 3. Clone thread state on LangGraph Server using official client.threads.copy
+    let copySuccessful = false;
+    if (sourceThreadId) {
+      try {
+        const copiedThread = await client.threads.copy(sourceThreadId);
+        if (copiedThread?.thread_id) {
+          newThreadId = copiedThread.thread_id;
+          copySuccessful = true;
+        }
+      } catch (copyErr) {
+        console.warn("[Fork Route]: client.threads.copy fallback to manual create:", copyErr);
       }
-    } catch (lgError) {
-      console.warn(
-        "[LangGraph Client Notice]: Could not update LangGraph thread state during fork:",
-        lgError
-      );
     }
 
-    // 6. Save to Supabase user_sessions so it shows up in user's sidebar
+    // 4. Fallback: If copy was not possible, create new thread and update metadata
+    if (!copySuccessful) {
+      try {
+        const createdThread = await client.threads.create({
+          metadata: {
+            graph_id: "product_opportunity_hub",
+            forked_from: sourceThreadId || shareToken,
+            forked_by: targetUserId,
+            title: forkedTitle,
+          },
+        });
+        if (createdThread?.thread_id) {
+          newThreadId = createdThread.thread_id;
+        }
+      } catch (createErr) {
+        console.warn("[Fork Route]: client.threads.create note:", createErr);
+      }
+    }
+
+    // 5. Save to Supabase user_sessions so it shows up in user's sidebar
     if (isSupabaseConfigured && supabase && targetUserId) {
       try {
         await supabase.from("user_sessions").upsert({
@@ -148,7 +137,6 @@ export async function POST(request: NextRequest) {
       success: true,
       newThreadId,
       title: forkedTitle,
-      messagesCount: snapshotData?.messages?.length || 0,
       message: "Đã nhân bản phiên nghiên cứu thành công vào không gian làm việc của bạn.",
     });
   } catch (error: any) {
