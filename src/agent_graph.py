@@ -50,15 +50,12 @@ orchestrator_tools = [
 
 from src.db.supabase_checkpointer import get_supabase_postgres_checkpointer
 
-# Configure Checkpointer (Supabase PostgreSQL or Memory fallback)
-checkpointer = get_supabase_postgres_checkpointer()
-
-# Instantiate PRINTWAY NEXUS Agent with strict R&D System Prompt, Domain Tools & Persistent Checkpointer
+# Instantiate PRINTWAY NEXUS Agent with strict R&D System Prompt & Domain Tools
+# Note: LangGraph API server natively provides persistence and thread state management.
 graph = create_react_agent(
     model=llm,
     tools=orchestrator_tools,
-    prompt=ORCHESTRATOR_SYSTEM_PROMPT,
-    checkpointer=checkpointer
+    prompt=ORCHESTRATOR_SYSTEM_PROMPT
 )
 
 if __name__ == "__main__":
