@@ -21,7 +21,13 @@ from typing import Dict, Any, List, Optional
 from urllib.parse import quote_plus
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
-from ddgs import DDGS
+try:
+    from duckduckgo_search import DDGS
+except ImportError:
+    try:
+        from ddgs import DDGS
+    except ImportError:
+        DDGS = None
 from dotenv import load_dotenv
 
 load_dotenv()
