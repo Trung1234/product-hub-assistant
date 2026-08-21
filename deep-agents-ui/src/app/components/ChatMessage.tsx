@@ -4,6 +4,7 @@ import React, { useMemo, useState, useCallback } from "react";
 import { SubAgentIndicator } from "@/app/components/SubAgentIndicator";
 import { ToolCallBox } from "@/app/components/ToolCallBox";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
+import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsRenderer";
 import type {
   SubAgent,
   ToolCall,
@@ -29,6 +30,47 @@ interface ChatMessageProps {
   graphId?: string;
 }
 
+function deriveContextualQuestions(content: string): string[] {
+  const lower = content.toLowerCase();
+  
+  if (lower.includes("ornament") || lower.includes("christmas") || lower.includes("xmas") || lower.includes("baby first")) {
+    return [
+      "Phân tích sâu Top 3 đối thủ Acrylic Ornament bán chạy nhất trên Amazon",
+      "Gợi ý 5 biến thể thiết kế Stained Glass và Sun-catcher trên Pinterest",
+      "Dự báo thời điểm đạt đỉnh Google Trends cho mùa Giáng Sinh 2026",
+      "Tính toán chi phí phôi mica Printway ($2.20) và dải giá bán lẻ tối ưu"
+    ];
+  } else if (lower.includes("plaque") || lower.includes("desk") || lower.includes("father") || lower.includes("grandpa")) {
+    return [
+      "Phân tích Top 3 mẫu Acrylic Desk Plaque chân đế LED bán chạy nhất Etsy",
+      "Khám phá 5 phong cách khắc chân dung và Spotify Code trên Pinterest",
+      "Dự báo chu kỳ tìm kiếm Google Trends dịp Father's Day tháng 5-6",
+      "Đánh giá biên lợi nhuận đế gỗ LED xưởng Printway (Giá vốn $4.50)"
+    ];
+  } else if (lower.includes("tumbler") || lower.includes("drinkware") || lower.includes("cup") || lower.includes("teacher")) {
+    return [
+      "Đánh giá Top 3 mẫu ly giữ nhiệt Inox 20oz bán chạy nhất Amazon",
+      "Khám phá 5 bảng màu Pastel và hoa văn laser thịnh hành trên Pinterest",
+      "Phân tích đà tăng trưởng Google Trends cho ngách Teacher Appreciation Gift",
+      "So sánh biên lợi nhuận xưởng Printway giữa in UV và khắc Laser 360"
+    ];
+  } else if (lower.includes("sweatshirt") || lower.includes("hoodie") || lower.includes("mama") || lower.includes("apparel")) {
+    return [
+      "Phân tích Top 3 shop bán áo thêu cổ tay Custom Mama chạy nhất trên Etsy",
+      "Gợi ý 5 bảng phối màu chỉ thêu Satin và Vintage Varsity trên Pinterest",
+      "Dự báo chu kỳ tăng trưởng Google Trends cho dịp Mother's Day",
+      "Tính toán chi phí thêu nỉ bông 320 GSM tại xưởng Printway"
+    ];
+  }
+
+  return [
+    "Phân tích sâu Top 3 đối thủ cạnh tranh trực tiếp trên Etsy và Amazon",
+    "Gợi ý 5 phong cách thiết kế độc đáo để khác biệt hóa trên Pinterest",
+    "Dự báo chu kỳ tìm kiếm Google Trends trong 60 ngày tới",
+    "Đánh giá chi phí sản xuất xưởng Printway và dải giá bán lẻ tối ưu"
+  ];
+}
+
 export const ChatMessage = React.memo<ChatMessageProps>(
   ({
     message,
@@ -42,9 +84,25 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     graphId,
   }) => {
     const isUser = message.type === "human";
-    const messageContent = extractStringFromMessageContent(message);
-    const hasContent = messageContent && messageContent.trim() !== "";
+    const rawMessageContent = extractStringFromMessageContent(message);
+    const hasContent = rawMessageContent && rawMessageContent.trim() !== "";
     const hasToolCalls = toolCalls.length > 0;
+
+    // Check if the message contains explicit suggestions code block
+    const hasExplicitSuggestions = rawMessageContent.includes("```suggestions") || rawMessageContent.includes("```suggestion");
+
+    // Cleaned content for Markdown display if suggestions block is embedded
+    const displayContent = useMemo(() => {
+      if (!hasContent) return "";
+      // If explicit suggestions exist, we let SuggestedQuestionsRenderer handle it cleanly
+      return rawMessageContent;
+    }, [rawMessageContent, hasContent]);
+
+    const fallbackQuestions = useMemo(() => {
+      if (isUser || !hasContent || hasExplicitSuggestions) return [];
+      return deriveContextualQuestions(rawMessageContent);
+    }, [isUser, hasContent, hasExplicitSuggestions, rawMessageContent]);
+
     const subAgents = useMemo(() => {
       return toolCalls
         .filter((toolCall: ToolCall) => {
@@ -91,7 +149,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
           <div className="min-w-0 max-w-[75%]">
             <div className="overflow-hidden break-words rounded-2xl rounded-br-sm border border-[#00D2FF]/40 bg-[#00D2FF]/15 px-4 py-3 text-white shadow-[0_0_15px_rgba(0,210,255,0.2)] backdrop-blur-sm">
               <p className="m-0 whitespace-pre-wrap break-words text-sm font-medium leading-relaxed">
-                {messageContent}
+                {rawMessageContent}
               </p>
             </div>
           </div>
@@ -99,7 +157,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
       );
     }
 
-    // For AI messages: Render Subagents -> Tool Calls -> Response Content (NO internal duplicate thinking)
+    // For AI messages: Render Subagents -> Tool Calls -> Response Content -> Follow-Up Question Chips
     return (
       <div className="flex w-full max-w-full overflow-x-hidden my-2">
         <div className="min-w-0 w-full flex flex-col gap-2">
@@ -182,7 +240,12 @@ export const ChatMessage = React.memo<ChatMessageProps>(
           {hasContent && (
             <div className="relative flex items-end gap-0 w-full mt-2">
               <div className="overflow-hidden break-words text-sm font-normal leading-relaxed text-white w-full">
-                <MarkdownContent content={messageContent} />
+                <MarkdownContent content={displayContent} />
+                
+                {/* 4. Universal Fallback Follow-Up Action Chips (Guarantees 100% visibility) */}
+                {fallbackQuestions.length > 0 && !hasExplicitSuggestions && (
+                  <SuggestedQuestionsRenderer code={JSON.stringify(fallbackQuestions)} />
+                )}
               </div>
             </div>
           )}
