@@ -1,30 +1,37 @@
 "use client";
 
 import React, { useState } from "react";
-import { CornerDownRight } from "lucide-react";
 
 interface SuggestedQuestionsRendererProps {
-  code: string;
+  questions?: string[];
+  code?: string;
 }
 
-export const SuggestedQuestionsRenderer: React.FC<SuggestedQuestionsRendererProps> = ({ code }) => {
+export const SuggestedQuestionsRenderer: React.FC<SuggestedQuestionsRendererProps> = ({
+  questions: directQuestions,
+  code
+}) => {
   const [clickedIndex, setClickedIndex] = useState<number | null>(null);
 
   const questions: string[] = React.useMemo(() => {
-    try {
-      const parsed = JSON.parse(code.trim());
-      if (Array.isArray(parsed)) {
-        return parsed.map((item) => String(item).trim()).filter(Boolean);
+    if (directQuestions && directQuestions.length > 0) {
+      return directQuestions;
+    }
+    if (code) {
+      try {
+        const parsed = JSON.parse(code.trim());
+        if (Array.isArray(parsed)) {
+          return parsed.map((item) => String(item).trim()).filter(Boolean);
+        }
+      } catch {
+        return code
+          .split("\n")
+          .map((line) => line.replace(/^[-*•\d.↳"\[\]]\s*/, "").replace(/^[<]?[^>]+[>]?/, "").replace(/[",\]]/g, "").trim())
+          .filter((line) => line.length > 6);
       }
-    } catch {
-      // Fallback: parse bullet lines
-      return code
-        .split("\n")
-        .map((line) => line.replace(/^[-*•\d.↳]\s*/, "").replace(/^\[|\]$/g, "").trim())
-        .filter((line) => line.length > 5);
     }
     return [];
-  }, [code]);
+  }, [directQuestions, code]);
 
   if (questions.length === 0) return null;
 
