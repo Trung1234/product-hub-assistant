@@ -19,17 +19,30 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+/**
+ * Bulletproof numeric parser: safely handles numbers, strings with currency/ranges ("$4.50 - $6.80"), or undefined.
+ */
+function parseNumeric(val: any, fallback: number): number {
+  if (typeof val === "number" && !isNaN(val)) return val;
+  if (typeof val === "string") {
+    // Extract first valid float / integer number from string
+    const match = val.match(/[-+]?[0-9]*\.?[0-9]+/);
+    if (match) {
+      const parsed = parseFloat(match[0]);
+      if (!isNaN(parsed)) return parsed;
+    }
+  }
+  return fallback;
+}
+
+function safeFormatCurrency(val: any, decimals = 2): string {
+  const num = parseNumeric(val, 0);
+  return num.toFixed(decimals);
+}
+
 // ==========================================
 // 1. PROFIT & MARGIN CALCULATOR WIDGET
 // ==========================================
-interface ProfitCalcProps {
-  initialPrice?: number;
-  initialBaseCost?: number;
-  initialShipping?: number;
-  initialAdSpend?: number;
-  skuName?: string;
-}
-
 export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => {
   let parsed: any = {};
   try {
@@ -37,32 +50,47 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
   } catch {
     const lines = code.split("\n");
     lines.forEach((l) => {
-      const [k, v] = l.split(":");
-      if (k && v) {
-        const num = parseFloat(v.replace(/[^0-9.]/g, ""));
-        if (!isNaN(num)) parsed[k.trim().toLowerCase()] = num;
+      const parts = l.split(":");
+      if (parts.length >= 2) {
+        const k = parts[0].trim().toLowerCase();
+        const v = parts.slice(1).join(":").trim();
+        parsed[k] = v;
       }
     });
   }
 
-  const [price, setPrice] = useState<number>(
-    parsed.price || parsed.retail_price || parsed.retail || 29.99
+  const initialPrice = parseNumeric(
+    parsed.price || parsed.retail_price || parsed.retail,
+    29.99
   );
-  const [baseCost, setBaseCost] = useState<number>(
-    parsed.base_cost || parsed.cost || parsed.printway_cost || 6.5
+  const initialBaseCost = parseNumeric(
+    parsed.base_cost || parsed.cost || parsed.printway_cost,
+    6.5
   );
-  const [shipping, setShipping] = useState<number>(
-    parsed.shipping || parsed.shipping_cost || 4.99
+  const initialShipping = parseNumeric(
+    parsed.shipping || parsed.shipping_cost,
+    4.99
   );
-  const [adSpend, setAdSpend] = useState<number>(
-    parsed.ad_spend || parsed.ads || 5.0
+  const initialAdSpend = parseNumeric(
+    parsed.ad_spend || parsed.ads,
+    5.0
   );
-  const marketplaceFeeRate = parsed.fee_rate || 0.12; // 12% Etsy/Amazon fee average
+  const marketplaceFeeRate = parseNumeric(parsed.fee_rate, 0.12);
 
-  const marketplaceFee = price * marketplaceFeeRate;
-  const totalCost = baseCost + shipping + adSpend + marketplaceFee;
-  const netProfit = Math.max(-50, price - totalCost);
-  const profitMargin = price > 0 ? (netProfit / price) * 100 : 0;
+  const [price, setPrice] = useState<number>(initialPrice);
+  const [baseCost, setBaseCost] = useState<number>(initialBaseCost);
+  const [shipping, setShipping] = useState<number>(initialShipping);
+  const [adSpend, setAdSpend] = useState<number>(initialAdSpend);
+
+  const safePrice = parseNumeric(price, 29.99);
+  const safeBaseCost = parseNumeric(baseCost, 6.5);
+  const safeShipping = parseNumeric(shipping, 4.99);
+  const safeAdSpend = parseNumeric(adSpend, 5.0);
+
+  const marketplaceFee = safePrice * marketplaceFeeRate;
+  const totalCost = safeBaseCost + safeShipping + safeAdSpend + marketplaceFee;
+  const netProfit = Math.max(-100, safePrice - totalCost);
+  const profitMargin = safePrice > 0 ? (netProfit / safePrice) * 100 : 0;
   const breakEvenUnits = netProfit > 0 ? Math.ceil(10000 / netProfit) : 0;
 
   return (
@@ -93,15 +121,15 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
         <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
             <span className="text-slate-300 font-medium">Giá bán lẻ (Retail Price):</span>
-            <span className="font-mono font-bold text-[#00FF88]">${price.toFixed(2)}</span>
+            <span className="font-mono font-bold text-[#00FF88]">${safeFormatCurrency(safePrice)}</span>
           </div>
           <input
             type="range"
             min="10"
-            max="100"
+            max="120"
             step="0.5"
-            value={price}
-            onChange={(e) => setPrice(parseFloat(e.target.value))}
+            value={safePrice}
+            onChange={(e) => setPrice(parseNumeric(e.target.value, 29.99))}
             className="w-full accent-[#00FF88] cursor-pointer"
           />
         </div>
@@ -110,15 +138,15 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
         <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
             <span className="text-slate-300 font-medium">Giá gốc xưởng Printway (Base Cost):</span>
-            <span className="font-mono font-bold text-[#00D2FF]">${baseCost.toFixed(2)}</span>
+            <span className="font-mono font-bold text-[#00D2FF]">${safeFormatCurrency(safeBaseCost)}</span>
           </div>
           <input
             type="range"
             min="2"
-            max="40"
+            max="50"
             step="0.25"
-            value={baseCost}
-            onChange={(e) => setBaseCost(parseFloat(e.target.value))}
+            value={safeBaseCost}
+            onChange={(e) => setBaseCost(parseNumeric(e.target.value, 6.5))}
             className="w-full accent-[#00D2FF] cursor-pointer"
           />
         </div>
@@ -127,15 +155,15 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
         <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
             <span className="text-slate-300 font-medium">Phí Ship US (USPS/DHL Line):</span>
-            <span className="font-mono font-bold text-amber-400">${shipping.toFixed(2)}</span>
+            <span className="font-mono font-bold text-amber-400">${safeFormatCurrency(safeShipping)}</span>
           </div>
           <input
             type="range"
             min="2"
-            max="15"
+            max="20"
             step="0.25"
-            value={shipping}
-            onChange={(e) => setShipping(parseFloat(e.target.value))}
+            value={safeShipping}
+            onChange={(e) => setShipping(parseNumeric(e.target.value, 4.99))}
             className="w-full accent-amber-400 cursor-pointer"
           />
         </div>
@@ -144,15 +172,15 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
         <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
             <span className="text-slate-300 font-medium">Chi phí Quảng cáo / Đơn (CAC Ads):</span>
-            <span className="font-mono font-bold text-purple-400">${adSpend.toFixed(2)}</span>
+            <span className="font-mono font-bold text-purple-400">${safeFormatCurrency(safeAdSpend)}</span>
           </div>
           <input
             type="range"
             min="0"
-            max="25"
+            max="30"
             step="0.5"
-            value={adSpend}
-            onChange={(e) => setAdSpend(parseFloat(e.target.value))}
+            value={safeAdSpend}
+            onChange={(e) => setAdSpend(parseNumeric(e.target.value, 5.0))}
             className="w-full accent-purple-400 cursor-pointer"
           />
         </div>
@@ -165,7 +193,7 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
             Tổng chi phí (COGS)
           </span>
           <span className="mt-1 font-mono text-base font-bold text-slate-200">
-            ${totalCost.toFixed(2)}
+            ${safeFormatCurrency(totalCost)}
           </span>
           <span className="text-[9px] text-slate-500">Bao gồm ~12% sàn</span>
         </div>
@@ -179,7 +207,7 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
               netProfit >= 0 ? "text-[#00FF88]" : "text-rose-400"
             }`}
           >
-            ${netProfit.toFixed(2)}
+            ${safeFormatCurrency(netProfit)}
           </span>
           <span className="text-[9px] text-slate-400">Net Profit</span>
         </div>
@@ -197,7 +225,7 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
                 : "text-amber-400"
             }`}
           >
-            {profitMargin.toFixed(1)}%
+            {safeFormatCurrency(profitMargin, 1)}%
           </span>
           <span className="text-[9px] text-slate-400">Mục tiêu {">"} 35%</span>
         </div>
@@ -229,7 +257,6 @@ export const SeoTagsWidget: React.FC<{ code: string }> = ({ code }) => {
       if (Array.isArray(parsed)) return parsed.map(String);
       if (parsed.tags && Array.isArray(parsed.tags)) return parsed.tags.map(String);
     } catch {
-      // split comma or newline
       return code
         .split(/[,\n]/)
         .map((t) => t.replace(/^[-*•\d.↳"\[\]\s]+/, "").replace(/[",\]]/g, "").trim())
