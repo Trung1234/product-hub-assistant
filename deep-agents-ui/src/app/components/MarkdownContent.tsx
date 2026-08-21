@@ -7,6 +7,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { cn } from "@/lib/utils";
 import { CyberpunkChartRenderer } from "@/app/components/CyberpunkChartRenderer";
+import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsRenderer";
 
 interface MarkdownContentProps {
   content: string;
@@ -48,6 +49,11 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
               // Intercept chart code blocks for visual rendering
               if (!inline && (lang === "chart" || lang.startsWith("chart:") || lang === "radar" || lang === "gauge")) {
                 return <CyberpunkChartRenderer code={codeStr} />;
+              }
+
+              // Intercept suggestions / follow-up question blocks for interactive action chips
+              if (!inline && (lang === "suggestions" || lang.startsWith("suggestion") || lang === "followup" || lang === "questions")) {
+                return <SuggestedQuestionsRenderer code={codeStr} />;
               }
 
               return !inline && match ? (

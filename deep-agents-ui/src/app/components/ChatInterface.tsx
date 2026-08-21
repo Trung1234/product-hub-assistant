@@ -146,6 +146,21 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
     [isLoading, sendMessage, submitDisabled]
   );
 
+  // Listen for 1-click follow-up prompt events from SuggestedQuestionsRenderer
+  React.useEffect(() => {
+    const handleSendPromptEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail && !isLoading) {
+        sendMessage(customEvent.detail);
+      }
+    };
+
+    window.addEventListener("send-chat-prompt", handleSendPromptEvent);
+    return () => {
+      window.removeEventListener("send-chat-prompt", handleSendPromptEvent);
+    };
+  }, [isLoading, sendMessage]);
+
   const processedMessages = useMemo(() => {
     const messageMap = new Map<
       string,
