@@ -1,13 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { cn } from "@/lib/utils";
 import { CyberpunkChartRenderer } from "@/app/components/CyberpunkChartRenderer";
 import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsRenderer";
+import { Sparkles, ZoomIn } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface MarkdownContentProps {
   content: string;
@@ -15,17 +16,25 @@ interface MarkdownContentProps {
 }
 
 export const MarkdownContent = React.memo<MarkdownContentProps>(
-  ({ content, className = "" }) => {
+  ({ content, className }) => {
     return (
       <div
         className={cn(
-          "prose min-w-0 max-w-full overflow-hidden break-words text-sm leading-relaxed text-inherit",
-          "prose-headings:text-white prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-p:text-slate-200 prose-strong:text-[#00FF88]",
-          "[&_h1:first-child]:mt-0 [&_h1]:mb-3 [&_h1]:mt-5 [&_h1]:font-bold",
-          "[&_h2:first-child]:mt-0 [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:font-bold",
-          "[&_h3:first-child]:mt-0 [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-semibold",
-          "[&_h4:first-child]:mt-0 [&_h4]:mb-2 [&_h4]:mt-4 [&_h4]:font-semibold",
-          "[&_p:last-child]:mb-0 [&_p]:mb-3",
+          "prose prose-invert max-w-none break-words text-sm leading-relaxed",
+          "prose-headings:font-bold prose-headings:tracking-tight",
+          "prose-h1:text-xl prose-h1:text-[#00FF88] prose-h1:border-b prose-h1:border-[#00FF88]/30 prose-h1:pb-2",
+          "prose-h2:text-lg prose-h2:text-[#00D2FF] prose-h2:mt-4",
+          "prose-h3:text-base prose-h3:text-white prose-h3:mt-3",
+          "prose-p:text-slate-200 prose-p:my-2",
+          "prose-strong:text-white prose-strong:font-bold",
+          "prose-ul:my-2 prose-ul:list-disc prose-ul:pl-5",
+          "prose-li:my-0.5 prose-li:text-slate-300",
+          "prose-table:w-full prose-table:my-4 prose-table:border-collapse prose-table:rounded-xl prose-table:overflow-hidden",
+          "prose-th:bg-[#0E1538] prose-th:text-[#00FF88] prose-th:p-2.5 prose-th:text-xs prose-th:font-bold prose-th:border prose-th:border-slate-800",
+          "prose-td:p-2.5 prose-td:text-xs prose-td:text-slate-300 prose-td:border prose-td:border-slate-800/80",
+          "prose-tr:even:bg-[#080B21]/50 prose-tr:hover:bg-[#0E1538]/60 prose-tr:transition-colors",
+          "prose-blockquote:border-l-4 prose-blockquote:border-[#00FF88] prose-blockquote:bg-[#0E1538]/60 prose-blockquote:px-4 prose-blockquote:py-2 prose-blockquote:rounded-r-xl prose-blockquote:text-slate-300",
+          "prose-a:text-[#00D2FF] prose-a:underline hover:prose-a:text-[#00FF88] prose-a:transition-colors",
           className
         )}
       >
@@ -91,96 +100,39 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 </code>
               );
             },
-            pre({ children }: { children?: React.ReactNode }) {
+            img({ src, alt, ...props }: { src?: string; alt?: string }) {
+              if (!src) return null;
               return (
-                <div className="my-3 max-w-full overflow-hidden last:mb-0">
-                  {children}
-                </div>
-              );
-            },
-            a({
-              href,
-              children,
-            }: {
-              href?: string;
-              children?: React.ReactNode;
-            }) {
-              return (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#00D2FF] font-semibold underline decoration-[#00D2FF]/40 underline-offset-2 hover:text-[#00FF88] hover:decoration-[#00FF88] transition-colors"
+                <div
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("open-image-lightbox", {
+                          detail: { imageUrl: src, alt: alt || "Product Visual Design" },
+                        })
+                      );
+                    }
+                  }}
+                  className="group relative my-4 overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_30px_rgba(0,255,136,0.15)] transition-all duration-300 hover:border-[#00FF88] hover:shadow-[0_0_40px_rgba(0,255,136,0.35)] cursor-pointer"
                 >
-                  {children}
-                </a>
-              );
-            },
-            img({ src, alt }: { src?: string; alt?: string }) {
-              return (
-                <span className="my-2.5 inline-block overflow-hidden rounded-xl border border-[#00FF88]/30 bg-[#080B21] shadow-[0_0_15px_rgba(0,255,136,0.15)] transition-all duration-300 hover:border-[#00FF88] hover:shadow-[0_0_25px_rgba(0,255,136,0.3)]">
                   <img
                     src={src}
-                    alt={alt || "Product Design Sample"}
-                    className="max-h-48 max-w-[240px] object-cover rounded-t-lg transition-transform duration-300 hover:scale-105"
-                    loading="lazy"
+                    alt={alt || "Product Design"}
+                    className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    {...props}
                   />
-                  {alt && (
-                    <span className="block border-t border-[#00FF88]/20 bg-[#0E1538]/90 px-2 py-1 text-center text-[10px] font-semibold text-[#00FF88]">
-                      📷 {alt}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080B21]/90 via-[#080B21]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4 justify-between">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-[#00FF88]" />
+                      {alt || "Xem phóng to & thông số xưởng Printway"}
                     </span>
-                  )}
-                </span>
-              );
-            },
-            blockquote({ children }: { children?: React.ReactNode }) {
-              return (
-                <blockquote className="my-4 rounded-xl border-l-4 border-[#00FF88] bg-[#0E1538]/70 p-3.5 text-slate-200 shadow-[0_0_15px_rgba(0,255,136,0.1)]">
-                  {children}
-                </blockquote>
-              );
-            },
-            ul({ children }: { children?: React.ReactNode }) {
-              return (
-                <ul className="my-3 space-y-1.5 pl-5 list-disc marker:text-[#00FF88]">
-                  {children}
-                </ul>
-              );
-            },
-            ol({ children }: { children?: React.ReactNode }) {
-              return (
-                <ol className="my-3 space-y-1.5 pl-5 list-decimal marker:text-[#00D2FF]">
-                  {children}
-                </ol>
-              );
-            },
-            table({ children }: { children?: React.ReactNode }) {
-              return (
-                <div className="my-4 overflow-x-auto rounded-xl border border-[#00FF88]/20 bg-[#0E1538]/80 shadow-[0_0_15px_rgba(0,255,136,0.08)]">
-                  <table className="w-full border-collapse text-left text-xs">
-                    {children}
-                  </table>
+                    <span className="flex items-center gap-1 rounded-full bg-[#00FF88] text-[#080B21] px-2.5 py-1 text-[11px] font-bold shadow-lg">
+                      <ZoomIn className="h-3 w-3" />
+                      Phóng to
+                    </span>
+                  </div>
                 </div>
               );
-            },
-            thead({ children }: { children?: React.ReactNode }) {
-              return (
-                <thead className="border-b border-[#00FF88]/20 bg-[#121A45] text-[#00FF88] font-bold">
-                  {children}
-                </thead>
-              );
-            },
-            tbody({ children }: { children?: React.ReactNode }) {
-              return <tbody className="divide-y divide-[#00FF88]/10 text-slate-200">{children}</tbody>;
-            },
-            tr({ children }: { children?: React.ReactNode }) {
-              return <tr className="hover:bg-[#121A45]/50 transition-colors">{children}</tr>;
-            },
-            th({ children }: { children?: React.ReactNode }) {
-              return <th className="px-3.5 py-2.5 font-semibold text-[#00FF88]">{children}</th>;
-            },
-            td({ children }: { children?: React.ReactNode }) {
-              return <td className="px-3.5 py-2.5">{children}</td>;
             },
           }}
         >

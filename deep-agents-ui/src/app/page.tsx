@@ -10,6 +10,8 @@ import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import { ChatProvider } from "@/providers/ChatProvider";
 import { ChatInterface } from "@/app/components/ChatInterface";
 import { AppSidebar } from "@/app/components/AppSidebar";
+import { ImageLightboxModal } from "@/app/components/ImageLightboxModal";
+import { CommandPalette } from "@/app/components/CommandPalette";
 
 interface HomePageInnerProps {
   config: StandaloneConfig;
@@ -31,6 +33,66 @@ function HomePageInner({
   const [mutateThreads, setMutateThreads] = useState<(() => void) | null>(null);
   const [interruptCount, setInterruptCount] = useState(0);
   const [assistant, setAssistant] = useState<Assistant | null>(null);
+
+  // Command Palette & Image Lightbox state
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [lightboxData, setLightboxData] = useState<{
+    isOpen: boolean;
+    imageUrl: string;
+    alt?: string;
+    caption?: string;
+  }>({
+    isOpen: false,
+    imageUrl: "",
+  });
+
+  // Global Keyboard shortcuts: Cmd+K / Ctrl+K and Cmd+Shift+N and Cmd+B
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Cmd + K or Ctrl + K -> Command Palette
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+      }
+      // Cmd + Shift + N -> New Research
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === "n") {
+        e.preventDefault();
+        setThreadId(null);
+      }
+      // Cmd + B -> Toggle Sidebar
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setSidebarCollapsed((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [setThreadId]);
+
+  // Listen for image lightbox click events
+  useEffect(() => {
+    const handleOpenLightbox = (e: Event) => {
+      const customEvent = e as CustomEvent<{ imageUrl: string; alt?: string; caption?: string }>;
+      if (customEvent.detail?.imageUrl) {
+        setLightboxData({
+          isOpen: true,
+          imageUrl: customEvent.detail.imageUrl,
+          alt: customEvent.detail.alt,
+          caption: customEvent.detail.caption,
+        });
+      }
+    };
+
+    window.addEventListener("open-image-lightbox", handleOpenLightbox);
+    return () => window.removeEventListener("open-image-lightbox", handleOpenLightbox);
+  }, []);
+
+  const handleSelectPalettePrompt = useCallback((prompt: string) => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("send-chat-prompt", { detail: prompt }));
+    }
+  }, []);
 
   const fetchAssistant = useCallback(async () => {
     const isUUID =
@@ -101,6 +163,26 @@ function HomePageInner({
         onSave={handleSaveConfig}
         initialConfig={config}
       />
+
+      {/* Command Palette (Cmd + K) */}
+      <CommandPalette
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
+        onSelectPrompt={handleSelectPalettePrompt}
+        onNewResearch={() => setThreadId(null)}
+        onOpenSettings={() => setConfigDialogOpen(true)}
+        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
+
+      {/* Image Lightbox & Spec Inspector Modal */}
+      <ImageLightboxModal
+        isOpen={lightboxData.isOpen}
+        imageUrl={lightboxData.imageUrl}
+        alt={lightboxData.alt}
+        caption={lightboxData.caption}
+        onClose={() => setLightboxData((prev) => ({ ...prev, isOpen: false }))}
+      />
+
       <div className="flex h-screen w-screen overflow-hidden bg-[#080B21] text-white">
         {/* ChatGPT-Style Left Sidebar (Unified Navigation & History) */}
         <AppSidebar

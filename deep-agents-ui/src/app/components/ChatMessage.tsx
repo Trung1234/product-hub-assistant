@@ -5,6 +5,7 @@ import { SubAgentIndicator } from "@/app/components/SubAgentIndicator";
 import { ToolCallBox } from "@/app/components/ToolCallBox";
 import { MarkdownContent } from "@/app/components/MarkdownContent";
 import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsRenderer";
+import { MessageActionBar } from "@/app/components/MessageActionBar";
 import type {
   SubAgent,
   ToolCall,
@@ -300,6 +301,11 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                 {/* 4. Follow-Up Questions rendered in clean ↳ UI (Last response only) */}
                 {isLastMessage && finalQuestions.length > 0 && (
                   <SuggestedQuestionsRenderer questions={finalQuestions} />
+                )}
+
+                {/* 5. Message Quick Action Bar (Copy Report, Download CSV, Feedback) */}
+                {!isLoading && (
+                  <MessageActionBar content={trimmedContent} />
                 )}
               </div>
             </div>

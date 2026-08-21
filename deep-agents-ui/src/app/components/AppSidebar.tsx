@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { format } from "date-fns";
 import {
   SquarePen,
@@ -11,7 +11,9 @@ import {
   PanelLeft,
   Clock,
   CheckCircle,
-  Loader2
+  Loader2,
+  Search,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -56,11 +58,22 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
   interruptCount = 0,
   onMutateReady,
 }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const threads = useThreads({ limit: 35 });
 
   const flattened = useMemo(() => {
     return threads.data?.flat() ?? [];
   }, [threads.data]);
+
+  const filteredThreads = useMemo(() => {
+    if (!searchQuery.trim()) return flattened;
+    const q = searchQuery.toLowerCase();
+    return flattened.filter(
+      (t) =>
+        (t.title && t.title.toLowerCase().includes(q)) ||
+        (t.description && t.description.toLowerCase().includes(q))
+    );
+  }, [flattened, searchQuery]);
 
   const isLoading = threads.isLoading && !threads.data;
 
@@ -118,7 +131,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
             <Button
               type="button"
               onClick={onNewResearch}
-              className="w-full justify-start gap-2.5 rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 px-3.5 py-2 text-xs font-bold text-[#00FF88] shadow-[0_0_12px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all"
+              className="w-full justify-start gap-2.5 rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 px-3.5 py-2 text-xs font-bold text-[#00FF88] shadow-[0_0_12px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer"
             >
               <SquarePen className="h-4 w-4 shrink-0" />
               <span className="truncate">New research</span>
@@ -129,7 +142,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 <button
                   type="button"
                   onClick={onNewResearch}
-                  className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 text-[#00FF88] shadow-[0_0_10px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all"
+                  className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 text-[#00FF88] shadow-[0_0_10px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer"
                 >
                   <SquarePen className="h-4 w-4" />
                 </button>
@@ -149,7 +162,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 <button
                   type="button"
                   onClick={onToggleCollapse}
-                  className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors"
+                  className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
                 >
                   <PanelLeft className="h-4 w-4" />
                 </button>
@@ -158,6 +171,31 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 Mở rộng Sidebar
               </TooltipContent>
             </Tooltip>
+          </div>
+        )}
+
+        {/* SEARCH THREADS INPUT (WHEN EXPANDED) */}
+        {!collapsed && (
+          <div className="px-3 pb-2 shrink-0">
+            <div className="flex items-center gap-2 rounded-xl border border-slate-800 bg-[#080B21]/80 px-2.5 py-1.5 text-xs">
+              <Search className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm kiếm phiên nghiên cứu..."
+                className="w-full bg-transparent text-[11px] text-white placeholder:text-slate-500 focus:outline-none"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="text-slate-500 hover:text-white"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -181,14 +219,14 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 </div>
               )}
 
-              {!isLoading && flattened.length === 0 && (
+              {!isLoading && filteredThreads.length === 0 && (
                 <div className="px-2 py-4 text-center text-xs text-slate-500 italic">
-                  Chưa có lịch sử nghiên cứu
+                  {searchQuery ? "Không tìm thấy kết quả" : "Chưa có lịch sử nghiên cứu"}
                 </div>
               )}
 
               <div className="space-y-1">
-                {flattened.map((thread) => {
+                {filteredThreads.map((thread) => {
                   const isActive = currentThreadId === thread.id;
                   const rawTitle = thread.title || thread.description || "Research Session";
                   const displayTitle = truncateTitle(rawTitle, 28);
@@ -198,16 +236,33 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                       key={thread.id}
                       type="button"
                       onClick={() => onThreadSelect(thread.id)}
-                      title={rawTitle}
                       className={cn(
-                        "group relative flex w-full items-center justify-between gap-1.5 rounded-lg px-2.5 py-2 text-left text-xs transition-all",
+                        "group relative flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left transition-all duration-200 cursor-pointer",
                         isActive
-                          ? "border border-[#00FF88]/40 bg-[#0E1538] text-[#00FF88] font-semibold shadow-[0_0_10px_rgba(0,255,136,0.12)]"
-                          : "border border-transparent text-slate-300 hover:bg-[#121A45]/70 hover:text-white"
+                          ? "border border-[#00FF88]/40 bg-[#0E1538] text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] font-semibold"
+                          : "text-slate-300 hover:bg-[#121A45]/80 hover:text-white border border-transparent"
                       )}
+                      title={rawTitle}
                     >
-                      <span className="block min-w-0 flex-1 truncate text-[12px] leading-snug">
-                        {displayTitle}
+                      <div className="flex items-center gap-2 min-w-0 flex-1 pr-1">
+                        <MessageSquare
+                          className={cn(
+                            "h-3.5 w-3.5 shrink-0 transition-colors",
+                            isActive ? "text-[#00FF88]" : "text-slate-500 group-hover:text-slate-300"
+                          )}
+                        />
+                        <span className="text-xs truncate block">
+                          {displayTitle}
+                        </span>
+                      </div>
+
+                      <span
+                        className={cn(
+                          "shrink-0 text-[10px] tabular-nums whitespace-nowrap pl-1",
+                          isActive ? "text-[#00D2FF]" : "text-slate-500"
+                        )}
+                      >
+                        {formatTime(thread.updatedAt)}
                       </span>
                     </button>
                   );
@@ -217,16 +272,16 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* BOTTOM SECTION: SETTINGS & USER AVATAR */}
-        <div className="shrink-0 border-t border-[#00FF88]/15 bg-[#0E1538]/90 p-3 space-y-1.5 z-40 backdrop-blur-md">
+        {/* BOTTOM SECTION: USER PROFILE & SETTINGS */}
+        <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 flex flex-col gap-2">
           {/* Settings Button */}
           {!collapsed ? (
             <button
               type="button"
               onClick={onOpenSettings}
-              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-300 hover:bg-[#121A45] hover:text-[#00D2FF] transition-colors"
+              className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-300 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
             >
-              <Settings className="h-4 w-4 text-[#00D2FF]" />
+              <Settings className="h-4 w-4" />
               <span>Settings</span>
             </button>
           ) : (
@@ -235,18 +290,18 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 <button
                   type="button"
                   onClick={onOpenSettings}
-                  className="mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-slate-300 hover:bg-[#121A45] hover:text-[#00D2FF] transition-colors"
+                  className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
                 >
-                  <Settings className="h-4 w-4 text-[#00D2FF]" />
+                  <Settings className="h-4 w-4" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="right" className="bg-[#0E1538] border-[#00D2FF]/30 text-white text-xs">
+              <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
                 Settings
               </TooltipContent>
             </Tooltip>
           )}
 
-          {/* User Profile Bar */}
+          {/* User Profile Card */}
           {!collapsed ? (
             <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-[#080B21]/70 border border-slate-800/80">
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/30 text-[11px] font-bold text-[#00FF88]">
