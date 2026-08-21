@@ -164,31 +164,38 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-[#080B21]/80 pt-[12vh] px-4 backdrop-blur-md animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-[#080B21]/80 pt-[4vh] sm:pt-[12vh] px-2 sm:px-4 backdrop-blur-md animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_50px_rgba(0,255,136,0.2)] animate-in zoom-in-95 duration-200"
+        className="w-full max-w-2xl max-h-[88vh] flex flex-col overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_50px_rgba(0,255,136,0.2)] animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Bar */}
-        <div className="flex items-center gap-3 border-b border-slate-800 bg-[#0A0E2A] px-4 py-3.5">
-          <Search className="h-4 w-4 text-[#00FF88]" />
+        <div className="flex items-center gap-2.5 sm:gap-3 border-b border-slate-800 bg-[#0A0E2A] px-3 sm:px-4 py-3 sm:py-3.5">
+          <Search className="h-4 w-4 text-[#00FF88] shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Tìm kiếm mẫu prompt, thao tác hoặc lệnh nhanh (hoặc gõ từ khóa)..."
+            placeholder="Tìm kiếm mẫu prompt, thao tác..."
             className="flex-1 bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
           />
           <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-slate-700 bg-[#121A45] px-1.5 py-0.5 text-[10px] font-mono text-slate-400">
             ESC
           </kbd>
+          <button
+            type="button"
+            onClick={onClose}
+            className="sm:hidden p-1 rounded-lg text-slate-400 hover:text-white transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Action List */}
-        <div className="max-h-[60vh] overflow-y-auto p-2">
+        <div className="flex-1 overflow-y-auto max-h-[65vh] p-2">
           {filteredCategories.length === 0 ? (
             <div className="p-8 text-center text-xs text-slate-400">
               Không tìm thấy lệnh nào phù hợp với &quot;{query}&quot;
@@ -209,12 +216,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                         onClick={() => handleAction(item)}
                         className="group flex w-full items-center justify-between rounded-xl px-3 py-2 text-left transition-all hover:bg-[#121A45] hover:border hover:border-[#00FF88]/30 cursor-pointer"
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-slate-800 text-slate-300 group-hover:border-[#00FF88]/40 group-hover:text-[#00FF88] transition-colors">
+                        <div className="flex items-center gap-2.5 sm:gap-3">
+                          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-slate-800 text-slate-300 group-hover:border-[#00FF88]/40 group-hover:text-[#00FF88] transition-colors shrink-0">
                             <IconComp className="h-3.5 w-3.5" />
                           </div>
-                          <div>
-                            <div className="text-xs font-semibold text-white group-hover:text-[#00FF88] transition-colors">
+                          <div className="min-w-0 flex-1">
+                            <div className="text-xs font-semibold text-white group-hover:text-[#00FF88] transition-colors truncate">
                               {item.title}
                             </div>
                             <div className="text-[11px] text-slate-400 line-clamp-1">
@@ -222,7 +229,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                             </div>
                           </div>
                         </div>
-                        <ArrowRight className="h-3.5 w-3.5 text-slate-600 opacity-0 group-hover:opacity-100 group-hover:text-[#00FF88] transition-all group-hover:translate-x-0.5" />
+                        <ArrowRight className="h-3.5 w-3.5 text-slate-600 opacity-0 group-hover:opacity-100 group-hover:text-[#00FF88] transition-all group-hover:translate-x-0.5 shrink-0 ml-1" />
                       </button>
                     );
                   })}
@@ -233,10 +240,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer Info */}
-        <div className="flex items-center justify-between border-t border-slate-800/80 bg-[#0A0E2A]/70 px-4 py-2 text-[11px] text-slate-500">
-          <span>Dùng phím mũi tên hoặc chuột để chọn</span>
-          <div className="flex items-center gap-2">
-            <span>Printway AI Copilot</span>
+        <div className="flex items-center justify-between border-t border-slate-800/80 bg-[#0A0E2A]/70 px-3 sm:px-4 py-2 text-[10px] sm:text-[11px] text-slate-500">
+          <span>Chọn lệnh để kích hoạt</span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span>Printway AI</span>
             <span className="h-1 w-1 rounded-full bg-[#00FF88]" />
             <span className="text-[#00FF88]">Online</span>
           </div>

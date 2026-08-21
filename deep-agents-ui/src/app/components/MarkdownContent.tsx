@@ -218,14 +218,25 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 <FastCodeBlock codeStr={codeStr} lang={lang} />
               ) : (
                 <code
-                  className="bg-[#121A45] text-[#00FF88] rounded px-1.5 py-0.5 font-mono text-[0.88em] border border-[#00FF88]/20"
+                  className="bg-[#121A45] text-[#00FF88] rounded px-1.5 py-0.5 font-mono text-[0.88em] border border-[#00FF88]/20 break-words"
                   {...props}
                 >
                   {children}
                 </code>
               );
             },
-            img({ src, alt, ...props }: { src?: string; alt?: string }) {
+            table({ children, ...props }) {
+              return (
+                <div className="my-4 w-full overflow-x-auto rounded-xl border border-slate-800/80 bg-[#080B21]/40 scrollbar-pretty -mx-0.5 sm:mx-0">
+                  <table className="w-full border-collapse min-w-[500px]" {...props}>
+                    {children}
+                  </table>
+                </div>
+              );
+            },
+            img(props: any) {
+              const src = typeof props.src === "string" ? props.src : "";
+              const alt = typeof props.alt === "string" ? props.alt : "Product Visual Design";
               if (!src) return null;
               return (
                 <div
@@ -235,7 +246,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                         new CustomEvent("open-image-lightbox", {
                           detail: {
                             imageUrl: src,
-                            alt: alt || "Product Visual Design",
+                            alt: alt,
                           },
                         })
                       );
@@ -245,16 +256,15 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 >
                   <img
                     src={src}
-                    alt={alt || "Product Design"}
+                    alt={alt}
                     className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    {...props}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080B21]/90 via-[#080B21]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4 justify-between">
-                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                      <Sparkles className="h-3.5 w-3.5 text-[#00FF88]" />
-                      {alt || "Xem phóng to & thông số xưởng Printway"}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#080B21]/90 via-[#080B21]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3 sm:p-4 justify-between">
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5 truncate max-w-[70%]">
+                      <Sparkles className="h-3.5 w-3.5 text-[#00FF88] shrink-0" />
+                      <span className="truncate">{alt}</span>
                     </span>
-                    <span className="flex items-center gap-1 rounded-full bg-[#00FF88] text-[#080B21] px-2.5 py-1 text-[11px] font-bold shadow-lg">
+                    <span className="flex items-center gap-1 rounded-full bg-[#00FF88] text-[#080B21] px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold shadow-lg shrink-0">
                       <ZoomIn className="h-3 w-3" />
                       Phóng to
                     </span>

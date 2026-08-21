@@ -275,65 +275,65 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         onScroll={handleScroll}
       >
         <div
-          className="mx-auto w-full max-w-[1024px] px-6 pb-6 pt-4"
+          className="mx-auto w-full max-w-[1024px] px-3 sm:px-6 pb-4 sm:pb-6 pt-3 sm:pt-4"
           ref={contentRef}
         >
           {isThreadLoading ? (
             <div className="flex items-center justify-center p-8">
-              <p className="text-[#00FF88] font-mono animate-pulse">Loading conversation...</p>
+              <p className="text-[#00FF88] font-mono animate-pulse text-xs sm:text-sm">Đang tải cuộc trò chuyện...</p>
             </div>
           ) : processedMessages.length === 0 ? (
             /* Welcome Hero Section */
-            <div className="my-6 flex flex-col items-center justify-center text-center">
-              <div className="relative mb-6 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+            <div className="my-4 sm:my-6 flex flex-col items-center justify-center text-center">
+              <div className="relative mb-4 sm:mb-6 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
                 <img
                   src="/banner_crossborder.png"
                   alt="Cross Border AI Innovation Summit 2026"
-                  className="h-auto w-full max-h-[220px] object-cover object-center"
+                  className="h-auto w-full max-h-[160px] sm:max-h-[220px] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
               </div>
 
-              <div className="flex items-center justify-center gap-3 mb-4">
-                <div className="flex items-center justify-center px-4 py-2 rounded-xl bg-white shadow-[0_0_25px_rgba(255,255,255,0.2)]">
+              <div className="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+                <div className="flex items-center justify-center px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white shadow-[0_0_25px_rgba(255,255,255,0.2)]">
                   <img
                     src="/logo_header.png"
                     alt="Printway.io"
-                    className="h-6 w-auto object-contain"
+                    className="h-5 sm:h-6 w-auto object-contain"
                   />
                 </div>
               </div>
 
-              <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+              <h2 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl md:text-3xl">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF]">
                   PRINTWAY PRODUCT OPPORTUNITY HUB
                 </span>
               </h2>
-              <p className="mt-2 max-w-xl text-sm text-[#94A3B8]">
+              <p className="mt-1.5 sm:mt-2 max-w-xl text-xs sm:text-sm text-[#94A3B8] px-2">
                 AI Copilot tự động cào tín hiệu thị trường Etsy, Amazon & Pinterest, tính toán Opportunity Score và tự suy luận chiến lược R&D sản phẩm POD xưởng Printway.
               </p>
 
               {/* Quick Prompt Cards */}
-              <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 text-left">
+              <div className="mt-4 sm:mt-6 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2 text-left">
                 {QUICK_PROMPTS.map((p, idx) => (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => handleQuickPromptClick(p.query)}
-                    className="group relative flex flex-col justify-between rounded-xl border border-[#00FF88]/20 bg-[#0E1538]/80 p-4 transition-all duration-300 hover:border-[#00FF88] hover:bg-[#121A45] hover:shadow-[0_0_20px_rgba(0,255,136,0.2)] text-left cursor-pointer"
+                    className="group relative flex flex-col justify-between rounded-xl border border-[#00FF88]/20 bg-[#0E1538]/80 p-3 sm:p-4 transition-all duration-300 hover:border-[#00FF88] hover:bg-[#121A45] hover:shadow-[0_0_20px_rgba(0,255,136,0.2)] text-left cursor-pointer"
                   >
                     <div>
                       <div className="flex items-center justify-between">
-                        <span className="inline-flex items-center rounded-full bg-[#00FF88]/15 px-2 py-0.5 text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
+                        <span className="inline-flex items-center rounded-full bg-[#00FF88]/15 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
                           {p.badge}
                         </span>
                         <Zap className="h-3.5 w-3.5 text-[#00D2FF] opacity-70 group-hover:opacity-100 group-hover:text-[#00FF88] transition-colors" />
                       </div>
-                      <h4 className="mt-2 text-sm font-semibold text-white group-hover:text-[#00FF88] transition-colors">
+                      <h4 className="mt-2 text-xs sm:text-sm font-semibold text-white group-hover:text-[#00FF88] transition-colors">
                         {p.title}
                       </h4>
                     </div>
-                    <p className="mt-2 line-clamp-2 text-xs text-[#94A3B8]">
+                    <p className="mt-1.5 sm:mt-2 line-clamp-2 text-[11px] sm:text-xs text-[#94A3B8]">
                       {p.query}
                     </p>
                   </button>
@@ -391,7 +391,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         <button
           type="button"
           onClick={handleScrollToBottom}
-          className="group absolute bottom-36 left-1/2 -translate-x-1/2 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-[#00FF88]/40 bg-[#0E1538]/90 shadow-[0_0_20px_rgba(0,255,136,0.3)] backdrop-blur-md hover:bg-[#121A45] hover:border-[#00FF88] hover:shadow-[0_0_25px_rgba(0,255,136,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 animate-in fade-in zoom-in-90 cursor-pointer"
+          className="group absolute bottom-32 sm:bottom-36 left-1/2 -translate-x-1/2 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-[#00FF88]/40 bg-[#0E1538]/90 shadow-[0_0_20px_rgba(0,255,136,0.3)] backdrop-blur-md hover:bg-[#121A45] hover:border-[#00FF88] hover:shadow-[0_0_25px_rgba(0,255,136,0.6)] hover:scale-110 active:scale-95 transition-all duration-200 animate-in fade-in zoom-in-90 cursor-pointer"
           title="Cuộn xuống tin nhắn mới nhất"
           aria-label="Cuộn xuống tin nhắn mới nhất"
         >

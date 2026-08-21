@@ -165,19 +165,19 @@ export const CyberpunkChartRenderer = React.memo<{ code: string }>(({ code }) =>
     }).join(" ");
 
     return (
-      <div className="my-5 rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538]/90 p-5 shadow-[0_0_20px_rgba(0,210,255,0.15)] backdrop-blur-md">
-        <div className="flex items-center justify-between border-b border-[#00D2FF]/20 pb-3 mb-4">
+      <div className="my-4 sm:my-5 rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538]/90 p-3.5 sm:p-5 shadow-[0_0_20px_rgba(0,210,255,0.15)] backdrop-blur-md">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00D2FF]/20 pb-3 mb-4">
           <div className="flex items-center gap-2">
-            <Radar className="h-4 w-4 text-[#00D2FF]" />
-            <h4 className="text-sm font-bold tracking-wider text-white uppercase">{title}</h4>
+            <Radar className="h-4 w-4 text-[#00D2FF] shrink-0" />
+            <h4 className="text-xs sm:text-sm font-bold tracking-wider text-white uppercase">{title}</h4>
           </div>
-          <span className="text-[10px] font-semibold text-[#00FF88] bg-[#00FF88]/15 px-2 py-0.5 rounded-full border border-[#00FF88]/30">
+          <span className="text-[9px] sm:text-[10px] font-semibold text-[#00FF88] bg-[#00FF88]/15 px-2 py-0.5 rounded-full border border-[#00FF88]/30 shrink-0">
             5D Opportunity Radar
           </span>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-around gap-4">
-          <div className="relative">
-            <svg width="200" height="200" className="overflow-visible">
+          <div className="relative flex items-center justify-center">
+            <svg viewBox="0 0 200 200" className="w-[180px] h-[180px] sm:w-[200px] sm:h-[200px] overflow-visible">
               {/* Concentric Polygons */}
               {[0.25, 0.5, 0.75, 1.0].map((level, idx) => {
                 const gridPoints = Array.from({ length: totalAxes }).map((_, i) => {
@@ -239,7 +239,7 @@ export const CyberpunkChartRenderer = React.memo<{ code: string }>(({ code }) =>
             </svg>
           </div>
           {/* Legend Table */}
-          <div className="flex flex-col gap-2 min-w-[200px] text-xs">
+          <div className="flex flex-col gap-2 w-full sm:w-auto sm:min-w-[200px] text-xs">
             {radarData.map((d, i) => (
               <div key={i} className="flex items-center justify-between gap-3 border-b border-slate-800 pb-1">
                 <span className="text-slate-300">{d.axis}</span>

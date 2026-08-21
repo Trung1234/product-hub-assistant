@@ -104,31 +104,31 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
   }, [safePrice, safeBaseCost, safeShipping, safeAdSpend, marketplaceFeeRate]);
 
   return (
-    <div className="my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-5 shadow-[0_0_25px_rgba(0,255,136,0.15)] backdrop-blur-md">
+    <div className="my-4 sm:my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-3.5 sm:p-5 shadow-[0_0_25px_rgba(0,255,136,0.15)] backdrop-blur-md">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#00FF88]/20 pb-3 mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00FF88]/20 pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-[#00FF88]/40 text-[#00FF88]">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-[#00FF88]/40 text-[#00FF88] shrink-0">
             <Calculator className="h-4 w-4" />
           </div>
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Bảng Tính Lợi Nhuận & Điểm Hòa Vốn (Interactive Profit Engine)
+              Bảng Tính Lợi Nhuận (Profit Engine)
             </h4>
             <span className="text-[10px] text-[#94A3B8]">
-              Tùy chỉnh giá bán, chi phí xưởng Printway & Ads để tính ROI theo thời gian thực
+              Tùy chỉnh giá bán, giá xưởng & Ads tính ROI tức thì
             </span>
           </div>
         </div>
-        <span className="rounded-full bg-[#00FF88]/15 px-2.5 py-1 text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
+        <span className="rounded-full bg-[#00FF88]/15 px-2.5 py-0.5 text-[9px] sm:text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30 shrink-0">
           Printway SKU Pricing
         </span>
       </div>
 
       {/* Sliders Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-5">
         {/* Retail Price */}
-        <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
+        <div className="space-y-1.5 bg-[#080B21]/70 p-2.5 sm:p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
             <span className="text-slate-300 font-medium">Giá bán lẻ (Retail Price):</span>
             <span className="font-mono font-bold text-[#00FF88]">${safeFormatCurrency(safePrice)}</span>
@@ -145,9 +145,9 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
         </div>
 
         {/* Base Cost */}
-        <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
+        <div className="space-y-1.5 bg-[#080B21]/70 p-2.5 sm:p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Giá gốc xưởng Printway (Base Cost):</span>
+            <span className="text-slate-300 font-medium">Giá gốc xưởng Printway:</span>
             <span className="font-mono font-bold text-[#00D2FF]">${safeFormatCurrency(safeBaseCost)}</span>
           </div>
           <input
@@ -162,9 +162,9 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
         </div>
 
         {/* Shipping Cost */}
-        <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
+        <div className="space-y-1.5 bg-[#080B21]/70 p-2.5 sm:p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Phí Ship US (USPS/DHL Line):</span>
+            <span className="text-slate-300 font-medium">Phí Ship US (USPS Line):</span>
             <span className="font-mono font-bold text-amber-400">${safeFormatCurrency(safeShipping)}</span>
           </div>
           <input
@@ -179,9 +179,9 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
         </div>
 
         {/* Ad Spend */}
-        <div className="space-y-1.5 bg-[#080B21]/70 p-3 rounded-xl border border-slate-800">
+        <div className="space-y-1.5 bg-[#080B21]/70 p-2.5 sm:p-3 rounded-xl border border-slate-800">
           <div className="flex justify-between text-xs">
-            <span className="text-slate-300 font-medium">Chi phí Quảng cáo / Đơn (CAC Ads):</span>
+            <span className="text-slate-300 font-medium">Chi phí Quảng cáo / Đơn:</span>
             <span className="font-mono font-bold text-purple-400">${safeFormatCurrency(safeAdSpend)}</span>
           </div>
           <input
@@ -197,37 +197,37 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
       </div>
 
       {/* Results Matrix Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-        <div className="flex flex-col rounded-xl bg-[#080B21] border border-slate-800 p-3 text-center">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
+        <div className="flex flex-col rounded-xl bg-[#080B21] border border-slate-800 p-2.5 sm:p-3 text-center">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400">
             Tổng chi phí (COGS)
           </span>
-          <span className="mt-1 font-mono text-base font-bold text-slate-200">
+          <span className="mt-1 font-mono text-sm sm:text-base font-bold text-slate-200">
             ${safeFormatCurrency(totalCost)}
           </span>
-          <span className="text-[9px] text-slate-500">Bao gồm ~12% sàn</span>
+          <span className="text-[8px] sm:text-[9px] text-slate-500">~12% sàn</span>
         </div>
 
-        <div className="flex flex-col rounded-xl bg-[#080B21] border border-[#00FF88]/30 p-3 text-center shadow-[0_0_12px_rgba(0,255,136,0.1)]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#00FF88]">
-            Lợi nhuận ròng / Item
+        <div className="flex flex-col rounded-xl bg-[#080B21] border border-[#00FF88]/30 p-2.5 sm:p-3 text-center shadow-[0_0_12px_rgba(0,255,136,0.1)]">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#00FF88]">
+            LN ròng / Item
           </span>
           <span
-            className={`mt-1 font-mono text-lg font-extrabold ${
+            className={`mt-1 font-mono text-base sm:text-lg font-extrabold ${
               netProfit >= 0 ? "text-[#00FF88]" : "text-rose-400"
             }`}
           >
             ${safeFormatCurrency(netProfit)}
           </span>
-          <span className="text-[9px] text-slate-400">Net Profit</span>
+          <span className="text-[8px] sm:text-[9px] text-slate-400">Net Profit</span>
         </div>
 
-        <div className="flex flex-col rounded-xl bg-[#080B21] border border-[#00D2FF]/30 p-3 text-center shadow-[0_0_12px_rgba(0,210,255,0.1)]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#00D2FF]">
-            Tỷ suất LN (Margin)
+        <div className="flex flex-col rounded-xl bg-[#080B21] border border-[#00D2FF]/30 p-2.5 sm:p-3 text-center shadow-[0_0_12px_rgba(0,210,255,0.1)]">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#00D2FF]">
+            Tỷ suất Margin
           </span>
           <span
-            className={`mt-1 font-mono text-lg font-extrabold ${
+            className={`mt-1 font-mono text-base sm:text-lg font-extrabold ${
               profitMargin >= 30
                 ? "text-[#00FF88]"
                 : profitMargin >= 15
@@ -237,17 +237,17 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
           >
             {safeFormatCurrency(profitMargin, 1)}%
           </span>
-          <span className="text-[9px] text-slate-400">Mục tiêu {">"} 35%</span>
+          <span className="text-[8px] sm:text-[9px] text-slate-400">Mục tiêu &gt; 35%</span>
         </div>
 
-        <div className="flex flex-col rounded-xl bg-[#080B21] border border-purple-500/30 p-3 text-center shadow-[0_0_12px_rgba(168,85,247,0.1)]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">
-            Số đơn cho $10k Profit
+        <div className="flex flex-col rounded-xl bg-[#080B21] border border-purple-500/30 p-2.5 sm:p-3 text-center shadow-[0_0_12px_rgba(168,85,247,0.1)]">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-purple-400">
+            Số đơn cho $10k
           </span>
-          <span className="mt-1 font-mono text-lg font-extrabold text-purple-300">
-            {breakEvenUnits > 0 ? `${breakEvenUnits.toLocaleString()} đơn` : "N/A"}
+          <span className="mt-1 font-mono text-base sm:text-lg font-extrabold text-purple-300">
+            {breakEvenUnits > 0 ? `${breakEvenUnits.toLocaleString()}` : "N/A"}
           </span>
-          <span className="text-[9px] text-slate-400">Tháng cao điểm Q4</span>
+          <span className="text-[8px] sm:text-[9px] text-slate-400">Mùa cao điểm</span>
         </div>
       </div>
     </div>
@@ -295,18 +295,18 @@ export const SeoTagsWidget = React.memo<{ code: string }>(({ code }) => {
   if (tags.length === 0) return null;
 
   return (
-    <div className="my-5 rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538] p-4 shadow-[0_0_20px_rgba(0,210,255,0.12)] backdrop-blur-md">
-      <div className="flex items-center justify-between border-b border-[#00D2FF]/20 pb-3 mb-3">
+    <div className="my-4 sm:my-5 rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538] p-3.5 sm:p-4 shadow-[0_0_20px_rgba(0,210,255,0.12)] backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00D2FF]/20 pb-3 mb-3">
         <div className="flex items-center gap-2">
-          <Tag className="h-4 w-4 text-[#00D2FF]" />
+          <Tag className="h-4 w-4 text-[#00D2FF] shrink-0" />
           <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-            Bộ 13 SEO Keywords / Tags Tối Ưu (Etsy & Amazon Listing Ready)
+            13 SEO Keywords (Etsy & Amazon Ready)
           </h4>
         </div>
         <button
           type="button"
           onClick={handleCopyAll}
-          className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-3 py-1 text-[11px] font-bold text-[#00FF88] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer shadow-[0_0_10px_rgba(0,255,136,0.2)]"
+          className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-bold text-[#00FF88] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer shadow-[0_0_10px_rgba(0,255,136,0.2)] shrink-0"
         >
           {copiedAll ? (
             <>
@@ -322,7 +322,7 @@ export const SeoTagsWidget = React.memo<{ code: string }>(({ code }) => {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2">
         {tags.map((tag, idx) => {
           const isCopied = copiedIdx === idx;
           return (
@@ -330,21 +330,21 @@ export const SeoTagsWidget = React.memo<{ code: string }>(({ code }) => {
               key={idx}
               type="button"
               onClick={() => handleCopyTag(tag, idx)}
-              className={`group flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-all duration-200 cursor-pointer ${
+              className={`group flex items-center gap-1.5 rounded-xl border px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium transition-all duration-200 cursor-pointer ${
                 isCopied
                   ? "border-[#00FF88] bg-[#00FF88]/20 text-[#00FF88]"
                   : "border-slate-800 bg-[#080B21] text-slate-300 hover:border-[#00D2FF]/50 hover:bg-[#121A45] hover:text-white"
               }`}
               title="Click để sao chép tag này"
             >
-              <span className="text-slate-500 font-mono text-[10px] group-hover:text-[#00D2FF]">
+              <span className="text-slate-500 font-mono text-[9px] sm:text-[10px] group-hover:text-[#00D2FF]">
                 #{idx + 1}
               </span>
               <span>{tag}</span>
               {isCopied ? (
-                <Check className="h-3 w-3 text-[#00FF88]" />
+                <Check className="h-3 w-3 text-[#00FF88] shrink-0" />
               ) : (
-                <Copy className="h-3 w-3 text-slate-500 opacity-0 group-hover:opacity-100 group-hover:text-[#00D2FF] transition-opacity" />
+                <Copy className="h-3 w-3 text-slate-500 opacity-0 group-hover:opacity-100 group-hover:text-[#00D2FF] transition-opacity shrink-0" />
               )}
             </button>
           );
@@ -379,60 +379,60 @@ export const PrintwaySkuCardWidget = React.memo<{ code: string }>(({ code }) => 
   } = data;
 
   return (
-    <div className="my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-5 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md">
-      <div className="flex items-center justify-between border-b border-[#00FF88]/20 pb-3 mb-4">
+    <div className="my-4 sm:my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-3.5 sm:p-5 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00FF88]/20 pb-3 mb-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm p-1">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm p-1 shrink-0">
             <img src="/logo_header.png" alt="Printway" className="h-3 w-auto object-contain" />
           </div>
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-              Thông Số Sản Xuất & Năng Lực Xưởng Printway
+              Thông Số Xưởng Printway
             </h4>
-            <span className="text-[10px] text-[#94A3B8]">In-house POD Factory Fulfillment Specs</span>
+            <span className="text-[10px] text-[#94A3B8]">In-house POD Factory Specs</span>
           </div>
         </div>
         <a
           href={catalog_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-[11px] font-bold text-[#00FF88] hover:underline"
+          className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#00FF88] hover:underline shrink-0"
         >
-          <span>Catalog 500+ SKUs</span>
+          <span>500+ SKUs</span>
           <ExternalLink className="h-3 w-3" />
         </a>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs mb-4">
-        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-3 border border-slate-800">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-xs mb-2">
+        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Layers className="h-4 w-4 text-[#00FF88] shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[10px] font-bold uppercase block">Chất liệu & Vật liệu</span>
-            <span className="font-semibold text-white">{material}</span>
+            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Chất liệu & Vật liệu</span>
+            <span className="font-semibold text-white text-xs">{material}</span>
           </div>
         </div>
 
-        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-3 border border-slate-800">
+        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Sparkles className="h-4 w-4 text-[#00D2FF] shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[10px] font-bold uppercase block">Công nghệ in ấn</span>
-            <span className="font-semibold text-white">{print_tech}</span>
+            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Công nghệ in ấn</span>
+            <span className="font-semibold text-white text-xs">{print_tech}</span>
           </div>
         </div>
 
-        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-3 border border-slate-800">
+        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Clock className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[10px] font-bold uppercase block">Thời gian sản xuất (Turnaround)</span>
-            <span className="font-semibold text-white">{turnaround}</span>
+            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Thời gian sản xuất</span>
+            <span className="font-semibold text-white text-xs">{turnaround}</span>
           </div>
         </div>
 
-        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-3 border border-slate-800">
+        <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Truck className="h-4 w-4 text-purple-400 shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[10px] font-bold uppercase block">Thời gian vận chuyển US</span>
-            <span className="font-semibold text-white">{shipping_us}</span>
+            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Vận chuyển US</span>
+            <span className="font-semibold text-white text-xs">{shipping_us}</span>
           </div>
         </div>
       </div>

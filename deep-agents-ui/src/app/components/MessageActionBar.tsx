@@ -45,14 +45,14 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
   };
 
   return (
-    <div className="mt-3 flex items-center justify-between border-t border-slate-800/80 pt-2.5 text-xs text-slate-400">
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-2.5 text-xs text-slate-400">
       {/* Left Action Buttons */}
-      <div className="flex items-center gap-1.5">
+      <div className="flex flex-wrap items-center gap-1.5">
         <button
           type="button"
           onClick={handleCopy}
           className={cn(
-            "flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-all cursor-pointer",
+            "flex items-center gap-1.5 rounded-lg border px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all cursor-pointer",
             copied
               ? "border-[#00FF88]/50 bg-[#00FF88]/15 text-[#00FF88]"
               : "border-slate-800 bg-[#0E1538]/60 text-slate-300 hover:border-[#00FF88]/40 hover:bg-[#121A45] hover:text-white"
@@ -75,7 +75,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
         <button
           type="button"
           onClick={handleDownloadCsv}
-          className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2.5 py-1 text-[11px] font-medium text-slate-300 transition-all hover:border-[#00D2FF]/40 hover:bg-[#121A45] hover:text-[#00D2FF] cursor-pointer"
+          className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-slate-300 transition-all hover:border-[#00D2FF]/40 hover:bg-[#121A45] hover:text-[#00D2FF] cursor-pointer"
           title="Tải bảng ma trận 23 cột file CSV"
         >
           <Download className="h-3.5 w-3.5" />

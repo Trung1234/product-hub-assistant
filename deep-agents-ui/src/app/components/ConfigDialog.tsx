@@ -64,7 +64,7 @@ export function ConfigDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className="sm:max-w-[525px] bg-[#0E1538] border-[#00FF88]/30 text-white shadow-[0_0_40px_rgba(0,255,136,0.2)]">
+      <DialogContent className="w-[92vw] sm:max-w-[525px] max-h-[90vh] overflow-y-auto bg-[#0E1538] border-[#00FF88]/30 text-white shadow-[0_0_40px_rgba(0,255,136,0.2)] rounded-2xl p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-white text-base font-bold">Cấu hình hệ thống R&D</DialogTitle>
           <DialogDescription className="text-slate-400 text-xs">

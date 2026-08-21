@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { format } from "date-fns";
 import {
   SquarePen,
@@ -30,6 +30,8 @@ interface AppSidebarProps {
   onToggleCollapse: () => void;
   interruptCount?: number;
   onMutateReady?: (mutate: () => void) => void;
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 function formatTime(date: Date, now = new Date()): string {
@@ -57,6 +59,8 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
   onToggleCollapse,
   interruptCount = 0,
   onMutateReady,
+  mobileOpen = false,
+  onMobileClose,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const threads = useThreads({ limit: 35 });
@@ -77,17 +81,44 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
 
   const isLoading = threads.isLoading && !threads.data;
 
+  const handleThreadClick = useCallback((id: string | null) => {
+    onThreadSelect(id);
+    onMobileClose?.();
+  }, [onThreadSelect, onMobileClose]);
+
+  const handleNewResearchClick = useCallback(() => {
+    onNewResearch();
+    onMobileClose?.();
+  }, [onNewResearch, onMobileClose]);
+
+  const handleOpenSettingsClick = useCallback(() => {
+    onOpenSettings();
+    onMobileClose?.();
+  }, [onOpenSettings, onMobileClose]);
+
   return (
     <TooltipProvider delayDuration={200}>
+      {/* Mobile Backdrop Overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-[#080B21]/80 backdrop-blur-sm transition-opacity duration-300 md:hidden"
+          onClick={onMobileClose}
+          aria-hidden="true"
+        />
+      )}
+
       <aside
         className={cn(
-          "relative flex h-screen flex-col border-r border-[#00FF88]/15 bg-[#0A0E2A] text-white transition-all duration-300 ease-in-out select-none shrink-0 z-30",
-          collapsed ? "w-16" : "w-[280px]"
+          "fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r border-[#00FF88]/15 bg-[#0A0E2A] text-white transition-all duration-300 ease-in-out select-none shrink-0 shadow-2xl md:shadow-none md:static md:z-30 md:h-screen",
+          // Mobile state: slide in / out
+          mobileOpen ? "translate-x-0 w-[280px] max-w-[85vw]" : "-translate-x-full md:translate-x-0",
+          // Desktop state: 16 (collapsed) or 280px
+          collapsed ? "md:w-16" : "md:w-[280px]"
         )}
       >
-        {/* TOP SECTION: Header / Logo & Collapse Toggle */}
+        {/* TOP SECTION: Header / Logo & Collapse / Close Toggle */}
         <div className="flex h-14 shrink-0 items-center justify-between px-3.5 border-b border-[#00FF88]/10 bg-[#0E1538]/60">
-          {!collapsed ? (
+          {(!collapsed || mobileOpen) ? (
             <div className="flex items-center">
               <div className="flex h-8 px-2.5 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
                 <img
@@ -107,30 +138,43 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
             </div>
           )}
 
-          {!collapsed && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  onClick={onToggleCollapse}
-                  className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
-                >
-                  <PanelLeftClose className="h-4 w-4" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                Thu gọn thanh bên
-              </TooltipContent>
-            </Tooltip>
-          )}
+          {/* Desktop Collapse Toggle */}
+          <div className="hidden md:block">
+            {!collapsed && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={onToggleCollapse}
+                    className="flex h-7 w-7 items-center justify-center rounded-md text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
+                  >
+                    <PanelLeftClose className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
+                  Thu gọn thanh bên
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+
+          {/* Mobile Close Button (X) */}
+          <button
+            type="button"
+            onClick={onMobileClose}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-white transition-colors cursor-pointer md:hidden"
+            aria-label="Đóng thanh bên"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
 
         {/* NEW RESEARCH BUTTON */}
         <div className="p-3 shrink-0">
-          {!collapsed ? (
+          {(!collapsed || mobileOpen) ? (
             <Button
               type="button"
-              onClick={onNewResearch}
+              onClick={handleNewResearchClick}
               className="w-full justify-start gap-2.5 rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 px-3.5 py-2 text-xs font-bold text-[#00FF88] shadow-[0_0_12px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer"
             >
               <SquarePen className="h-4 w-4 shrink-0" />
@@ -141,7 +185,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  onClick={onNewResearch}
+                  onClick={handleNewResearchClick}
                   className="mx-auto flex h-10 w-10 items-center justify-center rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 text-[#00FF88] shadow-[0_0_10px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer"
                 >
                   <SquarePen className="h-4 w-4" />
@@ -154,9 +198,9 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* COLLAPSED EXPAND BUTTON */}
+        {/* COLLAPSED EXPAND BUTTON (DESKTOP ONLY) */}
         {collapsed && (
-          <div className="px-3 pb-2 shrink-0">
+          <div className="px-3 pb-2 shrink-0 hidden md:block">
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -174,8 +218,8 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           </div>
         )}
 
-        {/* SEARCH THREADS INPUT (WHEN EXPANDED) */}
-        {!collapsed && (
+        {/* SEARCH THREADS INPUT (WHEN EXPANDED OR ON MOBILE) */}
+        {(!collapsed || mobileOpen) && (
           <div className="px-3 pb-2 shrink-0">
             <div className="group flex items-center gap-2 rounded-xl border border-slate-800/80 bg-[#0E1538]/60 px-3 py-1.5 text-xs transition-all duration-200 focus-within:border-[#00FF88]/50 focus-within:bg-[#0E1538] focus-within:shadow-[0_0_15px_rgba(0,255,136,0.15)]">
               <Search className="h-3.5 w-3.5 text-slate-500 group-focus-within:text-[#00FF88] transition-colors shrink-0" />
@@ -201,7 +245,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
 
         {/* MIDDLE SECTION: RECENTS / HISTORY LIST (SCROLLABLE) */}
         <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-          {!collapsed && (
+          {(!collapsed || mobileOpen) && (
             <div className="py-2 pb-6 space-y-1">
               <div className="px-2 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
                 <span>Gần đây</span>
@@ -235,7 +279,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                     <button
                       key={thread.id}
                       type="button"
-                      onClick={() => onThreadSelect(thread.id)}
+                      onClick={() => handleThreadClick(thread.id)}
                       className={cn(
                         "group relative flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left transition-all duration-200 cursor-pointer",
                         isActive
@@ -275,10 +319,10 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         {/* BOTTOM SECTION: USER PROFILE & SETTINGS */}
         <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 flex flex-col gap-2">
           {/* Settings Button */}
-          {!collapsed ? (
+          {(!collapsed || mobileOpen) ? (
             <button
               type="button"
-              onClick={onOpenSettings}
+              onClick={handleOpenSettingsClick}
               className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-xs font-semibold text-slate-300 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
             >
               <Settings className="h-4 w-4" />
@@ -289,7 +333,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  onClick={onOpenSettings}
+                  onClick={handleOpenSettingsClick}
                   className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-[#00FF88] transition-colors cursor-pointer"
                 >
                   <Settings className="h-4 w-4" />
@@ -302,7 +346,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
 
           {/* User Profile Card */}
-          {!collapsed ? (
+          {(!collapsed || mobileOpen) ? (
             <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-[#080B21]/70 border border-slate-800/80">
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/30 text-[11px] font-bold text-[#00FF88]">
                 PN

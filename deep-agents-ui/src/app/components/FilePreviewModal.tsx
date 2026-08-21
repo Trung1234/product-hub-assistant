@@ -57,16 +57,16 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B21]/90 p-4 sm:p-6 backdrop-blur-xl animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B21]/90 p-2 sm:p-6 backdrop-blur-xl animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_50px_rgba(0,255,136,0.25)]"
+        className="relative flex max-h-[94vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_50px_rgba(0,255,136,0.25)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-slate-800 bg-[#0A0E2A] px-5 py-3.5">
-          <div className="flex items-center gap-3 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-800 bg-[#0A0E2A] px-3.5 sm:px-5 py-3 sm:py-3.5">
+          <div className="flex items-center gap-2.5 truncate max-w-[60%] sm:max-w-[70%]">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] text-[#080B21]">
               {isImage ? (
                 <ImageIcon className="h-4 w-4" />
@@ -81,19 +81,19 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
                 {file.name}
               </span>
               <span className="text-[10px] text-slate-400">
-                {formatFileSize(file.size)} • {file.type || "Tài liệu đính kèm"}
+                {formatFileSize(file.size)} • {file.type || "Tài liệu"}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={handleDownload}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#121A45] px-3 py-1.5 text-xs font-semibold text-[#00FF88] hover:border-[#00FF88] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#121A45] px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-[#00FF88] hover:border-[#00FF88] transition-all cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
-              <span>Tải xuống</span>
+              <span className="hidden sm:inline">Tải xuống</span>
             </button>
             <button
               type="button"
@@ -106,12 +106,12 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({ file, onClos
         </div>
 
         {/* Content Viewer Body */}
-        <div className="flex flex-1 items-center justify-center overflow-auto p-6 bg-[#060919] min-h-[300px] max-h-[calc(92vh-70px)]">
+        <div className="flex flex-1 items-center justify-center overflow-auto p-3 sm:p-6 bg-[#060919] min-h-[220px] max-h-[calc(94vh-70px)]">
           {isImage ? (
             <img
               src={file.url}
               alt={file.name}
-              className="max-h-[70vh] w-auto rounded-xl object-contain shadow-2xl transition-transform hover:scale-105 duration-300"
+              className="max-h-[65vh] w-auto rounded-xl object-contain shadow-2xl transition-transform hover:scale-105 duration-300"
             />
           ) : isPdf ? (
             <iframe

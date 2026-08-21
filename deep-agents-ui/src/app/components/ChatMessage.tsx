@@ -179,7 +179,8 @@ export const ChatMessage = React.memo<ChatMessageProps>(
             name: toolCall.name,
             subAgentName: subagentType,
             input: toolCall.args,
-            output: toolCall.result,
+            output: typeof toolCall.result === "string" ? { result: toolCall.result } : (toolCall.result as any),
+            status: (toolCall.status === "interrupted" ? "error" : toolCall.status === "pending" ? "pending" : "completed") as "pending" | "active" | "completed" | "error",
           };
         });
     }, [toolCalls]);
@@ -234,8 +235,8 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     // If human message: Render User Bubble with Images & Clean Text
     if (isUser) {
       return (
-        <div className="flex w-full justify-end my-3">
-          <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/30 p-3.5 text-sm text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed space-y-2.5">
+        <div className="flex w-full justify-end my-2.5 sm:my-3">
+          <div className="max-w-[92%] sm:max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/30 p-3 sm:p-3.5 text-xs sm:text-sm text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed space-y-2">
             {/* Attached Images Gallery */}
             {userImages.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -251,7 +252,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                         );
                       }
                     }}
-                    className="group relative h-28 w-28 overflow-hidden rounded-xl border border-[#00FF88]/40 bg-[#080B21] shadow-md cursor-pointer hover:border-[#00FF88] transition-all"
+                    className="group relative h-20 w-20 sm:h-28 sm:w-28 overflow-hidden rounded-xl border border-[#00FF88]/40 bg-[#080B21] shadow-md cursor-pointer hover:border-[#00FF88] transition-all"
                     title="Bấm để xem ảnh phóng to"
                   >
                     <img

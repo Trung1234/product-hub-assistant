@@ -12,6 +12,7 @@ import { ChatInterface } from "@/app/components/ChatInterface";
 import { AppSidebar } from "@/app/components/AppSidebar";
 import { ImageLightboxModal } from "@/app/components/ImageLightboxModal";
 import { CommandPalette } from "@/app/components/CommandPalette";
+import { PanelLeft, SquarePen, Search, Settings } from "lucide-react";
 
 interface HomePageInnerProps {
   config: StandaloneConfig;
@@ -29,6 +30,7 @@ function HomePageInner({
   const client = useClient();
   const [threadId, setThreadId] = useQueryState("threadId");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   const [mutateThreads, setMutateThreads] = useState<(() => void) | null>(null);
   const [interruptCount, setInterruptCount] = useState(0);
@@ -184,7 +186,7 @@ function HomePageInner({
       />
 
       <div className="flex h-screen w-screen overflow-hidden bg-[#080B21] text-white">
-        {/* ChatGPT-Style Left Sidebar (Unified Navigation & History) */}
+        {/* ChatGPT-Style Left Sidebar (Unified Navigation & History, Drawer on Mobile) */}
         <AppSidebar
           currentThreadId={threadId}
           onThreadSelect={(id) => setThreadId(id)}
@@ -194,10 +196,72 @@ function HomePageInner({
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           interruptCount={interruptCount}
           onMutateReady={(fn) => setMutateThreads(() => fn)}
+          mobileOpen={mobileSidebarOpen}
+          onMobileClose={() => setMobileSidebarOpen(false)}
         />
 
         {/* Main Full-Height Workspace Area */}
         <main className="relative flex flex-1 flex-col overflow-hidden bg-[#080B21]">
+          {/* Mobile Top Navigation Header (< md) */}
+          <header className="flex h-13 w-full shrink-0 items-center justify-between border-b border-[#00FF88]/15 bg-[#0E1538]/90 px-3 backdrop-blur-md md:hidden z-20">
+            <div className="flex items-center gap-2">
+              {/* Hamburger Menu Button */}
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-[#080B21] text-slate-300 hover:text-[#00FF88] hover:border-[#00FF88]/40 transition-colors cursor-pointer"
+                aria-label="Mở danh mục & lịch sử nghiên cứu"
+              >
+                <PanelLeft className="h-4.5 w-4.5" />
+              </button>
+
+              {/* Logo & Brand Badge */}
+              <div className="flex items-center gap-1.5">
+                <div className="flex h-7 px-2 items-center justify-center rounded-md bg-white shadow-sm">
+                  <img
+                    src="/logo_header.png"
+                    alt="Printway"
+                    className="h-3.5 w-auto object-contain"
+                  />
+                </div>
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#00FF88] bg-[#00FF88]/15 px-1.5 py-0.5 rounded border border-[#00FF88]/30">
+                  R&D Hub
+                </span>
+              </div>
+            </div>
+
+            {/* Right Action Icons (Search Cmd+K, New Research, Settings) */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setCommandPaletteOpen(true)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-[#00D2FF] transition-colors cursor-pointer"
+                title="Tìm kiếm lệnh & gợi ý (Cmd+K)"
+                aria-label="Tìm kiếm lệnh & gợi ý"
+              >
+                <Search className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setThreadId(null)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#00FF88]/30 bg-[#00FF88]/10 text-[#00FF88] hover:bg-[#00FF88] hover:text-[#080B21] transition-colors cursor-pointer"
+                title="Tạo phiên nghiên cứu mới"
+                aria-label="Tạo phiên nghiên cứu mới"
+              >
+                <SquarePen className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfigDialogOpen(true)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-[#121A45] hover:text-white transition-colors cursor-pointer"
+                title="Cài đặt hệ thống"
+                aria-label="Cài đặt hệ thống"
+              >
+                <Settings className="h-4 w-4" />
+              </button>
+            </div>
+          </header>
+
           <ChatProvider
             activeAssistant={assistant}
             onHistoryRevalidate={() => mutateThreads?.()}

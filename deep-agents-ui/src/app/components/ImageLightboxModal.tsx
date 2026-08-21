@@ -49,31 +49,31 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B21]/90 p-4 sm:p-6 backdrop-blur-xl animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#080B21]/90 p-2 sm:p-6 backdrop-blur-xl animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_50px_rgba(0,255,136,0.25)]"
+        className="relative flex max-h-[95vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] shadow-[0_0_50px_rgba(0,255,136,0.25)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Bar */}
-        <div className="flex items-center justify-between border-b border-slate-800 bg-[#0A0E2A] px-5 py-3.5">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF]">
+        <div className="flex items-center justify-between border-b border-slate-800 bg-[#0A0E2A] px-3.5 sm:px-5 py-3 sm:py-3.5">
+          <div className="flex items-center gap-2 truncate">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shrink-0">
               <Sparkles className="h-3.5 w-3.5 text-[#080B21]" />
             </div>
-            <span className="text-xs font-extrabold uppercase tracking-wider text-white">
-              Visual Design Inspector & Spec Viewer
+            <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-white truncate">
+              Design Inspector & Spec Viewer
             </span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={handleDownload}
-              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#121A45] px-3 py-1.5 text-xs font-semibold text-[#00FF88] hover:border-[#00FF88] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#121A45] px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-[#00FF88] hover:border-[#00FF88] transition-all cursor-pointer"
             >
               <Download className="h-3.5 w-3.5" />
-              <span>Tải ảnh</span>
+              <span className="hidden sm:inline">Tải ảnh</span>
             </button>
             <button
               type="button"
@@ -86,18 +86,18 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="flex flex-col md:flex-row overflow-y-auto max-h-[calc(92vh-60px)]">
+        <div className="flex flex-col md:flex-row overflow-y-auto max-h-[calc(95vh-60px)]">
           {/* Left: Big Image Preview */}
-          <div className="flex flex-1 items-center justify-center bg-[#060919] p-6">
+          <div className="flex flex-1 items-center justify-center bg-[#060919] p-3 sm:p-6 min-h-[220px]">
             <img
               src={imageUrl}
               alt={alt}
-              className="max-h-[60vh] w-auto rounded-xl object-contain shadow-2xl transition-transform hover:scale-105 duration-300"
+              className="max-h-[45vh] md:max-h-[60vh] w-auto rounded-xl object-contain shadow-2xl transition-transform hover:scale-105 duration-300"
             />
           </div>
 
           {/* Right: Technical Specs & R&D Notes */}
-          <div className="flex w-full md:w-80 flex-col justify-between border-t md:border-t-0 md:border-l border-slate-800 bg-[#0E1538] p-5">
+          <div className="flex w-full md:w-80 flex-col justify-between border-t md:border-t-0 md:border-l border-slate-800 bg-[#0E1538] p-3.5 sm:p-5">
             <div className="space-y-4">
               <div>
                 <span className="rounded-full bg-[#00FF88]/15 px-2.5 py-0.5 text-[10px] font-bold uppercase text-[#00FF88] border border-[#00FF88]/30">

@@ -139,23 +139,23 @@ export const FileViewDialog = React.memo<{
       open={true}
       onOpenChange={onClose}
     >
-      <DialogContent className="flex h-[80vh] max-h-[80vh] min-w-[60vw] flex-col p-6 bg-[#0E1538] border-[#00FF88]/30 text-white">
+      <DialogContent className="flex h-[88vh] max-h-[88vh] w-[94vw] sm:min-w-[60vw] max-w-4xl flex-col p-4 sm:p-6 bg-[#0E1538] border-[#00FF88]/30 text-white rounded-2xl">
         <DialogTitle className="sr-only">
           {file?.path || "Tệp mới"}
         </DialogTitle>
-        <div className="mb-4 flex items-center justify-between border-b border-slate-800 pb-4">
-          <div className="flex min-w-0 items-center gap-2">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <div className="flex min-w-0 items-center gap-2 truncate max-w-[60%] sm:max-w-[70%]">
             <FileText className="text-[#00FF88] h-5 w-5 shrink-0" />
             {isEditingMode && file === null ? (
               <Input
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
                 placeholder="Nhập tên tệp..."
-                className="text-base font-medium bg-[#080B21] border-slate-800 text-white"
+                className="text-sm font-medium bg-[#080B21] border-slate-800 text-white"
                 aria-invalid={!fileNameIsValid}
               />
             ) : (
-              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium text-[#00FF88]">
+              <span className="overflow-hidden text-ellipsis whitespace-nowrap text-sm sm:text-base font-medium text-[#00FF88]">
                 {file?.path}
               </span>
             )}

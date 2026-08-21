@@ -33,7 +33,7 @@ interface ChatInputProps {
   onStopStream: () => void;
   todos: TodoItem[];
   files: Record<string, string>;
-  setFiles: (files: Record<string, string>) => void;
+  setFiles: (files: Record<string, string>) => Promise<void> | void;
   interrupt?: any;
   clarificationData: { question: string; options: string[] } | null;
   onClarificationSubmit: (response: string) => void;
@@ -43,6 +43,17 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function getStatusIcon(status: TodoItem["status"]) {
+  switch (status) {
+    case "completed":
+      return <CheckCircle size={14} className="text-[#00FF88] shrink-0" />;
+    case "in_progress":
+      return <Clock size={14} className="text-amber-400 animate-spin shrink-0" />;
+    default:
+      return <Circle size={12} className="text-slate-500 shrink-0" />;
+  }
 }
 
 export const ChatInput = React.memo<ChatInputProps>(({
@@ -361,7 +372,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
         onChange={handleFileInputChange}
       />
 
-      <div className="flex-shrink-0 bg-transparent px-4 pb-5 pt-2">
+      <div className="flex-shrink-0 bg-transparent px-2.5 sm:px-4 pb-3 sm:pb-5 pt-1.5 sm:pt-2">
         <div
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -376,9 +387,9 @@ export const ChatInput = React.memo<ChatInputProps>(({
         >
           {/* Drag Overlay Hint */}
           {isDragging && (
-            <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#080B21]/90 backdrop-blur-sm pointer-events-none">
-              <div className="flex items-center gap-2 text-sm font-bold text-[#00FF88] animate-bounce">
-                <Paperclip className="h-5 w-5" />
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#080B21]/90 backdrop-blur-sm pointer-events-none p-4 text-center">
+              <div className="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#00FF88] animate-bounce">
+                <Paperclip className="h-4 sm:h-5 w-4 sm:w-5 shrink-0" />
                 <span>Thả ảnh hoặc tài liệu vào đây để đính kèm</span>
               </div>
             </div>
@@ -389,22 +400,22 @@ export const ChatInput = React.memo<ChatInputProps>(({
             <div className="flex flex-col border-b border-[#00FF88]/20 bg-[#0A0E2A]">
               {/* Closed State Header / Trigger */}
               {!metaOpen && (
-                <div className="grid grid-cols-[1fr_auto] items-center px-4 py-2.5">
+                <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-2.5 gap-2 overflow-hidden">
                   {hasTasks && (
                     <button
                       type="button"
                       onClick={() => setMetaOpen("tasks")}
-                      className="flex items-center gap-2 text-left text-xs font-semibold text-white hover:text-[#00FF88] transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 sm:gap-2 text-left text-[11px] sm:text-xs font-semibold text-white hover:text-[#00FF88] transition-colors cursor-pointer truncate"
                     >
                       {todos.length === groupedTodos.completed.length ? (
-                        <CheckCircle size={15} className="text-[#00FF88]" />
+                        <CheckCircle size={14} className="text-[#00FF88] shrink-0" />
                       ) : (
-                        <Clock size={15} className="text-amber-400 animate-spin" />
+                        <Clock size={14} className="text-amber-400 animate-spin shrink-0" />
                       )}
-                      <span>
-                        Nhiệm vụ R&D: {groupedTodos.completed.length}/{todos.length} đã xong
+                      <span className="truncate">
+                        Nhiệm vụ: {groupedTodos.completed.length}/{todos.length} xong
                       </span>
-                      <ChevronDown size={14} className="text-[#00FF88]" />
+                      <ChevronDown size={13} className="text-[#00FF88] shrink-0" />
                     </button>
                   )}
 
@@ -412,11 +423,11 @@ export const ChatInput = React.memo<ChatInputProps>(({
                     <button
                       type="button"
                       onClick={() => setMetaOpen("files")}
-                      className="flex items-center gap-1.5 text-xs text-[#00D2FF] hover:underline cursor-pointer"
+                      className="flex items-center gap-1 text-[11px] sm:text-xs text-[#00D2FF] hover:underline cursor-pointer shrink-0"
                     >
-                      <FileIcon size={14} />
-                      Tệp dữ liệu ({Object.keys(files).length})
-                      <ChevronDown size={14} />
+                      <FileIcon size={13} />
+                      <span>Tệp ({Object.keys(files).length})</span>
+                      <ChevronDown size={13} />
                     </button>
                   )}
                 </div>
@@ -425,14 +436,14 @@ export const ChatInput = React.memo<ChatInputProps>(({
               {/* Opened Drawer State */}
               {metaOpen && (
                 <div className="flex flex-col">
-                  <div className="flex items-center justify-between border-b border-[#00FF88]/20 bg-[#0E1538] px-4 py-2 text-xs">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between border-b border-[#00FF88]/20 bg-[#0E1538] px-3 sm:px-4 py-2 text-xs">
+                    <div className="flex items-center gap-3 overflow-hidden">
                       {hasTasks && (
                         <button
                           type="button"
                           onClick={() => setMetaOpen("tasks")}
                           className={cn(
-                            "font-bold transition-colors pb-0.5 cursor-pointer",
+                            "font-bold transition-colors pb-0.5 cursor-pointer text-xs truncate",
                             metaOpen === "tasks"
                               ? "text-[#00FF88] border-b-2 border-[#00FF88]"
                               : "text-[#94A3B8] hover:text-white"
@@ -446,40 +457,40 @@ export const ChatInput = React.memo<ChatInputProps>(({
                           type="button"
                           onClick={() => setMetaOpen("files")}
                           className={cn(
-                            "font-bold transition-colors pb-0.5 cursor-pointer",
+                            "font-bold transition-colors pb-0.5 cursor-pointer text-xs truncate",
                             metaOpen === "files"
                               ? "text-[#00D2FF] border-b-2 border-[#00D2FF]"
                               : "text-[#94A3B8] hover:text-white"
                           )}
                         >
-                          Tệp dữ liệu hệ thống ({Object.keys(files).length})
+                          Tệp ({Object.keys(files).length})
                         </button>
                       )}
                     </div>
                     <button
                       type="button"
                       onClick={() => setMetaOpen(null)}
-                      className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                      className="flex items-center gap-1 text-slate-400 hover:text-white transition-colors cursor-pointer shrink-0 text-xs"
                     >
                       <span>Đóng</span>
-                      <ChevronUp size={14} />
+                      <ChevronUp size={13} />
                     </button>
                   </div>
 
                   <div
                     ref={tasksContainerRef}
-                    className="max-h-60 overflow-y-auto px-4 py-3 text-xs"
+                    className="max-h-60 overflow-y-auto px-3 sm:px-4 py-2.5 sm:py-3 text-xs"
                   >
                     {metaOpen === "tasks" && (
                       <div className="space-y-2">
                         {todos.map((todo, idx) => (
                           <div
                             key={idx}
-                            className="flex items-start gap-2.5 rounded-lg bg-[#080B21]/60 p-2 border border-slate-800"
+                            className="flex items-start gap-2.5 rounded-lg bg-[#080B21]/60 p-2 border border-slate-800 text-xs"
                           >
                             <span className="mt-0.5">{getStatusIcon(todo.status)}</span>
-                            <span className="text-slate-200 leading-relaxed">
-                              {todo.description}
+                            <span className="text-slate-200 leading-relaxed break-words flex-1">
+                              {todo.content}
                             </span>
                           </div>
                         ))}
@@ -490,7 +501,9 @@ export const ChatInput = React.memo<ChatInputProps>(({
                       <div className="max-h-48 overflow-y-auto">
                         <FilesPopover
                           files={files}
-                          setFiles={setFiles}
+                          setFiles={async (f) => {
+                            await Promise.resolve(setFiles(f));
+                          }}
                           editDisabled={
                             isLoading === true || interrupt !== undefined
                           }
@@ -505,33 +518,33 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
           {/* PINNED CLARIFICATION / HANDOFF TO USER DRAWER RIGHT ABOVE PROMPT INPUT */}
           {clarificationData && (
-            <div className="border-b border-amber-500/30 bg-[#0E1538] p-4 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="flex items-center justify-between mb-2">
+            <div className="border-b border-amber-500/30 bg-[#0E1538] p-3 sm:p-4 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex flex-wrap items-center justify-between gap-1.5 mb-2">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-amber-400 to-orange-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-amber-400 to-orange-500 shadow-[0_0_10px_rgba(245,158,11,0.5)] shrink-0">
                     <HelpCircle className="h-3.5 w-3.5 text-[#080B21]" />
                   </div>
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-amber-400">
-                    AI Copilot Cần Làm Rõ Thông Tin (Hỏi Ý Kiến Bạn)
+                  <span className="text-[11px] sm:text-xs font-extrabold uppercase tracking-wider text-amber-400">
+                    AI Copilot Cần Làm Rõ Thông Tin
                   </span>
                 </div>
-                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40 animate-pulse">
-                  Chờ phản hồi của bạn
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[9px] sm:text-[10px] font-bold text-amber-400 border border-amber-500/40 animate-pulse">
+                  Chờ bạn chọn hoặc phản hồi
                 </span>
               </div>
 
-              <p className="text-sm font-medium text-slate-100 mb-3 leading-relaxed">
+              <p className="text-xs sm:text-sm font-medium text-slate-100 mb-3 leading-relaxed">
                 {clarificationData.question}
               </p>
 
               {clarificationData.options.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
                   {clarificationData.options.map((opt, idx) => (
                     <button
                       key={idx}
                       type="button"
                       onClick={() => handleClarificationSend(opt)}
-                      className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500 hover:text-[#080B21] transition-all shadow-[0_0_10px_rgba(245,158,11,0.1)] cursor-pointer"
+                      className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-semibold text-amber-300 hover:bg-amber-500 hover:text-[#080B21] transition-all shadow-[0_0_10px_rgba(245,158,11,0.1)] cursor-pointer text-left"
                     >
                       <span>{opt}</span>
                     </button>
@@ -539,7 +552,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 </div>
               )}
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <input
                   type="text"
                   value={clarificationInput}
@@ -551,7 +564,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                     }
                   }}
                   placeholder="Nhập câu trả lời hoặc làm rõ yêu cầu của bạn..."
-                  className="flex-1 rounded-xl border border-amber-500/30 bg-[#080B21] px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none shadow-inner"
+                  className="flex-1 rounded-xl border border-amber-500/30 bg-[#080B21] px-3.5 py-2 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none shadow-inner"
                   autoFocus
                 />
                 <Button
@@ -559,7 +572,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                   size="sm"
                   onClick={() => handleClarificationSend(clarificationInput)}
                   disabled={!clarificationInput.trim()}
-                  className="rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-xs font-bold text-[#080B21] hover:bg-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all cursor-pointer"
+                  className="rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-xs font-bold text-[#080B21] hover:bg-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all cursor-pointer shrink-0"
                 >
                   <Send className="mr-1.5 h-3.5 w-3.5" />
                   Gửi Phản Hồi
@@ -570,32 +583,32 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
           {/* UPLOADED ATTACHMENTS LIST CHIPS */}
           {attachments.length > 0 && (
-            <div className="flex flex-wrap items-center gap-2 px-4 pt-3 pb-2 border-b border-[#00FF88]/10 bg-[#0A0E2A]/50">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 px-3 sm:px-4 pt-2.5 pb-2 border-b border-[#00FF88]/10 bg-[#0A0E2A]/50 max-h-28 overflow-y-auto">
               {attachments.map((file) => {
                 const isImg = file.type?.startsWith("image/") || file.url?.startsWith("data:image/");
                 return (
                   <div
                     key={file.id}
                     onClick={() => setPreviewingFile(file)}
-                    className="group flex items-center gap-2 rounded-xl border border-[#00FF88]/30 bg-[#0E1538] px-2.5 py-1.5 shadow-[0_0_12px_rgba(0,255,136,0.1)] hover:border-[#00FF88] hover:bg-[#121A45] transition-all cursor-pointer"
+                    className="group flex items-center gap-2 rounded-xl border border-[#00FF88]/30 bg-[#0E1538] px-2 py-1 sm:px-2.5 sm:py-1.5 shadow-[0_0_12px_rgba(0,255,136,0.1)] hover:border-[#00FF88] hover:bg-[#121A45] transition-all cursor-pointer"
                     title="Bấm vào để xem trước file"
                   >
                     {isImg ? (
                       <img
                         src={file.url}
                         alt={file.name}
-                        className="h-7 w-7 rounded-lg object-cover border border-[#00FF88]/30 shadow-sm"
+                        className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg object-cover border border-[#00FF88]/30 shadow-sm shrink-0"
                       />
                     ) : (
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-slate-800 text-[#00FF88]">
-                        <FileText className="h-3.5 w-3.5" />
+                      <div className="flex h-6 w-6 sm:h-7 sm:w-7 items-center justify-center rounded-lg bg-[#080B21] border border-slate-800 text-[#00FF88] shrink-0">
+                        <FileText className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       </div>
                     )}
-                    <div className="flex flex-col truncate max-w-[140px]">
-                      <span className="text-[11px] font-semibold text-white truncate">
+                    <div className="flex flex-col truncate max-w-[110px] sm:max-w-[140px]">
+                      <span className="text-[10px] sm:text-[11px] font-semibold text-white truncate">
                         {file.name}
                       </span>
-                      <span className="text-[9px] text-slate-400">
+                      <span className="text-[8px] sm:text-[9px] text-slate-400">
                         {formatFileSize(file.size)}
                       </span>
                     </div>
@@ -608,7 +621,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                       className="rounded-full p-0.5 text-slate-400 hover:bg-slate-800 hover:text-rose-400 transition-colors cursor-pointer"
                       title="Gỡ tệp"
                     >
-                      <X className="h-3.5 w-3.5" />
+                      <X className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     </button>
                   </div>
                 );
@@ -625,7 +638,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
               {/* Ghost Text Overlay */}
               {ghostSuffix && (
                 <div
-                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden px-[18px] pb-[13px] pt-[14px] text-sm leading-relaxed whitespace-pre-wrap break-words font-inherit select-none"
+                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden px-3.5 sm:px-[18px] pb-3 sm:pb-[13px] pt-3 sm:pt-[14px] text-base sm:text-sm leading-relaxed whitespace-pre-wrap break-words font-inherit select-none"
                   aria-hidden="true"
                 >
                   <span className="opacity-0">{input}</span>
@@ -635,7 +648,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 </div>
               )}
 
-              {/* Real Input Textarea */}
+              {/* Real Input Textarea: 16px on iOS to avoid auto-zoom */}
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -645,29 +658,30 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 }}
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
-                placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc kéo thả/dán ảnh & tài liệu để phân tích..."}
-                className="font-inherit field-sizing-content relative z-10 w-full resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-relaxed text-white outline-none placeholder:text-[#64748B]"
+                placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc đính kèm ảnh..."}
+                className="font-inherit field-sizing-content relative z-10 w-full resize-none border-0 bg-transparent px-3.5 sm:px-[18px] pb-3 sm:pb-[13px] pt-3 sm:pt-[14px] text-base sm:text-sm leading-relaxed text-white outline-none placeholder:text-[#64748B]"
                 rows={1}
               />
             </div>
 
             {/* Bottom Bar: Action Tools & Suggestion Pill */}
-            <div className="flex justify-between items-center gap-2 px-4 py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10 relative z-20">
-              {/* Left Side: Attachment Button & Suggestion Pill */}
-              <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex justify-between items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10 relative z-20">
+              {/* Left Side: Attachment Button & File Count */}
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-[#00FF88] hover:bg-[#121A45] border border-transparent hover:border-[#00FF88]/30 transition-all cursor-pointer"
                   title="Đính kèm ảnh hoặc tài liệu (PDF, CSV, TXT, JSON, DOCX)"
+                  aria-label="Đính kèm ảnh hoặc tài liệu"
                 >
                   <Paperclip className="h-4 w-4" />
                 </button>
 
                 {attachments.length > 0 && (
-                  <span className="text-[11px] text-[#00FF88] font-semibold flex items-center gap-1">
+                  <span className="text-[10px] sm:text-[11px] text-[#00FF88] font-semibold flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
-                    {attachments.length} tệp sẵn sàng gửi
+                    {attachments.length} tệp
                   </span>
                 )}
               </div>
@@ -679,7 +693,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 size="sm"
                 onClick={isLoading ? onStopStream : undefined}
                 disabled={submitDisabled && !isLoading}
-                className="rounded-lg border border-[#00FF88] bg-[#00FF88] px-4 py-1.5 text-xs font-bold text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all cursor-pointer shrink-0"
+                className="rounded-lg border border-[#00FF88] bg-[#00FF88] px-3.5 sm:px-4 py-1.5 text-xs font-bold text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all cursor-pointer shrink-0"
               >
                 {isLoading ? (
                   <>
