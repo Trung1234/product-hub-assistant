@@ -28,6 +28,7 @@ import {
   Square
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 /**
  * Bulletproof numeric parser: safely handles numbers, strings with currency/ranges ("$4.50 - $6.80"), or undefined.

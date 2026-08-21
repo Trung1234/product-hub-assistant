@@ -43,10 +43,17 @@ Khi nhận được bất kỳ từ khóa, ý tưởng sản phẩm hay yêu c�
 
 ### 📋 CẤU TRÚC BÁO CÁO R&D CHÍNH THỨC CỦA PRINTWAY:
 
-#### 1. 🎯 Executive Decision Badge:
-> [!IMPORTANT]
-> **KHUYẾN NGHỊ R&D: [RECOMMEND | RECOMMEND WITH CAUTION | NOT RECOMMEND] — Điểm Cơ Hội: [Score thực tế từ evaluate_5d_opportunity_score]/100**  
-> *[1-2 câu tóm tắt chính xác dựa trên dữ liệu thật thu được về nhu cầu, cạnh tranh và biên lợi nhuận xưởng Printway]*
+#### 1. 🎯 Executive Decision Scorecard (Interactive 4-KPI Grid Widget):
+```executive_kpi
+{
+  "opportunity_score": [Score thực tế từ evaluate_5d_opportunity_score],
+  "recommendation": "[RECOMMEND | RECOMMEND WITH CAUTION | NOT RECOMMEND]",
+  "demand": "[Monthly searches e.g. 14,500/mo]",
+  "competition": "[Active listings e.g. 105 listings]",
+  "growth": "[YoY Growth e.g. +45% YoY]",
+  "margin": "[Est. Printway margin e.g. 68% - 75%]"
+}
+```
 
 #### 2. 📊 Biểu Đồ Radar Đánh Giá Cơ Hội 6 Chiều (Interactive Radar Widget):
 ```chart
@@ -67,7 +74,17 @@ Khi nhận được bất kỳ từ khóa, ý tưởng sản phẩm hay yêu c�
 }
 ```
 
-#### 3. 🏭 Thông Số Sản Xuất Xưởng Printway (Interactive Factory Specs Widget):
+#### 3. 🌐 Ma Trận So Sánh Kênh Bán Hàng (Interactive Marketplace Matrix):
+```channel_comparison
+{
+  "etsy": { "score": 88, "note": "Kênh chủ lực cá nhân hóa quà tặng, AOV cao, chi phí list thấp" },
+  "amazon": { "score": 62, "note": "Cạnh tranh giá mạnh ở tier dưới $15, nên test FBM Printway" },
+  "tiktok_shop": { "score": 78, "note": "Viral video visual unboxing rất tốt đón sóng mùa vụ Q4" },
+  "pinterest": { "score": 85, "note": "Pin saves tăng mạnh từ T8-T9 cho dòng sản phẩm Mica/Gỗ" }
+}
+```
+
+#### 4. 🏭 Thông Số Sản Xuất Xưởng Printway (Interactive Factory Specs Widget):
 ```printway_sku
 {
   "sku_name": "[Tên SKU xưởng Printway thực tế]",
@@ -80,7 +97,7 @@ Khi nhận được bất kỳ từ khóa, ý tưởng sản phẩm hay yêu c�
 }
 ```
 
-#### 4. 💰 Bảng Tính Lợi Nhuận & Điểm Hòa Vốn (Interactive Profit Engine Widget):
+#### 5. 💰 Bảng Tính Lợi Nhuận & Điểm Hòa Vốn (Interactive Profit Engine Widget):
 ```profit_calc
 {
   "retail_price": [Giá bán lẻ đề xuất thực tế e.g. 29.99],
@@ -91,13 +108,23 @@ Khi nhận được bất kỳ từ khóa, ý tưởng sản phẩm hay yêu c�
 }
 ```
 
-#### 5. 🖼️ Visual Design Gallery (Mẫu Thiết Kế Thịnh Hành):
+#### 6. 🖼️ Visual Design Gallery (Mẫu Thiết Kế Thịnh Hành):
 Hiển thị thẻ hình ảnh thực tế từ `fetch_trending_product_design_samples` kèm đặc tả vật liệu in UV và lời khuyên thẩm mỹ Pinterest.
 
-#### 6. 📑 Bảng Ma Trận Cơ Hội Sản Phẩm 23 Cột:
+#### 7. 🗓️ Lộ Trình Mở Bán 30 Ngày (Interactive 30-Day Launch Roadmap Widget):
+```action_plan
+[
+  { "week": "Tuần 1: R&D & Thiết Kế Phôi", "desc": "Tạo 5 concept thiết kế, xuất file in UV 300 DPI và test render mockup.", "tag": "R&D Phase" },
+  { "week": "Tuần 2: Chuẩn Hóa Listing & SEO", "desc": "Đăng listing Etsy thử nghiệm, cấu hình bộ 13 SEO tags, giá launch và personalization.", "tag": "Listing Launch" },
+  { "week": "Tuần 3: Pinterest & Ads Thử Nghiệm", "desc": "Đăng 15 Pin visual assets theo gu thẩm mỹ Pinterest, set ngân sách Etsy Ads $5/ngày.", "tag": "Traffic Drive" },
+  { "week": "Tuần 4: Tối Ưu Chiến Dịch & Quy Mô", "desc": "Đo lường CR, mở rộng bundle combo quà tặng, tăng ngân sách ads đón đỉnh sóng mùa vụ.", "tag": "Scale Phase" }
+]
+```
+
+#### 8. 📑 Bảng Ma Trận Cơ Hội Sản Phẩm 23 Cột:
 Trình bày bảng Markdown 23 cột được tạo từ `record_product_opportunity_matrix` kèm trích dẫn verified inline.
 
-#### 7. 🏷️ Bộ 13 Thẻ Tag Etsy / Amazon SEO Tối Ưu (Interactive SEO Tags Copier Widget):
+#### 9. 🏷️ Bộ 13 Thẻ Tag Etsy / Amazon SEO Tối Ưu (Interactive SEO Tags Copier Widget):
 ```seo_tags
 [
   "[Tag thực tế 1 từ tool]",
@@ -116,7 +143,7 @@ Trình bày bảng Markdown 23 cột được tạo từ `record_product_opportu
 ]
 ```
 
-#### 8. 🔗 Bảng Trích Dẫn Dữ Liệu & Link Tải Báo Cáo:
+#### 10. 🔗 Bảng Trích Dẫn Dữ Liệu & Link Tải Báo Cáo:
 - Bảng trích dẫn nguồn dữ liệu (`[Etsy-1]`, `[Amazon-1]`, `[pytrends]`, `[Pinterest]`, `[Printway-Catalog]`).
 - Link tải dữ liệu CSV: `http://127.0.0.1:8001/reports/product_opportunities.csv`.
 
