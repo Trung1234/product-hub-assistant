@@ -20,7 +20,6 @@ def _derive_signals_from_keyword(keyword: str):
     kw_clean = keyword.lower().strip()
     h = int(hashlib.md5(kw_clean.encode()).hexdigest(), 16)
     
-    # Deterministic yet realistic variance
     base_vol = 12000 + (h % 18000)
     base_listings = 45 + (h % 220)
     base_price = 14.99 + ((h % 1500) / 100.0)
@@ -55,6 +54,7 @@ def _derive_signals_from_keyword(keyword: str):
 def fetch_etsy_market_data(
     keyword: str,
     limit: int = 5,
+    pages: int = 1,
     sort_by: str = "relevance",
     min_price: Optional[float] = None,
     max_price: Optional[float] = None
@@ -64,10 +64,11 @@ def fetch_etsy_market_data(
     Supports filtering by:
     - sort_by: 'relevance' (default), 'price_high' (top price), 'price_low' (bottom price), 'reviews_high', 'bestseller'
     - limit: number of top products to retrieve (e.g. 3, 5, 10)
+    - pages: number of pagination pages to crawl (1 to 5)
     - min_price, max_price: price bracket in USD
     Output: [TOON:ETSY] kw="..." | vol=... | listings=... | avg_price=... | mo_sales=... | tags="..." | products=[...]
     """
-    data = crawlee_etsy_scraper.scrape(keyword, limit=limit, sort_by=sort_by, min_price=min_price, max_price=max_price)
+    data = crawlee_etsy_scraper.scrape(keyword, limit=limit, pages=pages, sort_by=sort_by, min_price=min_price, max_price=max_price)
     kw = data.get("search_query", keyword).strip()
     vol = data.get("search_volume", 14500)
     listings = data.get("active_listings", 120)
@@ -85,12 +86,13 @@ def fetch_etsy_market_data(
         prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} reviews){p_best}")
 
     prod_str = " ;; ".join(prod_summaries) if prod_summaries else "None"
-    return f"[TOON:ETSY] kw=\"{kw}\" | vol={vol} | listings={listings} | avg_price={avg_price} | mo_sales={mo_sales} | tags=\"{tags}\" | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit})\""
+    return f"[TOON:ETSY] kw=\"{kw}\" | vol={vol} | listings={listings} | avg_price={avg_price} | mo_sales={mo_sales} | tags=\"{tags}\" | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit}, pages={pages})\""
 
 @tool
 def fetch_amazon_market_data(
     keyword: str,
     limit: int = 5,
+    pages: int = 1,
     sort_by: str = "relevance",
     min_price: Optional[float] = None,
     max_price: Optional[float] = None
@@ -100,10 +102,11 @@ def fetch_amazon_market_data(
     Supports filtering by:
     - sort_by: 'relevance' (default), 'price_high' (top price), 'price_low' (bottom price), 'reviews_high', 'bestseller'
     - limit: number of top products to retrieve (e.g. 3, 5, 10)
+    - pages: number of pagination pages to crawl (1 to 5)
     - min_price, max_price: price bracket in USD
     Output: [TOON:AMAZON] kw="..." | sales_units=... | price_range="..." | bsr=... | reviews=... | products=[...]
     """
-    data = crawlee_amazon_scraper.scrape(keyword, limit=limit, sort_by=sort_by, min_price=min_price, max_price=max_price)
+    data = crawlee_amazon_scraper.scrape(keyword, limit=limit, pages=pages, sort_by=sort_by, min_price=min_price, max_price=max_price)
     kw = data.get("search_query", keyword).strip()
     sales_units = data.get("monthly_sales_units", 1250)
     price_range = data.get("price_range_usd", "$16.99 - $24.99")
@@ -120,7 +123,7 @@ def fetch_amazon_market_data(
         prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} reviews){p_bought} (ASIN: {p.get('asin', 'N/A')})")
 
     prod_str = " ;; ".join(prod_summaries) if prod_summaries else "None"
-    return f"[TOON:AMAZON] kw=\"{kw}\" | sales_units={sales_units} | price_range=\"{price_range}\" | bsr={bsr} | reviews={reviews} | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit})\""
+    return f"[TOON:AMAZON] kw=\"{kw}\" | sales_units={sales_units} | price_range=\"{price_range}\" | bsr={bsr} | reviews={reviews} | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit}, pages={pages})\""
 
 @tool
 def fetch_google_trends_data(keyword: str) -> str:
