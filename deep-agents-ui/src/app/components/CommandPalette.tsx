@@ -25,31 +25,37 @@ interface CommandPaletteProps {
 
 const COMMAND_ITEMS = [
   {
-    category: "Gợi Ý Nghiên Cứu R&D POD",
+    category: "Gợi Ý R&D Theo Danh Mục Xưởng Printway (500+ SKUs)",
     items: [
       {
         icon: Sparkles,
-        title: "Holiday 2026: Baby First Christmas Ornament",
-        subtitle: "Phân tích nhu cầu tìm kiếm, đối thủ Etsy & Amazon và mẫu thiết kế",
-        prompt: "Nghiên cứu xu hướng và cơ hội sản phẩm 'Baby First Christmas Ornament 2026 Custom Acrylic Keepsake' trên Etsy, Amazon, Google Trends và Pinterest."
+        title: "Acrylic #1: Suncatcher & 2-Layer Ornament",
+        subtitle: "Mica Đài Loan 3mm kết hợp gỗ cắt CNC Laser & In UV 4 lớp",
+        prompt: "Phân tích tiềm năng và xu hướng ngách 'Suncatcher Acrylic Ornament Personalized Family Keepsake' theo năng lực xưởng Printway trên Etsy và Amazon."
       },
       {
         icon: Sparkles,
-        title: "Father's Day: Grandpa Acrylic Desk Plaque",
-        subtitle: "Đánh giá biên lợi nhuận đế gỗ LED và xu hướng thị trường US",
-        prompt: "Phân tích tiềm năng ngách 'Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light' cho thị trường US."
+        title: "Wood Decor: Layered Desk Plaque With LED Base",
+        subtitle: "Gỗ Plywood thân thiện môi trường, khắc tên và đế đèn LED",
+        prompt: "Đánh giá cơ hội sản phẩm 'Personalized Grandpa Gift Custom Shape Acrylic Plaque With Wood Light Base' cho thị trường US."
       },
       {
         icon: Sparkles,
-        title: "Mother's Day: Embroidered Mama Sweatshirt",
-        subtitle: "Kiểm tra dung lượng thị trường áo thêu tên con trên cổ tay",
-        prompt: "Đánh giá cơ hội thị trường cho 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Phân tích nhu cầu tìm kiếm, cạnh tranh và gu thẩm mỹ Pinterest."
+        title: "Apparel: Custom Embroidered Mama Sweatshirt",
+        subtitle: "Áo nỉ thêu tên con trên cổ tay, DTG in sắc nét",
+        prompt: "Nghiên cứu thị trường 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Phân tích nhu cầu tìm kiếm, cạnh tranh và gu thẩm mỹ Pinterest."
       },
       {
         icon: Sparkles,
-        title: "Everyday Drinkware: Teacher Tumbler 20oz",
-        subtitle: "Phân tích vận tốc bán hàng Amazon BSR và giá vốn xưởng Printway",
-        prompt: "Kiểm tra tiềm năng sản phẩm 'Custom Stainless Steel Tumbler 20oz Teacher Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon và biên lợi nhuận xưởng Printway."
+        title: "Drinkware: Stainless Steel 40oz Handle Tumbler",
+        subtitle: "Bình giữ nhiệt 40oz có quai cầm & ống hút, in UV 360 độ",
+        prompt: "Kiểm tra tiềm năng sản phẩm 'Custom 40oz Tumbler with Handle Nurse Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon BSR và biên lợi nhuận xưởng Printway."
+      },
+      {
+        icon: Sparkles,
+        title: "Auto Decor: Acrylic Car Rearview Mirror Charm",
+        subtitle: "Mặt dây chuyền mica treo gương xe ô tô cá nhân hóa",
+        prompt: "Phân tích cơ hội ngách 'Personalized Dog Photo Acrylic Car Hanging Ornament' trên Etsy và TikTok Shop US."
       }
     ]
   },

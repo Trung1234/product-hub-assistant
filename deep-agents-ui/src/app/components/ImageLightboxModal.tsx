@@ -116,13 +116,21 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
               <div className="space-y-2 rounded-xl border border-slate-800/80 bg-[#080B21]/60 p-3 text-xs">
                 <div className="flex items-center justify-between text-slate-300">
                   <span className="text-slate-400">Chất liệu:</span>
-                  <span className="font-semibold text-white">Mica quang học 3mm / Gỗ sồi</span>
+                  <span className="font-semibold text-white">Mica Đài Loan 3mm / Gỗ Plywood</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
                   <span className="text-slate-400">Công nghệ in:</span>
                   <span className="font-semibold text-[#00D2FF]">In UV phẳng 4 lớp + Phủ bóng</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
+                  <span className="text-slate-400">Thời gian sản xuất:</span>
+                  <span className="font-semibold text-slate-200">1 – 3 ngày làm việc</span>
+                </div>
+                <div className="flex items-center justify-between text-slate-300">
+                  <span className="text-slate-400">Vận chuyển US:</span>
+                  <span className="font-semibold text-slate-200">5 – 9 ngày (USPS / DHL)</span>
+                </div>
+                <div className="flex items-center justify-between text-slate-300 pt-1 border-t border-slate-800/60">
                   <span className="text-slate-400">Giá vốn Printway:</span>
                   <span className="font-bold text-[#00FF88]">$2.20 - $4.50</span>
                 </div>
@@ -149,7 +157,7 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
               </div>
             </div>
 
-            <div className="mt-5 pt-3 border-t border-slate-800">
+            <div className="mt-5 pt-3 border-t border-slate-800 space-y-2">
               <Button
                 type="button"
                 onClick={handleDownload}
@@ -158,6 +166,15 @@ export const ImageLightboxModal: React.FC<ImageLightboxModalProps> = ({
                 <Download className="mr-1.5 h-3.5 w-3.5" />
                 Tải Xuống Ảnh Mẫu Mockup
               </Button>
+              <a
+                href="https://printway.io/products"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 bg-[#121A45] py-2 text-xs font-semibold text-[#00D2FF] hover:border-[#00D2FF] hover:text-white transition-all cursor-pointer text-center"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                Khám Phá 500+ SKUs Tại Printway.io
+              </a>
             </div>
           </div>
         </div>
