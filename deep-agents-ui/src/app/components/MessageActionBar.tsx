@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { EmailReportModal } from "@/app/components/EmailReportModal";
+import { toast } from "@/components/ui/sonner";
 
 interface MessageActionBarProps {
   content: string;
@@ -41,9 +42,15 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
     try {
       await navigator.clipboard.writeText(content);
       setCopied(true);
+      toast.success("Đã sao chép báo cáo", {
+        description: "Nội dung Markdown đã được lưu vào khay nhớ tạm.",
+      });
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy text:", err);
+      toast.error("Không thể sao chép", {
+        description: "Vui lòng cấp quyền truy cập clipboard cho trình duyệt.",
+      });
     }
   };
 
@@ -55,6 +62,9 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success("Đang tải tệp CSV", {
+      description: "Bảng dữ liệu 23 cột R&D đang được tải về máy tính.",
+    });
   };
 
   const handleDownloadPdf = () => {
@@ -65,6 +75,9 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    toast.success("Đang tải báo cáo PDF", {
+      description: "Bản báo cáo chính thức PDF đang được tải về.",
+    });
   };
 
   const handlePrint = () => {
@@ -78,10 +91,13 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
       if (typeof window !== "undefined") {
         await navigator.clipboard.writeText(window.location.href);
         setShared(true);
+        toast.info("Đã sao chép liên kết", {
+          description: "Link phiên nghiên cứu đã được lưu vào khay nhớ tạm.",
+        });
         setTimeout(() => setShared(false), 2000);
       }
     } catch {
-      // ignore
+      toast.error("Không thể sao chép liên kết");
     }
   };
 

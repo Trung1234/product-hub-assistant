@@ -197,76 +197,36 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* NAVIGATION TABS: CHAT COPILOT & SCHEDULE MANAGEMENT */}
+        {/* NAVIGATION TABS: SCHEDULE MANAGEMENT & AUTOMATION */}
         <div className="px-3 pt-2 pb-1 shrink-0 flex flex-col gap-1">
           {(!collapsed || mobileOpen) ? (
-            <>
-              {/* Tab 1: Chat Copilot */}
-              <button
-                type="button"
-                onClick={() => onChangeView?.("chat")}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
-                  currentView === "chat" || !currentView
-                    ? "bg-[#00FF88]/15 text-[#00FF88] border border-[#00FF88]/30 shadow-[0_0_12px_rgba(0,255,136,0.15)]"
-                    : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
-                )}
-              >
-                <div className="flex items-center gap-2.5">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>Nghiên Cứu R&D</span>
-                </div>
-              </button>
-
-              {/* Tab 2: Schedule Management */}
-              <button
-                type="button"
-                onClick={() => onChangeView?.("schedules")}
-                className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
-                  currentView === "schedules"
-                    ? "bg-[#00D4FF]/15 text-[#00D4FF] border border-[#00D4FF]/30 shadow-[0_0_12px_rgba(0,212,255,0.15)]"
-                    : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
-                )}
-              >
-                <div className="flex items-center gap-2.5">
-                  <Clock className="h-4 w-4" />
-                  <span>Lịch Quét & Email</span>
-                </div>
-                {activeScheduleCount !== undefined && activeScheduleCount > 0 && (
-                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#00D4FF] px-1 text-[10px] font-black text-[#080B21]">
-                    {activeScheduleCount}
-                  </span>
-                )}
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={() => onChangeView?.(currentView === "schedules" ? "chat" : "schedules")}
+              className={cn(
+                "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
+                currentView === "schedules"
+                  ? "bg-[#00D4FF]/15 text-[#00D4FF] border border-[#00D4FF]/30 shadow-[0_0_12px_rgba(0,212,255,0.15)]"
+                  : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
+              )}
+            >
+              <div className="flex items-center gap-2.5">
+                <Clock className="h-4 w-4" />
+                <span>Lịch Quét & Email</span>
+              </div>
+              {activeScheduleCount !== undefined && activeScheduleCount > 0 && (
+                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#00D4FF] px-1 text-[10px] font-black text-[#080B21]">
+                  {activeScheduleCount}
+                </span>
+              )}
+            </button>
           ) : (
             <div className="flex flex-col gap-2 items-center">
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
                     type="button"
-                    onClick={() => onChangeView?.("chat")}
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-xl transition-colors cursor-pointer",
-                      currentView === "chat" || !currentView
-                        ? "bg-[#00FF88]/20 text-[#00FF88] border border-[#00FF88]/40"
-                        : "text-slate-400 hover:bg-[#121A45] hover:text-white"
-                    )}
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                  Nghiên Cứu R&D (Copilot)
-                </TooltipContent>
-              </Tooltip>
-
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    onClick={() => onChangeView?.("schedules")}
+                    onClick={() => onChangeView?.(currentView === "schedules" ? "chat" : "schedules")}
                     className={cn(
                       "relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors cursor-pointer",
                       currentView === "schedules"

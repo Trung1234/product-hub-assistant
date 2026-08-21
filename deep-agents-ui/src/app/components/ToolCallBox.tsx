@@ -25,6 +25,7 @@ import { ToolCall, ActionRequest, ReviewConfig } from "@/app/types/types";
 import { cn } from "@/lib/utils";
 import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
 import { ToolApprovalInterrupt } from "@/app/components/ToolApprovalInterrupt";
+import { toast } from "@/components/ui/sonner";
 
 interface ToolCallBoxProps {
   toolCall: ToolCall;
@@ -201,6 +202,9 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
       };
       navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
       setCopied(true);
+      toast.success("Đã sao chép dữ liệu JSON", {
+        description: `Thông tin công cụ ${name} đã được lưu vào khay nhớ tạm.`,
+      });
       setTimeout(() => setCopied(false), 2000);
     }, [name, args, result]);
 
