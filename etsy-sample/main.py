@@ -1310,36 +1310,92 @@ def build_output(
     final_url: Optional[str],
 ) -> Dict[str, Any]:
     completed_at = now_iso()
-    return {
-        "schema_version": SCHEMA_VERSION,
-        "run": {
-            "run_id": dt.datetime.now().astimezone().strftime("%Y%m%dT%H%M%S") + "-" + slugify(keyword),
-            "source": "etsy_search_page",
-            "mode": mode,
-            "keyword": keyword,
-            "search_url": search_url,
-            "final_url": final_url,
-            "started_at": started_at,
-            "completed_at": completed_at,
-            "duration_ms": int((time.monotonic() - started_monotonic) * 1000),
-            "status": status,
-            "workers": [
-                {
-                    "profile_name": profile_name,
-                    "profile_id": profile_id,
-                    "status": status,
-                }
-            ]
-            if profile_name or profile_id
-            else [],
-            "counts": counts,
-            "collection": collection,
-            "filters": filters,
-            "warnings": warnings,
-        },
-        "listings": listings,
-        "errors": errors,
+    run_counts = {
+        key: counts.get(key)
+        for key in (
+            "organic_cards_found",
+            "unique_listings",
+            "etsy_records_complete",
+            "heyetsy_records_complete",
+        )
     }
+    return prune_empty(
+        {
+            "run": {
+                "source": "etsy_search_page",
+                "keyword": keyword,
+                "completed_at": completed_at,
+                "status": status,
+                "counts": run_counts,
+            },
+            "listings": [strip_listing_for_agent(listing) for listing in listings],
+        }
+    )
+
+
+def prune_empty(value: Any) -> Any:
+    """Remove null and empty containers while preserving meaningful false/zero values."""
+    if isinstance(value, dict):
+        compact = {key: prune_empty(item) for key, item in value.items()}
+        return {
+            key: item
+            for key, item in compact.items()
+            if item is not None and item != "" and item != [] and item != {}
+        }
+    if isinstance(value, list):
+        compact = [prune_empty(item) for item in value]
+        return [item for item in compact if item is not None and item != "" and item != [] and item != {}]
+    return value
+
+
+def strip_listing_for_agent(listing: Dict[str, Any]) -> Dict[str, Any]:
+    etsy = listing.get("etsy", {})
+    price = etsy.get("price", {})
+    heyetsy = listing.get("heyetsy", {})
+    metrics = heyetsy.get("metrics", {})
+    estimated_revenue = metrics.get("estimated_revenue") or {}
+    created = heyetsy.get("created") or {}
+    return prune_empty(
+        {
+            "rank": listing.get("rank"),
+            "listing_id": listing.get("listing_id"),
+            "etsy": {
+                "title": etsy.get("title"),
+                "canonical_url": etsy.get("canonical_url"),
+                "shop_name": etsy.get("shop_name"),
+                "rating": etsy.get("rating"),
+                "review_count": etsy.get("review_count"),
+                "badges": etsy.get("badges"),
+                "shipping_text": etsy.get("shipping_text"),
+                "price": {
+                    "sale": {"value": (price.get("sale") or {}).get("value")},
+                    "original": {"value": (price.get("original") or {}).get("value")},
+                    "currency": price.get("currency"),
+                    "discount_percent": price.get("discount_percent"),
+                },
+            },
+            "heyetsy": {
+                "metrics": {
+                    "total_views": metrics.get("total_views"),
+                    "average_daily_views": metrics.get("average_daily_views"),
+                    "views_24h": metrics.get("views_24h"),
+                    "total_sold": metrics.get("total_sold"),
+                    "estimated_revenue": {
+                        "value": estimated_revenue.get("value"),
+                        "currency": estimated_revenue.get("currency"),
+                        "estimated": estimated_revenue.get("estimated"),
+                    },
+                    "sold_24h": metrics.get("sold_24h"),
+                    "favorites": metrics.get("favorites"),
+                    "favorite_rate_percent": metrics.get("favorite_rate_percent"),
+                    "conversion_rate_percent": metrics.get("conversion_rate_percent"),
+                },
+                "created": {"date": created.get("date")},
+                "tags": heyetsy.get("tags"),
+                "categories": heyetsy.get("categories"),
+            },
+        }
+    )
 
 
 def write_json_atomic(path: Path, payload: Dict[str, Any]) -> None:
@@ -1347,7 +1403,7 @@ def write_json_atomic(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     with temporary.open("w", encoding="utf-8") as handle:
-        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
         handle.write("\n")
         handle.flush()
         os.fsync(handle.fileno())

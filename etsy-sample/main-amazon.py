@@ -1384,31 +1384,93 @@ def build_output(
     products: List[Dict[str, Any]],
     errors: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
-    return {
-        "schema_version": SCHEMA_VERSION,
-        "run": {
-            "run_id": dt.datetime.now().astimezone().strftime("%Y%m%dT%H%M%S") + "-" + slugify(keyword),
-            "source": "amazon_search_page",
-            "marketplace": "amazon.com",
-            "mode": mode,
-            "keyword": keyword,
-            "search_url": search_url,
-            "final_url": final_url,
-            "started_at": started_at,
-            "completed_at": now_iso(),
-            "duration_ms": int((time.monotonic() - started_monotonic) * 1000),
-            "status": status,
-            "workers": [
-                {"profile_name": profile_name, "profile_id": profile_id, "status": status}
-            ] if profile_name or profile_id else [],
-            "counts": counts,
-            "collection": collection,
-            "filters": filters,
-            "warnings": warnings,
-        },
-        "products": products,
-        "errors": errors,
+    run_counts = {
+        key: counts.get(key)
+        for key in (
+            "unique_asins",
+            "organic_cards",
+            "sponsored_cards",
+            "prices_available",
+            "bought_past_month_available",
+        )
     }
+    return prune_empty(
+        {
+            "run": {
+                "source": "amazon_search_page",
+                "marketplace": "amazon.com",
+                "keyword": keyword,
+                "completed_at": now_iso(),
+                "status": status,
+                "counts": run_counts,
+                "collection": {"result_summary": collection.get("result_summary")},
+            },
+            "products": [strip_product_for_agent(product) for product in products],
+        }
+    )
+
+
+def prune_empty(value: Any) -> Any:
+    """Remove null and empty containers while preserving meaningful false/zero values."""
+    if isinstance(value, dict):
+        compact = {key: prune_empty(item) for key, item in value.items()}
+        return {
+            key: item
+            for key, item in compact.items()
+            if item is not None and item != "" and item != [] and item != {}
+        }
+    if isinstance(value, list):
+        compact = [prune_empty(item) for item in value]
+        return [item for item in compact if item is not None and item != "" and item != [] and item != {}]
+    return value
+
+
+def strip_product_for_agent(product: Dict[str, Any]) -> Dict[str, Any]:
+    amazon = product.get("amazon", {})
+    rating = amazon.get("rating") or {}
+    bought = amazon.get("bought_past_month") or {}
+    price = amazon.get("price", {})
+    current_price = price.get("current") or {}
+    list_price = price.get("list") or {}
+    delivery = amazon.get("delivery") or {}
+    h10 = product.get("h10_overlay", {})
+    return prune_empty(
+        {
+            "asin": product.get("asin"),
+            "unique_rank": product.get("unique_rank"),
+            "is_sponsored": product.get("is_sponsored"),
+            "amazon": {
+                "title": amazon.get("title"),
+                "canonical_url": amazon.get("canonical_url"),
+                "rating": {"value": rating.get("value")},
+                "review_count": amazon.get("review_count"),
+                "bought_past_month": {
+                    "lower_bound": bought.get("lower_bound"),
+                    "window": bought.get("window"),
+                    "rounded": bought.get("rounded"),
+                },
+                "price": {
+                    "current": {
+                        "value": current_price.get("value"),
+                        "currency": current_price.get("currency"),
+                    },
+                    "list": {"value": list_price.get("value")},
+                    "discount_percent": price.get("discount_percent"),
+                },
+                "badges": amazon.get("badges"),
+                "delivery": {"free": delivery.get("free")},
+            },
+            "h10_overlay": {
+                "bsr": [
+                    {"category": item.get("category"), "rank": item.get("rank")}
+                    for item in h10.get("bsr", [])
+                ],
+                "sellers": {"value": (h10.get("sellers") or {}).get("value")},
+                "variations": {"value": (h10.get("variations") or {}).get("value")},
+                "fulfillment": h10.get("fulfillment"),
+            },
+        }
+    )
 
 
 def write_json_atomic(path: Path, payload: Dict[str, Any]) -> None:
@@ -1416,7 +1478,7 @@ def write_json_atomic(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
     with temporary.open("w", encoding="utf-8") as handle:
-        json.dump(payload, handle, ensure_ascii=False, indent=2)
+        json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
         handle.write("\n")
         handle.flush()
         os.fsync(handle.fileno())
