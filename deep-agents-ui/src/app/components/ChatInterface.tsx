@@ -22,6 +22,9 @@ import {
   BrainCircuit,
   ChevronDown,
   ChevronUp,
+  HelpCircle,
+  Send,
+  MessageCircleQuestion
 } from "lucide-react";
 import { ChatMessage } from "@/app/components/ChatMessage";
 import type {
@@ -274,6 +277,53 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       reviewConfigs.map((rc: ReviewConfig) => [rc.actionName, rc])
     );
   }, [interrupt]);
+
+  // Extract Clarification / Handoff Question and Options when interrupt occurs
+  const [clarificationInput, setClarificationInput] = useState("");
+  const clarificationData = useMemo(() => {
+    if (!interrupt && (!actionRequestsMap || actionRequestsMap.size === 0)) return null;
+
+    let question = "AI Copilot cần làm rõ thông tin từ bạn để tiếp tục nghiên cứu:";
+    let options: string[] = [];
+
+    if (interrupt?.value) {
+      const val = interrupt.value as any;
+      if (typeof val === "string") {
+        question = val;
+      } else if (val?.question) {
+        question = val.question;
+        if (Array.isArray(val.options)) options = val.options;
+      } else if (val?.action_requests && Array.isArray(val.action_requests)) {
+        const req = val.action_requests[0];
+        if (req?.args?.question) question = req.args.question;
+        if (Array.isArray(req?.args?.options)) options = req.args.options;
+      }
+    }
+
+    const askUserReq = actionRequestsMap?.get("ask_user_clarification");
+    if (askUserReq?.args) {
+      const args = askUserReq.args as any;
+      if (args.question) question = args.question;
+      if (Array.isArray(args.options)) options = args.options;
+    }
+
+    return { question, options };
+  }, [interrupt, actionRequestsMap]);
+
+  const handleClarificationSubmit = useCallback(
+    (responseVal: string) => {
+      const clean = responseVal.trim();
+      if (!clean) return;
+
+      if (resumeInterrupt) {
+        resumeInterrupt(clean);
+      } else {
+        sendMessage(clean);
+      }
+      setClarificationInput("");
+    },
+    [resumeInterrupt, sendMessage]
+  );
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden bg-[#080B21]">
@@ -528,6 +578,73 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* PINNED CLARIFICATION / HANDOFF TO USER DRAWER RIGHT ABOVE PROMPT INPUT */}
+          {clarificationData && (
+            <div className="border-b border-amber-500/30 bg-[#0E1538] p-4 shadow-[0_0_20px_rgba(245,158,11,0.15)] animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-tr from-amber-400 to-orange-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                    <HelpCircle className="h-3.5 w-3.5 text-[#080B21]" />
+                  </div>
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-amber-400">
+                    AI Copilot Cần Làm Rõ Thông Tin (Handoff To User)
+                  </span>
+                </div>
+                <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40 animate-pulse">
+                  Chờ phản hồi của bạn
+                </span>
+              </div>
+
+              <p className="text-sm font-medium text-slate-100 mb-3 leading-relaxed">
+                {clarificationData.question}
+              </p>
+
+              {/* Quick Select Option Pills if available */}
+              {clarificationData.options.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {clarificationData.options.map((opt, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleClarificationSubmit(opt)}
+                      className="flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-semibold text-amber-300 hover:bg-amber-500 hover:text-[#080B21] transition-all shadow-[0_0_10px_rgba(245,158,11,0.1)] cursor-pointer"
+                    >
+                      <span>{opt}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Dedicated Clarification Reply Input & Send Button */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={clarificationInput}
+                  onChange={(e) => setClarificationInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleClarificationSubmit(clarificationInput);
+                    }
+                  }}
+                  placeholder="Nhập câu trả lời hoặc làm rõ yêu cầu của bạn..."
+                  className="flex-1 rounded-xl border border-amber-500/30 bg-[#080B21] px-3.5 py-2 text-xs text-white placeholder:text-slate-500 focus:border-amber-400 focus:outline-none shadow-inner"
+                  autoFocus
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => handleClarificationSubmit(clarificationInput)}
+                  disabled={!clarificationInput.trim()}
+                  className="rounded-xl border border-amber-400 bg-amber-400 px-4 py-2 text-xs font-bold text-[#080B21] hover:bg-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)] transition-all"
+                >
+                  <Send className="mr-1.5 h-3.5 w-3.5" />
+                  Gửi Phản Hồi
+                </Button>
+              </div>
             </div>
           )}
 
