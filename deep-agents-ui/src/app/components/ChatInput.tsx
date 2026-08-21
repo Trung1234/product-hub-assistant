@@ -27,7 +27,7 @@ import { FilePreviewModal, UploadedFileItem } from "@/app/components/FilePreview
 interface ChatInputProps {
   isLoading: boolean;
   submitDisabled: boolean;
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string | any[]) => void;
   onStopStream: () => void;
   todos: TodoItem[];
   files: Record<string, string>;
@@ -42,17 +42,6 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
-
-const getStatusIcon = (status: TodoItem["status"], className?: string) => {
-  switch (status) {
-    case "completed":
-      return <CheckCircle size={15} className={cn("text-[#00FF88]", className)} />;
-    case "in_progress":
-      return <Clock size={15} className={cn("text-amber-400 animate-spin", className)} />;
-    default:
-      return <Circle size={15} className={cn("text-slate-500", className)} />;
-  }
-};
 
 export const ChatInput = React.memo<ChatInputProps>(({
   isLoading,
@@ -71,6 +60,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const [metaOpen, setMetaOpen] = useState<"tasks" | "files" | null>(null);
   const [attachments, setAttachments] = useState<UploadedFileItem[]>([]);
   const [previewingFile, setPreviewingFile] = useState<UploadedFileItem | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tasksContainerRef = useRef<HTMLDivElement | null>(null);
@@ -85,14 +75,28 @@ export const ChatInput = React.memo<ChatInputProps>(({
     completed: todos.filter((t) => t.status === "completed"),
   }), [todos]);
 
-  // Handle file uploading from file picker
+  // Handle file uploading from file picker, drag-and-drop, or paste
   const handleFilesAdded = useCallback((fileList: FileList | File[]) => {
     Array.from(fileList).forEach((file) => {
       const isTextOrCsv = /\.(txt|csv|json|md|log|tsv)$/i.test(file.name);
       const isImage = file.type.startsWith("image/");
 
-      const reader = new FileReader();
-      if (isTextOrCsv) {
+      if (isImage) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target?.result as string;
+          const newItem: UploadedFileItem = {
+            id: `file-${Date.now()}-${Math.random()}`,
+            name: file.name,
+            size: file.size,
+            type: file.type || "image/png",
+            url: dataUrl,
+          };
+          setAttachments((prev) => [...prev, newItem]);
+        };
+        reader.readAsDataURL(file);
+      } else if (isTextOrCsv) {
+        const reader = new FileReader();
         reader.onload = (e) => {
           const text = e.target?.result as string;
           const newItem: UploadedFileItem = {
@@ -107,13 +111,14 @@ export const ChatInput = React.memo<ChatInputProps>(({
         };
         reader.readAsText(file);
       } else {
+        const reader = new FileReader();
         reader.onload = (e) => {
           const dataUrl = e.target?.result as string;
           const newItem: UploadedFileItem = {
             id: `file-${Date.now()}-${Math.random()}`,
             name: file.name,
             size: file.size,
-            type: file.type || (isImage ? "image/png" : "application/octet-stream"),
+            type: file.type || "application/octet-stream",
             url: dataUrl || URL.createObjectURL(file),
           };
           setAttachments((prev) => [...prev, newItem]);
@@ -138,6 +143,28 @@ export const ChatInput = React.memo<ChatInputProps>(({
     }
   }, [handleFilesAdded]);
 
+  // Support Drag and Drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFilesAdded(e.dataTransfer.files);
+    }
+  };
+
   const handleSubmit = useCallback(
     (e?: FormEvent) => {
       if (e) {
@@ -146,17 +173,21 @@ export const ChatInput = React.memo<ChatInputProps>(({
       const messageText = input.trim();
       if ((!messageText && attachments.length === 0) || isLoading || submitDisabled) return;
 
-      let fullMessage = messageText;
+      const imageAttachments = attachments.filter(
+        (a) => a.type?.startsWith("image/") || a.url?.startsWith("data:image/")
+      );
+      const docAttachments = attachments.filter(
+        (a) => !imageAttachments.includes(a)
+      );
 
-      // If attachments exist, format context for LLM
-      if (attachments.length > 0) {
-        const fileNames = attachments.map((a) => a.name).join(", ");
-        const textSnippets = attachments
+      let textContent = messageText;
+      if (docAttachments.length > 0) {
+        const textSnippets = docAttachments
           .filter((a) => a.textPreview)
-          .map((a) => `\n\n--- Dữ Liệu Tệp [${a.name}] ---\n${a.textPreview?.slice(0, 3000)}`)
+          .map((a) => `\n\n--- Dữ Liệu Tệp [${a.name}] ---\n${a.textPreview?.slice(0, 5000)}`)
           .join("");
-
-        fullMessage = `[Tệp đính kèm: ${fileNames}]\n${messageText || "Hãy phân tích tệp đính kèm này."}${textSnippets}`;
+        const docNames = docAttachments.map((a) => a.name).join(", ");
+        textContent = `[Tệp tài liệu: ${docNames}]\n${messageText || "Hãy phân tích tài liệu đính kèm này."}${textSnippets}`;
       }
 
       setInput("");
@@ -164,7 +195,32 @@ export const ChatInput = React.memo<ChatInputProps>(({
       if (textareaRef.current) {
         textareaRef.current.value = "";
       }
-      onSendMessage(fullMessage);
+
+      // If images exist: send true multimodal payload to LLM
+      if (imageAttachments.length > 0) {
+        const promptText = textContent || "Hãy xem kỹ hình ảnh sản phẩm đính kèm này và phân tích chi tiết: tên sản phẩm, chất liệu xưởng Printway, tiềm năng bán trên Etsy/Amazon/TikTok Shop, giá bán đề xuất và biên lợi nhuận.";
+        const contentArray: any[] = [
+          {
+            type: "text",
+            text: promptText,
+          },
+        ];
+
+        imageAttachments.forEach((img) => {
+          if (img.url) {
+            contentArray.push({
+              type: "image_url",
+              image_url: {
+                url: img.url,
+              },
+            });
+          }
+        });
+
+        onSendMessage(contentArray);
+      } else {
+        onSendMessage(textContent);
+      }
     },
     [input, attachments, isLoading, onSendMessage, submitDisabled]
   );
@@ -210,11 +266,27 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
       <div className="flex-shrink-0 bg-transparent px-4 pb-5 pt-2">
         <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
           className={cn(
-            "mx-auto flex flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md",
-            "w-full max-w-[1024px] transition-all duration-200 ease-in-out focus-within:border-[#00FF88] focus-within:shadow-[0_0_25px_rgba(0,255,136,0.3)]"
+            "mx-auto flex flex-shrink-0 flex-col overflow-hidden rounded-2xl border bg-[#0E1538]/90 shadow-[0_0_20px_rgba(0,255,136,0.15)] backdrop-blur-md",
+            isDragging
+              ? "border-[#00FF88] shadow-[0_0_35px_rgba(0,255,136,0.4)] bg-[#121A45]"
+              : "border-[#00FF88]/30 focus-within:border-[#00FF88] focus-within:shadow-[0_0_25px_rgba(0,255,136,0.3)]",
+            "w-full max-w-[1024px] transition-all duration-200 ease-in-out relative"
           )}
         >
+          {/* Drag Overlay Hint */}
+          {isDragging && (
+            <div className="absolute inset-0 z-30 flex items-center justify-center bg-[#080B21]/90 backdrop-blur-sm pointer-events-none">
+              <div className="flex items-center gap-2 text-sm font-bold text-[#00FF88] animate-bounce">
+                <Paperclip className="h-5 w-5" />
+                <span>Thả ảnh hoặc tài liệu vào đây để đính kèm</span>
+              </div>
+            </div>
+          )}
+
           {/* Tasks & Files Trigger Bar */}
           {(hasTasks || hasFiles) && (
             <div className="flex flex-col border-b border-[#00FF88]/20 bg-[#0A0E2A]">
@@ -302,40 +374,23 @@ export const ChatInput = React.memo<ChatInputProps>(({
                     className="max-h-60 overflow-y-auto px-4 py-3 text-xs"
                   >
                     {metaOpen === "tasks" && (
-                      <div className="space-y-3">
-                        {Object.entries(groupedTodos)
-                          .filter(([_, tList]) => tList.length > 0)
-                          .map(([status, tList]) => (
-                            <div key={status} className="space-y-1.5">
-                              <h5 className="text-[10px] font-bold uppercase tracking-wider text-[#00FF88]">
-                                {status === "in_progress"
-                                  ? "⚡ Đang thực thi"
-                                  : status === "completed"
-                                  ? "✅ Đã hoàn thành"
-                                  : "⏳ Chờ xử lý"}
-                              </h5>
-                              <div className="space-y-1 rounded-lg border border-[#00FF88]/15 bg-[#080B21]/70 p-2">
-                                {tList.map((todo, idx) => (
-                                  <div
-                                    key={idx}
-                                    className="flex items-start gap-2 text-slate-200"
-                                  >
-                                    <div className="mt-0.5">
-                                      {getStatusIcon(todo.status)}
-                                    </div>
-                                    <span className="leading-relaxed">
-                                      {todo.content}
-                                    </span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
+                      <div className="space-y-2">
+                        {todos.map((todo, idx) => (
+                          <div
+                            key={idx}
+                            className="flex items-start gap-2.5 rounded-lg bg-[#080B21]/60 p-2 border border-slate-800"
+                          >
+                            <span className="mt-0.5">{getStatusIcon(todo.status)}</span>
+                            <span className="text-slate-200 leading-relaxed">
+                              {todo.description}
+                            </span>
+                          </div>
+                        ))}
                       </div>
                     )}
 
                     {metaOpen === "files" && (
-                      <div className="py-1">
+                      <div className="max-h-48 overflow-y-auto">
                         <FilesPopover
                           files={files}
                           setFiles={setFiles}
@@ -420,7 +475,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
           {attachments.length > 0 && (
             <div className="flex flex-wrap items-center gap-2 px-4 pt-3 pb-2 border-b border-[#00FF88]/10 bg-[#0A0E2A]/50">
               {attachments.map((file) => {
-                const isImg = file.type.startsWith("image/");
+                const isImg = file.type?.startsWith("image/") || file.url?.startsWith("data:image/");
                 return (
                   <div
                     key={file.id}
@@ -432,7 +487,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                       <img
                         src={file.url}
                         alt={file.name}
-                        className="h-7 w-7 rounded-lg object-cover border border-[#00FF88]/30"
+                        className="h-7 w-7 rounded-lg object-cover border border-[#00FF88]/30 shadow-sm"
                       />
                     ) : (
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#080B21] border border-slate-800 text-[#00FF88]">
@@ -453,7 +508,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                         e.stopPropagation();
                         setAttachments((prev) => prev.filter((a) => a.id !== file.id));
                       }}
-                      className="rounded-full p-0.5 text-slate-400 hover:bg-slate-800 hover:text-rose-400 transition-colors"
+                      className="rounded-full p-0.5 text-slate-400 hover:bg-slate-800 hover:text-rose-400 transition-colors cursor-pointer"
                       title="Gỡ tệp"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -475,13 +530,13 @@ export const ChatInput = React.memo<ChatInputProps>(({
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               onPaste={handlePaste}
-              placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc đính kèm ảnh/tài liệu để phân tích..."}
+              placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc kéo thả/dán ảnh & tài liệu để phân tích..."}
               className="font-inherit field-sizing-content flex-1 resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-relaxed text-white outline-none placeholder:text-[#64748B]"
               rows={1}
             />
             <div className="flex justify-between items-center gap-2 px-4 py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10">
               {/* Attachment Button */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -491,8 +546,9 @@ export const ChatInput = React.memo<ChatInputProps>(({
                   <Paperclip className="h-4 w-4" />
                 </button>
                 {attachments.length > 0 && (
-                  <span className="text-[11px] text-[#00FF88] font-semibold">
-                    {attachments.length} tệp đính kèm
+                  <span className="text-[11px] text-[#00FF88] font-semibold flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    {attachments.length} tệp sẵn sàng gửi
                   </span>
                 )}
               </div>

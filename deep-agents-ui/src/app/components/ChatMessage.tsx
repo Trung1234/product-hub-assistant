@@ -202,12 +202,93 @@ export const ChatMessage = React.memo<ChatMessageProps>(
       [expandedSubAgents]
     );
 
-    // If human message: Render User Bubble
+    // Extract user images from multimodal message content
+    const userImages: string[] = useMemo(() => {
+      if (!isUser) return [];
+      if (Array.isArray(message.content)) {
+        return message.content
+          .map((c: any) => {
+            if (typeof c === "object" && c !== null) {
+              if (c.type === "image_url" && c.image_url?.url) return c.image_url.url;
+              if (c.url && (c.type?.startsWith("image/") || String(c.url).startsWith("data:image/"))) return c.url;
+            }
+            return null;
+          })
+          .filter(Boolean) as string[];
+      }
+      return [];
+    }, [isUser, message.content]);
+
+    // Parse attachment tags like [Tệp đính kèm: ...] cleanly
+    const { cleanUserText, userAttachmentNames } = useMemo(() => {
+      if (!isUser) return { cleanUserText: rawMessageContent, userAttachmentNames: [] };
+      const match = rawMessageContent.match(/^\[(?:Tệp đính kèm|Tệp tài liệu):\s*([^\]]+)\]\n?/i);
+      if (match) {
+        const names = match[1].split(",").map((s) => s.trim()).filter(Boolean);
+        const clean = rawMessageContent.replace(/^\[(?:Tệp đính kèm|Tệp tài liệu):\s*[^\]]+\]\n?/i, "").trim();
+        return { cleanUserText: clean, userAttachmentNames: names };
+      }
+      return { cleanUserText: rawMessageContent, userAttachmentNames: [] };
+    }, [isUser, rawMessageContent]);
+
+    // If human message: Render User Bubble with Images & Clean Text
     if (isUser) {
       return (
         <div className="flex w-full justify-end my-3">
-          <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/30 px-4 py-3 text-sm text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed">
-            <p className="whitespace-pre-wrap font-medium">{rawMessageContent}</p>
+          <div className="max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/30 p-3.5 text-sm text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed space-y-2.5">
+            {/* Attached Images Gallery */}
+            {userImages.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {userImages.map((imgUrl, i) => (
+                  <div
+                    key={i}
+                    onClick={() => {
+                      if (typeof window !== "undefined") {
+                        window.dispatchEvent(
+                          new CustomEvent("open-image-lightbox", {
+                            detail: { imageUrl: imgUrl, alt: "Tệp ảnh đính kèm" },
+                          })
+                        );
+                      }
+                    }}
+                    className="group relative h-28 w-28 overflow-hidden rounded-xl border border-[#00FF88]/40 bg-[#080B21] shadow-md cursor-pointer hover:border-[#00FF88] transition-all"
+                    title="Bấm để xem ảnh phóng to"
+                  >
+                    <img
+                      src={imgUrl}
+                      alt="Ảnh đính kèm"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <span className="rounded-full bg-[#00FF88] text-[#080B21] p-1 text-[10px] font-bold shadow">
+                        Phóng to
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Document Badges */}
+            {userAttachmentNames.length > 0 && (
+              <div className="flex flex-wrap gap-1.5">
+                {userAttachmentNames.map((name, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-1.5 rounded-lg bg-[#080B21]/90 px-2.5 py-1 text-xs border border-[#00FF88]/30 text-[#00FF88]"
+                  >
+                    <span className="font-semibold text-[11px]">📎 {name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Clean Prompt Text */}
+            {cleanUserText && (
+              <p className="whitespace-pre-wrap font-medium text-slate-100">
+                {cleanUserText}
+              </p>
+            )}
           </div>
         </div>
       );
