@@ -371,7 +371,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
           title="Cuộn xuống tin nhắn mới nhất"
           aria-label="Cuộn xuống tin nhắn mới nhất"
         >
-          <ArrowDown className="h-4 w-4 text-[#00FF88] transition-transform duration-200 group-hover:translate-y-0.5 animate-bounce" />
+          <ArrowDown className="h-4 w-4 text-[#00FF88]" />
         </button>
       )}
 
