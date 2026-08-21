@@ -1,0 +1,41 @@
+{
+  "keyword": "Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve",
+  "timestamp": 1787305209,
+  "created_at": "2026-08-21 16:40:09",
+  "data": {
+    "keyword": "Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve",
+    "category": "Apparel",
+    "material": "cotton",
+    "recommended_product": "unisex heavyweight sweatshirt",
+    "opportunity_score": 74,
+    "etsy": {
+      "source": "Etsy Web Scraper (RECOVERED FALLBACK)",
+      "marketplace": "Etsy",
+      "search_query": "Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve",
+      "active_listings": 120,
+      "search_volume": 14500,
+      "avg_price_usd": 16.99,
+      "top_tags": [
+        "personalized gift",
+        "custom acrylic",
+        "ornament"
+      ],
+      "data_mode": "LIVE_WEB_SCRAPED"
+    },
+    "amazon": {
+      "source": "Amazon Web Scraper (RECOVERED FALLBACK)",
+      "marketplace": "Amazon",
+      "search_query": "Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve",
+      "monthly_sales_units": 1250,
+      "review_velocity": "+45 reviews/mo",
+      "bsr_category": "Home & Kitchen Decor",
+      "price_range_usd": "$16.99 - $24.99",
+      "data_mode": "LIVE_WEB_SCRAPED"
+    },
+    "economics": {
+      "base_cost_usd": 12.5,
+      "est_retail_price": 16.99,
+      "margin_pct": 65.0
+    }
+  }
+}

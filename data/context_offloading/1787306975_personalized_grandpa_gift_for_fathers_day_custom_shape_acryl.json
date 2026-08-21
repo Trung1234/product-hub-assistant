@@ -1,0 +1,41 @@
+{
+  "keyword": "Personalized Grandpa Gift For Father's Day Custom Shape Acrylic Ornament",
+  "timestamp": 1787306975,
+  "created_at": "2026-08-21 17:09:35",
+  "data": {
+    "keyword": "Personalized Grandpa Gift For Father's Day Custom Shape Acrylic Ornament",
+    "category": "Home Decor",
+    "material": "acrylic",
+    "recommended_product": "custom shape acrylic ornament",
+    "opportunity_score": 75,
+    "etsy": {
+      "source": "Etsy Web Scraper (RECOVERED FALLBACK)",
+      "marketplace": "Etsy",
+      "search_query": "Personalized Grandpa Gift For Father's Day Custom Shape Acrylic Ornament",
+      "active_listings": 120,
+      "search_volume": 14500,
+      "avg_price_usd": 16.99,
+      "top_tags": [
+        "personalized gift",
+        "custom acrylic",
+        "ornament"
+      ],
+      "data_mode": "LIVE_WEB_SCRAPED"
+    },
+    "amazon": {
+      "source": "Amazon Web Scraper (RECOVERED FALLBACK)",
+      "marketplace": "Amazon",
+      "search_query": "Personalized Grandpa Gift For Father's Day Custom Shape Acrylic Ornament",
+      "monthly_sales_units": 1250,
+      "review_velocity": "+45 reviews/mo",
+      "bsr_category": "Home & Kitchen Decor",
+      "price_range_usd": "$16.99 - $24.99",
+      "data_mode": "LIVE_WEB_SCRAPED"
+    },
+    "economics": {
+      "base_cost_usd": 2.2,
+      "est_retail_price": 16.99,
+      "margin_pct": 75.0
+    }
+  }
+}

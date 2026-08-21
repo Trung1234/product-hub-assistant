@@ -1,0 +1,13 @@
+{
+  "worker_id": "worker-antidetect-1787292302",
+  "marketplace": "ETSY",
+  "query": "Personalized Grandpa Gift For Father's Day From Granddaughter Custom Shape Acrylic Ornament",
+  "saved_at_timestamp": 1787292302,
+  "raw_payload_filepath": "/Users/png/01. Project/crossborder/data/raw_crawls/1787292302_etsy_personalized_grandpa_gift_for__raw.json",
+  "payload_size_bytes": 919,
+  "crawl_latency_ms": 914.68,
+  "cost_usd": 0.0,
+  "account_required": false,
+  "anti_detect_status": "ACTIVE_STEALTH_PROTECTED",
+  "raw_content": "<html lang=\"en\"><head><title>etsy.com</title><style>#cmsg{animation: A 1.5s;}@keyframes A{0%{opacity:0;}99%{opacity:0;}100%{opacity:1;}}</style></head><body style=\"margin:0\"><p id=\"cmsg\">Please enable JS and disable any ad blocker</p><script data-cfasync=\"false\">var dd={'rt':'c','cid':'AHrlqAAAAAMAIbToC1MXbiMAO5nrhA==','hsh':'D013AA612AB2224D03B2318D0F5B19','t':'bv','rr':'','qp':'q%3DPersonalized%2520Grandpa%2520Gift%2520For%2520Father%2527s%2520Day%2520From%2520Granddaughter%2520Custom%2520Shape%2520Acrylic%2520Ornament','s':45977,'e':'4c79deb4e57a34387a47eaef33888356e80aeca705cc488568091a11bb5601d7fd9f4eed1c458d8564caf4ece17aca2d','host':'geo.captcha-delivery.com','cookie':'BT1N8Vw9Jui8YAPEEn4fVa7Pu~WH2xF0vqH64_XUxE6S0Sd8o5KdprPQkEDCAmXI09RdLIds7Xqgvt0VO39miwXrYHWQzbJps3ZZMZSDqMDNyF4OKtwm6TgVEeQuP~s6'}</script><script data-cfasync=\"false\" src=\"https://ct.captcha-delivery.com/c.js\"></script></body></html>"
+}
