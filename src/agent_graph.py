@@ -46,12 +46,18 @@ orchestrator_tools = [
     list_available_ecommerce_skills
 ]
 
-# Instantiate PRINTWAY NEXUS Agent with strict R&D System Prompt & Domain Tools
+from src.db.supabase_checkpointer import get_supabase_postgres_checkpointer
+
+# Configure Checkpointer (Supabase PostgreSQL or Memory fallback)
+checkpointer = get_supabase_postgres_checkpointer()
+
+# Instantiate PRINTWAY NEXUS Agent with strict R&D System Prompt, Domain Tools & Persistent Checkpointer
 graph = create_react_agent(
     model=llm,
     tools=orchestrator_tools,
-    prompt=ORCHESTRATOR_SYSTEM_PROMPT
+    prompt=ORCHESTRATOR_SYSTEM_PROMPT,
+    checkpointer=checkpointer
 )
 
 if __name__ == "__main__":
-    print(f"PRINTWAY NEXUS — Chief R&D & Market Opportunity Strategist Graph ({len(orchestrator_tools)} Tools) initialized!")
+    print(f"PRINTWAY NEXUS — Chief R&D & Market Opportunity Strategist Graph ({len(orchestrator_tools)} Tools, Checkpointer: {type(checkpointer).__name__}) initialized!")
