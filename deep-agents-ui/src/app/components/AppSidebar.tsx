@@ -69,8 +69,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         <div className="flex h-14 items-center justify-between px-3.5 border-b border-[#00FF88]/10 bg-[#0E1538]/50">
           {!collapsed ? (
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_12px_rgba(0,255,136,0.4)]">
-                <Sparkles className="h-4 w-4 text-[#080B21]" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_12px_rgba(0,255,136,0.4)] p-0.5">
+                <img src="/assets/mascot_ball.png" alt="Mascot" className="h-full w-full object-contain" />
               </div>
               <div className="flex flex-col truncate">
                 <span className="font-extrabold text-xs tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#00D2FF]">
@@ -82,8 +82,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               </div>
             </div>
           ) : (
-            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_10px_rgba(0,255,136,0.4)]">
-              <Sparkles className="h-4 w-4 text-[#080B21]" />
+            <div className="mx-auto flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_10px_rgba(0,255,136,0.4)] p-0.5">
+              <img src="/assets/mascot_ball.png" alt="Mascot" className="h-full w-full object-contain" />
             </div>
           )}
 
