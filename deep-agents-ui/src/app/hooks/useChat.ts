@@ -48,7 +48,7 @@ export function useChat({
   }, [user, profile, onHistoryRevalidate]);
 
   const stream = useStream<StateType>({
-    assistantId: activeAssistant?.assistant_id || "",
+    assistantId: activeAssistant?.assistant_id || "product_opportunity_hub",
     client: client ?? undefined,
     reconnectOnMount: true,
     threadId: threadId ?? null,

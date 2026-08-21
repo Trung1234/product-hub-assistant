@@ -35,5 +35,5 @@ EXPOSE 2024
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:2024/ok || exit 0
 
-# Start LangGraph server
-CMD ["langgraph", "dev", "--host", "0.0.0.0", "--port", "2024", "--no-browser"]
+# Start LangGraph server without reload to avoid ulimit file exhaustion
+CMD ["langgraph", "dev", "--host", "0.0.0.0", "--port", "2024", "--no-reload", "--no-browser"]
