@@ -273,4 +273,6 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
       </aside>
     </TooltipProvider>
   );
-};
+});
+
+AppSidebar.displayName = "AppSidebar";

@@ -302,4 +302,6 @@ export const CyberpunkChartRenderer = React.memo<{ code: string }>(({ code }) =>
       </div>
     </div>
   );
-};
+});
+
+CyberpunkChartRenderer.displayName = "CyberpunkChartRenderer";
