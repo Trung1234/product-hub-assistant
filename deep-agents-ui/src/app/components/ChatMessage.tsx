@@ -22,6 +22,7 @@ interface ChatMessageProps {
   message: Message;
   toolCalls: ToolCall[];
   isLoading?: boolean;
+  isLastMessage?: boolean;
   actionRequestsMap?: Map<string, ActionRequest>;
   reviewConfigsMap?: Map<string, ReviewConfig>;
   ui?: any[];
@@ -76,6 +77,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     message,
     toolCalls,
     isLoading,
+    isLastMessage = true,
     actionRequestsMap,
     reviewConfigsMap,
     ui,
@@ -91,17 +93,19 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     // Check if the message contains explicit suggestions code block
     const hasExplicitSuggestions = rawMessageContent.includes("```suggestions") || rawMessageContent.includes("```suggestion");
 
-    // Cleaned content for Markdown display if suggestions block is embedded
+    // Cleaned content for Markdown display: strip suggestions if NOT last message
     const displayContent = useMemo(() => {
       if (!hasContent) return "";
-      // If explicit suggestions exist, we let SuggestedQuestionsRenderer handle it cleanly
+      if (!isLastMessage) {
+        return rawMessageContent.replace(/```(?:suggestions|suggestion|followup|questions)[\s\S]*?```/gi, "").trim();
+      }
       return rawMessageContent;
-    }, [rawMessageContent, hasContent]);
+    }, [rawMessageContent, hasContent, isLastMessage]);
 
     const fallbackQuestions = useMemo(() => {
-      if (isUser || !hasContent || hasExplicitSuggestions) return [];
+      if (isUser || !hasContent || !isLastMessage || hasExplicitSuggestions) return [];
       return deriveContextualQuestions(rawMessageContent);
-    }, [isUser, hasContent, hasExplicitSuggestions, rawMessageContent]);
+    }, [isUser, hasContent, isLastMessage, hasExplicitSuggestions, rawMessageContent]);
 
     const subAgents = useMemo(() => {
       return toolCalls
