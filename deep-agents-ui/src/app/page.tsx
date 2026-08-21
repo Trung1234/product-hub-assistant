@@ -10,6 +10,7 @@ import { ChatInterface } from "@/app/components/ChatInterface";
 import { AppSidebar } from "@/app/components/AppSidebar";
 import { ImageLightboxModal } from "@/app/components/ImageLightboxModal";
 import { CommandPalette } from "@/app/components/CommandPalette";
+import { AuthButton } from "@/app/components/AuthButton";
 import { PanelLeft, SquarePen, Search } from "lucide-react";
 
 interface HomePageInnerProps {
@@ -211,8 +212,9 @@ function HomePageInner({ config }: HomePageInnerProps) {
               </div>
             </div>
 
-            {/* Right Action Icons (Search Cmd+K, New Research) */}
-            <div className="flex items-center gap-1">
+            {/* Right Action Icons (Search Cmd+K, Auth, New Research) */}
+            <div className="flex items-center gap-2">
+              <AuthButton />
               <button
                 type="button"
                 onClick={() => setCommandPaletteOpen(true)}

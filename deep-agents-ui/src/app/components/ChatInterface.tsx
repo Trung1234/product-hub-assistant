@@ -22,6 +22,7 @@ import { Assistant, Message } from "@langchain/langgraph-sdk";
 import { extractStringFromMessageContent } from "@/app/utils/utils";
 import { useChatContext } from "@/providers/ChatProvider";
 import { useStickToBottom } from "use-stick-to-bottom";
+import { cn } from "@/lib/utils";
 
 interface ChatInterfaceProps {
   assistant: Assistant | null;
@@ -184,15 +185,8 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
           const { aiMsgId, tcIdx } = toolCallIndexMap.get(toolCallId)!;
           const parentMsg = messageMap.get(aiMsgId);
           if (parentMsg && parentMsg.toolCalls[tcIdx]) {
-            let result: unknown = message.content;
-            if (typeof message.content === "string") {
-              try {
-                result = JSON.parse(message.content);
-              } catch {
-                result = message.content;
-              }
-            }
-            const status = message.status === "error" ? "error" : message.status === "interrupted" ? "interrupted" : "completed";
+            const result: string = typeof message.content === "string" ? message.content : extractStringFromMessageContent(message);
+            const status: "completed" | "error" | "pending" | "interrupted" = message.status === "error" ? "error" : "completed";
 
             parentMsg.toolCalls[tcIdx] = {
               ...parentMsg.toolCalls[tcIdx],
@@ -233,21 +227,18 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
     [resumeInterrupt]
   );
 
-  const actionRequestsMap = useMemo(() => {
-    if (!interrupt || typeof interrupt !== 'object' || !('action_requests' in interrupt)) return undefined;
-    return new Map(
-      (interrupt as any).action_requests.map((req: ActionRequest) => [req.name, req])
-    );
+  const actionRequestsMap: Map<string, ActionRequest> | undefined = useMemo(() => {
+    if (!interrupt || typeof interrupt !== "object" || !("action_requests" in interrupt)) return undefined;
+    const reqs = (interrupt as any).action_requests as ActionRequest[];
+    if (!Array.isArray(reqs)) return undefined;
+    return new Map<string, ActionRequest>(reqs.map((req) => [req.name, req]));
   }, [interrupt]);
 
-  const reviewConfigsMap = useMemo(() => {
-    if (!interrupt || typeof interrupt !== 'object' || !('review_configs' in interrupt)) return undefined;
-    return new Map(
-      (interrupt as any).review_configs.map((config: ReviewConfig) => [
-        config.name,
-        config,
-      ])
-    );
+  const reviewConfigsMap: Map<string, ReviewConfig> | undefined = useMemo(() => {
+    if (!interrupt || typeof interrupt !== "object" || !("review_configs" in interrupt)) return undefined;
+    const configs = (interrupt as any).review_configs as ReviewConfig[];
+    if (!Array.isArray(configs)) return undefined;
+    return new Map<string, ReviewConfig>(configs.map((config) => [config.actionName, config]));
   }, [interrupt]);
 
   return (
