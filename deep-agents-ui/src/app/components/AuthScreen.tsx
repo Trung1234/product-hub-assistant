@@ -67,7 +67,7 @@ export function AuthScreen() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-3 shadow-lg">
             <Sparkles className="w-4 h-4 text-[#00FF88]" />
             <span className="text-xs font-semibold text-slate-300">
-              Printway AI R&D Platform 2.0
+              Printway Nexus 2.0 • AI R&D Platform
             </span>
           </div>
 
@@ -82,7 +82,7 @@ export function AuthScreen() {
           </div>
 
           <h1 className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400">
-            Product Opportunity Hub
+            Printway Nexus
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Hệ thống AI Copilot phát hiện cơ hội sản phẩm POD đa sàn thời gian thực

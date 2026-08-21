@@ -223,7 +223,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
                   />
                 </div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#00FF88] bg-[#00FF88]/15 px-1.5 py-0.5 rounded border border-[#00FF88]/30">
-                  R&D Hub
+                  Nexus 2.0
                 </span>
               </div>
             </div>

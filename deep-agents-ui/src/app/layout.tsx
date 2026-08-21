@@ -15,8 +15,8 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Printway Opportunity Hub | AI R&D Copilot",
-  description: "Printway.io AI R&D Copilot for discovering high-profit cross-border Print-on-Demand product opportunities across Etsy, Amazon, and Pinterest.",
+  title: "Printway Nexus | AI R&D Copilot & POD Opportunity Discovery",
+  description: "Printway Nexus - Hệ thống AI Copilot phát hiện cơ hội sản phẩm Print-on-Demand (POD) xuyên biên giới thời gian thực qua Amazon, Etsy & Pinterest.",
   icons: {
     icon: "/favicon.ico",
     apple: "/printway-logo.png",
