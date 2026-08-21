@@ -31,45 +31,53 @@ interface ChatMessageProps {
   graphId?: string;
 }
 
-function deriveContextualQuestions(content: string): string[] {
-  const lower = content.toLowerCase();
-  
-  if (lower.includes("ornament") || lower.includes("christmas") || lower.includes("xmas") || lower.includes("baby first")) {
+function extractDynamicQuestions(content: string): string[] {
+  if (!content) return [];
+
+  // 1. Try extracting from ```suggestions ... ``` code block
+  const codeMatch = content.match(/```(?:suggestions|suggestion|followup|questions)\s*([\s\S]*?)\s*```/i);
+  if (codeMatch && codeMatch[1]) {
+    try {
+      const parsed = JSON.parse(codeMatch[1].trim());
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((s) => String(s).trim()).filter(Boolean);
+      }
+    } catch {
+      const lines = codeMatch[1]
+        .split("\n")
+        .map((l) => l.replace(/^[-*•\d.↳"\[\]]\s*/, "").replace(/[",\]]/g, "").trim())
+        .filter((l) => l.length > 6);
+      if (lines.length > 0) return lines;
+    }
+  }
+
+  // 2. Try extracting from "### 💡 Câu Hỏi Gợi Ý" or similar header in content
+  const sectionMatch = content.match(/(?:###|\*\*|💡)?\s*(?:Câu Hỏi Gợi Ý|Gợi ý câu hỏi|Follow-up Questions)[^\n]*\n([\s\S]*?)(?:\n\n[#*]|\n---|$)/i);
+  if (sectionMatch && sectionMatch[1]) {
+    const lines = sectionMatch[1]
+      .split("\n")
+      .map((l) => l.replace(/^[-*•\d.↳]\s*/, "").trim())
+      .filter((l) => l.length > 8);
+    if (lines.length > 0) return lines.slice(0, 4);
+  }
+
+  // 3. Dynamic context-based synthesis from the actual text (extracting product title, scores, metrics)
+  const titleMatch = content.match(/###\s*🎯\s*Khuyến Nghị R&D:[^\n]*?\*\*([^*]+)\*\*/i) ||
+                     content.match(/keyword[:=]\s*"([^"]+)"/i) ||
+                     content.match(/sản phẩm\s*['"“]([^'"”]+)['"”]/i) ||
+                     content.match(/cơ hội\s*['"“]([^'"”]+)['"”]/i);
+  const productName = titleMatch ? titleMatch[1].trim() : "";
+
+  if (productName) {
     return [
-      "Phân tích sâu Top 3 đối thủ Acrylic Ornament bán chạy nhất trên Amazon",
-      "Gợi ý 5 biến thể thiết kế Stained Glass và Sun-catcher trên Pinterest",
-      "Dự báo thời điểm đạt đỉnh Google Trends cho mùa Giáng Sinh 2026",
-      "Tính toán chi phí phôi mica Printway ($2.20) và dải giá bán lẻ tối ưu"
-    ];
-  } else if (lower.includes("plaque") || lower.includes("desk") || lower.includes("father") || lower.includes("grandpa")) {
-    return [
-      "Phân tích Top 3 mẫu Acrylic Desk Plaque chân đế LED bán chạy nhất Etsy",
-      "Khám phá 5 phong cách khắc chân dung và Spotify Code trên Pinterest",
-      "Dự báo chu kỳ tìm kiếm Google Trends dịp Father's Day tháng 5-6",
-      "Đánh giá biên lợi nhuận đế gỗ LED xưởng Printway (Giá vốn $4.50)"
-    ];
-  } else if (lower.includes("tumbler") || lower.includes("drinkware") || lower.includes("cup") || lower.includes("teacher")) {
-    return [
-      "Đánh giá Top 3 mẫu ly giữ nhiệt Inox 20oz bán chạy nhất Amazon",
-      "Khám phá 5 bảng màu Pastel và hoa văn laser thịnh hành trên Pinterest",
-      "Phân tích đà tăng trưởng Google Trends cho ngách Teacher Appreciation Gift",
-      "So sánh biên lợi nhuận xưởng Printway giữa in UV và khắc Laser 360"
-    ];
-  } else if (lower.includes("sweatshirt") || lower.includes("hoodie") || lower.includes("mama") || lower.includes("apparel")) {
-    return [
-      "Phân tích Top 3 shop bán áo thêu cổ tay Custom Mama chạy nhất trên Etsy",
-      "Gợi ý 5 bảng phối màu chỉ thêu Satin và Vintage Varsity trên Pinterest",
-      "Dự báo chu kỳ tăng trưởng Google Trends cho dịp Mother's Day",
-      "Tính toán chi phí thêu nỉ bông 320 GSM tại xưởng Printway"
+      `Phân tích sâu top 3 đối thủ cạnh tranh có doanh số cao nhất cho ${productName}`,
+      `Gợi ý 5 biến thể thiết kế và màu sắc thịnh hành trên Pinterest cho ${productName}`,
+      `Dự báo chi tiết xu hướng tăng trưởng tìm kiếm Google Trends trong 60 ngày tới`,
+      `Tính toán chi tiết biên lợi nhuận xưởng Printway và dải giá bán lẻ tối ưu`
     ];
   }
 
-  return [
-    "Phân tích sâu Top 3 đối thủ cạnh tranh trực tiếp trên Etsy và Amazon",
-    "Gợi ý 5 phong cách thiết kế độc đáo để khác biệt hóa trên Pinterest",
-    "Dự báo chu kỳ tìm kiếm Google Trends trong 60 ngày tới",
-    "Đánh giá chi phí sản xuất xưởng Printway và dải giá bán lẻ tối ưu"
-  ];
+  return [];
 }
 
 export const ChatMessage = React.memo<ChatMessageProps>(
@@ -90,22 +98,20 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     const hasContent = rawMessageContent && rawMessageContent.trim() !== "";
     const hasToolCalls = toolCalls.length > 0;
 
-    // Check if the message contains explicit suggestions code block
-    const hasExplicitSuggestions = rawMessageContent.includes("```suggestions") || rawMessageContent.includes("```suggestion");
+    // Dynamic extraction of follow-up questions from the LLM content
+    const dynamicQuestions = useMemo(() => {
+      if (isUser || !hasContent || !isLastMessage) return [];
+      return extractDynamicQuestions(rawMessageContent);
+    }, [isUser, hasContent, isLastMessage, rawMessageContent]);
 
-    // Cleaned content for Markdown display: strip suggestions if NOT last message
+    // Cleaned content for Markdown display: strip raw suggestions code block so it renders as interactive list at the bottom
     const displayContent = useMemo(() => {
       if (!hasContent) return "";
-      if (!isLastMessage) {
-        return rawMessageContent.replace(/```(?:suggestions|suggestion|followup|questions)[\s\S]*?```/gi, "").trim();
-      }
-      return rawMessageContent;
-    }, [rawMessageContent, hasContent, isLastMessage]);
-
-    const fallbackQuestions = useMemo(() => {
-      if (isUser || !hasContent || !isLastMessage || hasExplicitSuggestions) return [];
-      return deriveContextualQuestions(rawMessageContent);
-    }, [isUser, hasContent, isLastMessage, hasExplicitSuggestions, rawMessageContent]);
+      return rawMessageContent
+        .replace(/```(?:suggestions|suggestion|followup|questions)[\s\S]*?```/gi, "")
+        .replace(/(?:###|\*\*|💡)?\s*(?:Câu Hỏi Gợi Ý|Gợi ý câu hỏi|Follow-up Questions)[^\n]*\n([\s\S]*?)(?:\n\n[#*]|\n---|$)/gi, "")
+        .trim();
+    }, [rawMessageContent, hasContent]);
 
     const subAgents = useMemo(() => {
       return toolCalls
@@ -161,7 +167,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
       );
     }
 
-    // For AI messages: Render Subagents -> Tool Calls -> Response Content -> Follow-Up Question Chips
+    // For AI messages: Render Subagents -> Tool Calls -> Response Content -> Follow-Up Question List (Last response only)
     return (
       <div className="flex w-full max-w-full overflow-x-hidden my-2">
         <div className="min-w-0 w-full flex flex-col gap-2">
@@ -242,13 +248,13 @@ export const ChatMessage = React.memo<ChatMessageProps>(
 
           {/* 3. Final Response Content */}
           {hasContent && (
-            <div className="relative flex items-end gap-0 w-full mt-2">
+            <div className="relative flex flex-col w-full mt-2">
               <div className="overflow-hidden break-words text-sm font-normal leading-relaxed text-white w-full">
                 <MarkdownContent content={displayContent} />
                 
-                {/* 4. Universal Fallback Follow-Up Action Chips (Guarantees 100% visibility) */}
-                {fallbackQuestions.length > 0 && !hasExplicitSuggestions && (
-                  <SuggestedQuestionsRenderer code={JSON.stringify(fallbackQuestions)} />
+                {/* 4. Dynamic LLM Follow-Up Questions (Rendered ONLY on the latest message) */}
+                {isLastMessage && dynamicQuestions.length > 0 && (
+                  <SuggestedQuestionsRenderer code={JSON.stringify(dynamicQuestions)} />
                 )}
               </div>
             </div>

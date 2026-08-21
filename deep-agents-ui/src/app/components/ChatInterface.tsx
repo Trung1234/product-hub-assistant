@@ -125,16 +125,20 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       }
       const messageText = input.trim();
       if (!messageText || isLoading || submitDisabled) return;
-      sendMessage(messageText);
       setInput("");
+      if (textareaRef.current) {
+        textareaRef.current.value = "";
+      }
+      sendMessage(messageText);
     },
     [input, isLoading, sendMessage, setInput, submitDisabled]
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey) {
+      if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
+        e.stopPropagation();
         handleSubmit();
       }
     },
