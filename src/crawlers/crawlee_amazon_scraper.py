@@ -71,9 +71,11 @@ class CrawleeAmazonScraper:
         inc_list = [k.strip().lower() for k in include_keywords.split(",") if k.strip()] if include_keywords else []
         exc_list = [k.strip().lower() for k in exclude_keywords.split(",") if k.strip()] if exclude_keywords else []
 
+        headless_mode = os.getenv("CRAWLEE_HEADLESS", "true").lower() != "false"
+
         async with async_playwright() as p:
             launch_args = ["--disable-blink-features=AutomationControlled", "--no-sandbox"]
-            browser = await p.chromium.launch(headless=True, args=launch_args)
+            browser = await p.chromium.launch(headless=headless_mode, args=launch_args)
             
             context_kwargs = {
                 "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -95,6 +97,13 @@ class CrawleeAmazonScraper:
                     break
 
                 page = await context.new_page()
+                if not headless_mode:
+                    await page.bring_to_front()
+                    try:
+                        import subprocess
+                        subprocess.run(['osascript', '-e', 'tell application "Chromium" to activate'], check=False)
+                    except Exception:
+                        pass
                 await page.route(
                     re.compile(r"\.(png|jpg|jpeg|webp|gif|svg|woff2?|ttf|eot|css)$"),
                     lambda route: route.abort()
