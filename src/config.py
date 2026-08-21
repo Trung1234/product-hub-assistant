@@ -46,6 +46,13 @@ class MarketConfig:
 
 
 @dataclass(frozen=True)
+class ResendConfig:
+    api_key: str = os.getenv("RESEND_API_KEY", "").strip()
+    from_email: str = os.getenv("RESEND_FROM_EMAIL", "Printway Nexus <onboarding@resend.dev>").strip()
+    reply_to: str = os.getenv("RESEND_REPLY_TO", "support@printway.io").strip()
+
+
+@dataclass(frozen=True)
 class PathsConfig:
     printway_catalog_path: str = os.getenv("PRINTWAY_CATALOG_PATH", "data/printway_catalog.json")
     sample_listings_path: str = os.getenv("SAMPLE_LISTINGS_PATH", "data/sample_listings.json")
@@ -57,6 +64,7 @@ llm_config = LLMConfig()
 supabase_config = SupabaseConfig()
 browserless_config = BrowserlessConfig()
 market_config = MarketConfig()
+resend_config = ResendConfig()
 paths_config = PathsConfig()
 
 # Backward-Compatible Top-Level Constants
@@ -77,6 +85,9 @@ BROWSERLESS_WS_ENDPOINT = browserless_config.ws_endpoint
 ETSY_API_KEY = market_config.etsy_api_key
 HELIUM10_API_KEY = market_config.helium10_api_key
 GOOGLE_TRENDS_API_KEY = market_config.google_trends_api_key
+
+RESEND_API_KEY = resend_config.api_key
+RESEND_FROM_EMAIL = resend_config.from_email
 
 PRINTWAY_CATALOG_PATH = paths_config.printway_catalog_path
 SAMPLE_LISTINGS_PATH = paths_config.sample_listings_path

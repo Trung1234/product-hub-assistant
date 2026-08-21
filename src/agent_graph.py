@@ -21,6 +21,10 @@ from src.tools.skill_tools import (
 )
 from src.tools.report_tools import generate_product_opportunity_pdf_report
 from src.tools.human_tools import ask_user_clarification
+from src.tools.email_tools import (
+    send_market_report_to_email,
+    schedule_prompt_research_to_email
+)
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
 # Configure LLM using Printway 9router API parameters with deterministic 0.0 temperature
@@ -31,7 +35,7 @@ llm = ChatOpenAI(
     temperature=0.0
 )
 
-# Granular Specialized Tools with 5-Source Market Data, Visual Gallery, Skills & Cloud PDF Generator
+# Granular Specialized Tools with 5-Source Market Data, Skills, PDF & Resend Email Delivery
 orchestrator_tools = [
     ask_user_clarification,
     fetch_etsy_market_data,
@@ -42,6 +46,8 @@ orchestrator_tools = [
     evaluate_5d_opportunity_score,
     record_product_opportunity_matrix,
     generate_product_opportunity_pdf_report,
+    send_market_report_to_email,
+    schedule_prompt_research_to_email,
     retrieve_offloaded_product_context,
     extract_ai_insights_from_opportunity_matrix,
     consult_ecommerce_skill,
