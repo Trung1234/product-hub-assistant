@@ -91,8 +91,8 @@ function SharedViewContent({ token }: SharedViewContentProps) {
       if (res.ok && data.success) {
         toast.success("🚀 Đã nhân bản thành công! Đang chuyển hướng sang phiên làm việc của bạn...");
         setTimeout(() => {
-          router.push(`/?threadId=${data.newThreadId}`);
-        }, 800);
+          window.location.href = `/?threadId=${data.newThreadId}`;
+        }, 400);
       } else {
         toast.error(`Không thể nhân bản: ${data.error || "Lỗi không xác định"}`);
         setIsForking(false);
