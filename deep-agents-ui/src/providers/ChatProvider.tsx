@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, createContext, useContext } from "react";
+import { ReactNode, createContext, useContext, useMemo } from "react";
 import { Assistant } from "@langchain/langgraph-sdk";
 import { type StateType, useChat } from "@/app/hooks/useChat";
 import type { UseStreamThread } from "@langchain/langgraph-sdk/react";
@@ -12,6 +12,12 @@ interface ChatProviderProps {
   thread?: UseStreamThread<StateType>;
 }
 
+export type ChatContextType = ReturnType<typeof useChat>;
+
+export const ChatContext = createContext<ChatContextType | undefined>(
+  undefined
+);
+
 export function ChatProvider({
   children,
   activeAssistant,
@@ -19,14 +25,12 @@ export function ChatProvider({
   thread,
 }: ChatProviderProps) {
   const chat = useChat({ activeAssistant, onHistoryRevalidate, thread });
-  return <ChatContext.Provider value={chat}>{children}</ChatContext.Provider>;
+
+  // Prevent cascading re-renders when parent re-renders
+  const memoizedChat = useMemo(() => chat, [chat]);
+
+  return <ChatContext.Provider value={memoizedChat}>{children}</ChatContext.Provider>;
 }
-
-export type ChatContextType = ReturnType<typeof useChat>;
-
-export const ChatContext = createContext<ChatContextType | undefined>(
-  undefined
-);
 
 export function useChatContext() {
   const context = useContext(ChatContext);

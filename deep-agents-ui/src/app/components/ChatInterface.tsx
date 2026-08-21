@@ -122,6 +122,12 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       }
     >();
 
+    // O(1) Index Map to find the parent AI message and tool call index
+    const toolCallIndexMap = new Map<
+      string,
+      { aiMsgId: string; tcIdx: number }
+    >();
+
     messages.forEach((message: Message) => {
       if (message.type === "ai") {
         const rawToolCalls = message.tool_calls || [];
@@ -147,36 +153,40 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               toolCall.args ||
               toolCall.input ||
               {};
+            const tcId = toolCall.id || `tc-${message.id}-${tcIdx}`;
+
+            toolCallIndexMap.set(tcId, {
+              aiMsgId: message.id!,
+              tcIdx,
+            });
+
             return {
-              id: toolCall.id || `tc-${message.id}-${tcIdx}`,
+              id: tcId,
               name,
               args,
               status: interrupt ? "interrupted" : ("pending" as const),
             } as ToolCall;
           }
         );
+
         messageMap.set(message.id!, {
           message,
           toolCalls: toolCallsWithStatus,
         });
       } else if (message.type === "tool") {
         const toolCallId = message.tool_call_id;
-        if (!toolCallId) {
-          return;
-        }
-        for (const [, data] of messageMap.entries()) {
-          const toolCallIndex = data.toolCalls.findIndex(
-            (tc: ToolCall) => tc.id === toolCallId
-          );
-          if (toolCallIndex === -1) {
-            continue;
+        if (!toolCallId) return;
+
+        const lookup = toolCallIndexMap.get(toolCallId);
+        if (lookup) {
+          const parentAi = messageMap.get(lookup.aiMsgId);
+          if (parentAi && parentAi.toolCalls[lookup.tcIdx]) {
+            parentAi.toolCalls[lookup.tcIdx] = {
+              ...parentAi.toolCalls[lookup.tcIdx],
+              status: "completed" as const,
+              result: extractStringFromMessageContent(message),
+            };
           }
-          data.toolCalls[toolCallIndex] = {
-            ...data.toolCalls[toolCallIndex],
-            status: "completed" as const,
-            result: extractStringFromMessageContent(message),
-          };
-          break;
         }
       } else if (message.type === "human") {
         messageMap.set(message.id!, {
@@ -185,6 +195,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         });
       }
     });
+
     const processedArray = Array.from(messageMap.values());
     return processedArray.map((data, index) => {
       const prevMessage = index > 0 ? processedArray[index - 1].message : null;

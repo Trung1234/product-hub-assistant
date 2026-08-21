@@ -1,4 +1,5 @@
 import hashlib
+from functools import lru_cache
 from langchain_core.tools import tool
 from src.providers.google_trends_provider import GoogleTrendsProvider
 from src.providers.pinterest_provider import PinterestTrendProvider
@@ -8,8 +9,9 @@ trends_provider = GoogleTrendsProvider()
 pinterest_provider = PinterestTrendProvider()
 visual_provider = ProductVisualProvider()
 
+@lru_cache(maxsize=512)
 def _derive_signals_from_keyword(keyword: str):
-    """Generates instant, realistic, deterministic market signals from keyword without network delay (0ms latency)."""
+    """Generates instant, realistic, deterministic market signals from keyword without network delay (0ms latency, LRU-cached)."""
     kw_clean = keyword.lower().strip()
     h = int(hashlib.md5(kw_clean.encode()).hexdigest(), 16)
     

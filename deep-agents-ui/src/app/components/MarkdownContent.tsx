@@ -27,15 +27,17 @@ interface MarkdownContentProps {
 function useThrottledContent(
   content: string,
   isStreaming?: boolean,
-  throttleMs = 50
+  throttleMs = 45
 ): string {
   const [throttled, setThrottled] = useState(content);
   const lastUpdateRef = useRef(Date.now());
+  const rafRef = useRef<number | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (!isStreaming) {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
       setThrottled(content);
       return;
     }
@@ -43,19 +45,24 @@ function useThrottledContent(
     const now = Date.now();
     const elapsed = now - lastUpdateRef.current;
 
-    if (elapsed >= throttleMs) {
-      lastUpdateRef.current = now;
-      setThrottled(content);
-    } else {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
+    const scheduleUpdate = () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
         lastUpdateRef.current = Date.now();
         setThrottled(content);
-      }, throttleMs - elapsed);
+      });
+    };
+
+    if (elapsed >= throttleMs) {
+      scheduleUpdate();
+    } else {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(scheduleUpdate, throttleMs - elapsed);
     }
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [content, isStreaming, throttleMs]);
 

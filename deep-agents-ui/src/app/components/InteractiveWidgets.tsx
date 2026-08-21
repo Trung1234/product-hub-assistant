@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   Calculator,
   Copy,
@@ -25,7 +25,6 @@ import { toast } from "sonner";
 function parseNumeric(val: any, fallback: number): number {
   if (typeof val === "number" && !isNaN(val)) return val;
   if (typeof val === "string") {
-    // Extract first valid float / integer number from string
     const match = val.match(/[-+]?[0-9]*\.?[0-9]+/);
     if (match) {
       const parsed = parseFloat(match[0]);
@@ -43,21 +42,24 @@ function safeFormatCurrency(val: any, decimals = 2): string {
 // ==========================================
 // 1. PROFIT & MARGIN CALCULATOR WIDGET
 // ==========================================
-export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => {
-  let parsed: any = {};
-  try {
-    parsed = JSON.parse(code.trim());
-  } catch {
-    const lines = code.split("\n");
-    lines.forEach((l) => {
-      const parts = l.split(":");
-      if (parts.length >= 2) {
-        const k = parts[0].trim().toLowerCase();
-        const v = parts.slice(1).join(":").trim();
-        parsed[k] = v;
-      }
-    });
-  }
+export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) => {
+  const parsed = useMemo(() => {
+    try {
+      return JSON.parse(code.trim());
+    } catch {
+      const obj: any = {};
+      const lines = code.split("\n");
+      lines.forEach((l) => {
+        const parts = l.split(":");
+        if (parts.length >= 2) {
+          const k = parts[0].trim().toLowerCase();
+          const v = parts.slice(1).join(":").trim();
+          obj[k] = v;
+        }
+      });
+      return obj;
+    }
+  }, [code]);
 
   const initialPrice = parseNumeric(
     parsed.price || parsed.retail_price || parsed.retail,
@@ -87,11 +89,19 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
   const safeShipping = parseNumeric(shipping, 4.99);
   const safeAdSpend = parseNumeric(adSpend, 5.0);
 
-  const marketplaceFee = safePrice * marketplaceFeeRate;
-  const totalCost = safeBaseCost + safeShipping + safeAdSpend + marketplaceFee;
-  const netProfit = Math.max(-100, safePrice - totalCost);
-  const profitMargin = safePrice > 0 ? (netProfit / safePrice) * 100 : 0;
-  const breakEvenUnits = netProfit > 0 ? Math.ceil(10000 / netProfit) : 0;
+  const { totalCost, netProfit, profitMargin, breakEvenUnits } = useMemo(() => {
+    const marketplaceFee = safePrice * marketplaceFeeRate;
+    const total = safeBaseCost + safeShipping + safeAdSpend + marketplaceFee;
+    const profit = Math.max(-100, safePrice - total);
+    const margin = safePrice > 0 ? (profit / safePrice) * 100 : 0;
+    const breakEven = profit > 0 ? Math.ceil(10000 / profit) : 0;
+    return {
+      totalCost: total,
+      netProfit: profit,
+      profitMargin: margin,
+      breakEvenUnits: breakEven,
+    };
+  }, [safePrice, safeBaseCost, safeShipping, safeAdSpend, marketplaceFeeRate]);
 
   return (
     <div className="my-5 rounded-2xl border border-[#00FF88]/30 bg-[#0E1538] p-5 shadow-[0_0_25px_rgba(0,255,136,0.15)] backdrop-blur-md">
@@ -242,12 +252,14 @@ export const ProfitCalculatorWidget: React.FC<{ code: string }> = ({ code }) => 
       </div>
     </div>
   );
-};
+});
+
+ProfitCalculatorWidget.displayName = "ProfitCalculatorWidget";
 
 // ==========================================
 // 2. SEO TAGS & 13 ETSY KEYWORDS COPIER WIDGET
 // ==========================================
-export const SeoTagsWidget: React.FC<{ code: string }> = ({ code }) => {
+export const SeoTagsWidget = React.memo<{ code: string }>(({ code }) => {
   const [copiedAll, setCopiedAll] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
@@ -265,22 +277,22 @@ export const SeoTagsWidget: React.FC<{ code: string }> = ({ code }) => {
     return [];
   }, [code]);
 
-  if (tags.length === 0) return null;
-
-  const handleCopyTag = (tag: string, idx: number) => {
+  const handleCopyTag = useCallback((tag: string, idx: number) => {
     navigator.clipboard.writeText(tag);
     setCopiedIdx(idx);
     toast.success(`Đã chép: "${tag}"`);
     setTimeout(() => setCopiedIdx(null), 1500);
-  };
+  }, []);
 
-  const handleCopyAll = () => {
+  const handleCopyAll = useCallback(() => {
     const allStr = tags.join(", ");
     navigator.clipboard.writeText(allStr);
     setCopiedAll(true);
     toast.success(`Đã sao chép toàn bộ ${tags.length} SEO Tags!`);
     setTimeout(() => setCopiedAll(false), 2000);
-  };
+  }, [tags]);
+
+  if (tags.length === 0) return null;
 
   return (
     <div className="my-5 rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538] p-4 shadow-[0_0_20px_rgba(0,210,255,0.12)] backdrop-blur-md">
@@ -340,18 +352,21 @@ export const SeoTagsWidget: React.FC<{ code: string }> = ({ code }) => {
       </div>
     </div>
   );
-};
+});
+
+SeoTagsWidget.displayName = "SeoTagsWidget";
 
 // ==========================================
 // 3. PRINTWAY FACTORY SKU PRODUCTION CARD WIDGET
 // ==========================================
-export const PrintwaySkuCardWidget: React.FC<{ code: string }> = ({ code }) => {
-  let data: any = {};
-  try {
-    data = JSON.parse(code.trim());
-  } catch {
-    data = { sku_name: code.trim() };
-  }
+export const PrintwaySkuCardWidget = React.memo<{ code: string }>(({ code }) => {
+  const data = useMemo(() => {
+    try {
+      return JSON.parse(code.trim());
+    } catch {
+      return { sku_name: code.trim() };
+    }
+  }, [code]);
 
   const {
     sku_name = "Acrylic Suncatcher / Desk Plaque",
@@ -423,4 +438,6 @@ export const PrintwaySkuCardWidget: React.FC<{ code: string }> = ({ code }) => {
       </div>
     </div>
   );
-};
+});
+
+PrintwaySkuCardWidget.displayName = "PrintwaySkuCardWidget";

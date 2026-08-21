@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useStream } from "@langchain/langgraph-sdk/react";
 import {
   type Message,
@@ -54,7 +54,7 @@ export function useChat({
   });
 
   const sendMessage = useCallback(
-    (content: string) => {
+    (content: string | any[]) => {
       const newMessage: Message = { id: uuidv4(), type: "human", content };
       stream.submit(
         { messages: [newMessage] },
@@ -102,9 +102,7 @@ export function useChat({
   const setFiles = useCallback(
     async (files: Record<string, string>) => {
       if (!threadId) return;
-      // TODO: missing a way how to revalidate the internal state
-      // I think we do want to have the ability to externally manage the state
-      await client.threads.updateState(threadId, { values: { files } });
+      await client?.threads.updateState(threadId, { values: { files } });
     },
     [client, threadId]
   );
@@ -145,23 +143,47 @@ export function useChat({
     stream.stop();
   }, [stream]);
 
-  return {
-    stream,
-    todos: stream.values.todos ?? [],
-    files: stream.values.files ?? {},
-    email: stream.values.email,
-    ui: stream.values.ui,
-    setFiles,
-    messages: stream.messages,
-    isLoading: stream.isLoading,
-    isThreadLoading: stream.isThreadLoading,
-    interrupt: stream.interrupt,
-    getMessagesMetadata: stream.getMessagesMetadata,
-    sendMessage,
-    runSingleStep,
-    continueStream,
-    stopStream,
-    markCurrentThreadAsResolved,
-    resumeInterrupt,
-  };
+  const todos = useMemo(() => stream.values.todos ?? [], [stream.values.todos]);
+  const files = useMemo(() => stream.values.files ?? {}, [stream.values.files]);
+
+  return useMemo(
+    () => ({
+      stream,
+      todos,
+      files,
+      email: stream.values.email,
+      ui: stream.values.ui,
+      setFiles,
+      messages: stream.messages,
+      isLoading: stream.isLoading,
+      isThreadLoading: stream.isThreadLoading,
+      interrupt: stream.interrupt,
+      getMessagesMetadata: stream.getMessagesMetadata,
+      sendMessage,
+      runSingleStep,
+      continueStream,
+      stopStream,
+      markCurrentThreadAsResolved,
+      resumeInterrupt,
+    }),
+    [
+      stream,
+      todos,
+      files,
+      stream.values.email,
+      stream.values.ui,
+      setFiles,
+      stream.messages,
+      stream.isLoading,
+      stream.isThreadLoading,
+      stream.interrupt,
+      stream.getMessagesMetadata,
+      sendMessage,
+      runSingleStep,
+      continueStream,
+      stopStream,
+      markCurrentThreadAsResolved,
+      resumeInterrupt,
+    ]
+  );
 }
