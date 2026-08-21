@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI
-from deepagents import create_deep_agent
+from langgraph.prebuilt import create_react_agent
 
 from src.config import OPENAI_API_KEY, OPENAI_API_BASE, MODEL_NAME
 from src.tools.market_tools import (
@@ -20,7 +20,6 @@ from src.tools.skill_tools import (
     list_available_ecommerce_skills
 )
 from src.tools.human_tools import ask_user_clarification
-from src.subagents.subagents_config import SUBAGENTS_CONFIG
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
 # Configure LLM using Printway 9router API parameters
@@ -31,7 +30,7 @@ llm = ChatOpenAI(
     temperature=0.1
 )
 
-# Granular Specialized Tools with 4-Source Market Data, Visual Gallery & Skills
+# Granular Specialized Tools with 5-Source Market Data, Visual Gallery & Skills
 orchestrator_tools = [
     ask_user_clarification,
     fetch_etsy_market_data,
@@ -47,13 +46,12 @@ orchestrator_tools = [
     list_available_ecommerce_skills
 ]
 
-# Instantiate DeepAgent without tool approval interrupts (autonomous execution)
-graph = create_deep_agent(
+# Instantiate PRINTWAY NEXUS Agent with strict R&D System Prompt & Domain Tools
+graph = create_react_agent(
     model=llm,
     tools=orchestrator_tools,
-    subagents=SUBAGENTS_CONFIG,
-    system_prompt=ORCHESTRATOR_SYSTEM_PROMPT
+    prompt=ORCHESTRATOR_SYSTEM_PROMPT
 )
 
 if __name__ == "__main__":
-    print(f"Printway Product Opportunity Hub Graph with Visual Design Gallery ({len(orchestrator_tools)} Tools) initialized!")
+    print(f"PRINTWAY NEXUS — Chief R&D & Market Opportunity Strategist Graph ({len(orchestrator_tools)} Tools) initialized!")
