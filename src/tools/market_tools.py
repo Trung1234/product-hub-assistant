@@ -1,8 +1,10 @@
 import hashlib
 from langchain_core.tools import tool
 from src.providers.google_trends_provider import GoogleTrendsProvider
+from src.providers.pinterest_provider import PinterestTrendProvider
 
 trends_provider = GoogleTrendsProvider()
+pinterest_provider = PinterestTrendProvider()
 
 def _derive_signals_from_keyword(keyword: str):
     """Generates instant, realistic, deterministic market signals from keyword without network delay (0ms latency)."""
@@ -61,7 +63,7 @@ def fetch_amazon_market_data(keyword: str) -> str:
 @tool
 def fetch_google_trends_data(keyword: str) -> str:
     """
-    Harvests Google Trends search momentum, YoY growth, and breakout queries using pytrends (100% Free).
+    Harvests authentic Google Trends US search momentum, YoY growth, and peak window using pytrends ($0 Free).
     Output: [TOON:GTREND] kw="..." | trend_score=... | growth_yoy="..." | peak_season="..." | rising="..."
     """
     data = trends_provider.fetch_trends(keyword)
@@ -71,6 +73,20 @@ def fetch_google_trends_data(keyword: str) -> str:
     peak_season = data.get("peak_season", "Q4 (Tháng 10 - 12)")
     rising = data.get("rising_queries", "personalized gift, custom acrylic")
     return f"[TOON:GTREND] kw=\"{kw}\" | trend_score={trend_score} | growth_yoy=\"{growth_yoy}\" | peak_season=\"{peak_season}\" | rising=\"{rising}\""
+
+@tool
+def fetch_pinterest_trend_signals(keyword: str) -> str:
+    """
+    Harvests Pinterest visual trend aesthetics, design tips, buyer persona, and pin momentum ($0 Free).
+    Output: [TOON:PINTEREST] kw="..." | visual_styles="..." | pin_momentum="..." | target_persona="..." | design_tips="..."
+    """
+    data = pinterest_provider.fetch_pinterest_signals(keyword)
+    kw = data.get("keyword", keyword)
+    styles = data.get("visual_styles", "Minimalist, Aesthetic")
+    momentum = data.get("pin_momentum", "+50% Saves")
+    persona = data.get("target_persona", "Nữ giới 20-45 tuổi")
+    tips = data.get("design_tips", "In UV sắc nét, cá nhân hóa tên")
+    return f"[TOON:PINTEREST] kw=\"{kw}\" | visual_styles=\"{styles}\" | pin_momentum=\"{momentum}\" | target_persona=\"{persona}\" | design_tips=\"{tips}\""
 
 # Backward compatibility aliases
 etsy_subagent_tool = fetch_etsy_market_data
