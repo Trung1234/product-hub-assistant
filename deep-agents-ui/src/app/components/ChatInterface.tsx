@@ -280,13 +280,23 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
               </div>
 
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="flex items-center justify-center px-4 py-2 rounded-xl bg-[#0E1538]/90 border border-[#00FF88]/30 shadow-[0_0_20px_rgba(0,255,136,0.25)]">
+                  <img
+                    src="/logo_header.png"
+                    alt="Printway.io"
+                    className="h-6 w-auto object-contain brightness-110"
+                  />
+                </div>
+              </div>
+
               <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF]">
                   PRINTWAY PRODUCT OPPORTUNITY HUB
                 </span>
               </h2>
               <p className="mt-2 max-w-xl text-sm text-[#94A3B8]">
-                AI Copilot tự động cào tín hiệu thị trường Etsy & Amazon, tính toán Opportunity Score 0-100 và tự suy luận chiến lược R&D sản phẩm POD toàn cầu.
+                AI Copilot tự động cào tín hiệu thị trường Etsy, Amazon & Pinterest, tính toán Opportunity Score và tự suy luận chiến lược R&D sản phẩm POD xưởng Printway.
               </p>
 
               {/* Quick Prompt Cards */}
