@@ -17,7 +17,6 @@ from src.tools.skill_tools import (
     list_available_ecommerce_skills
 )
 from src.tools.human_tools import ask_user_clarification
-from src.tools.rag_tools import retrieve_printway_knowledge_rag
 from src.subagents.subagents_config import SUBAGENTS_CONFIG
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
@@ -29,10 +28,9 @@ llm = ChatOpenAI(
     temperature=0.1
 )
 
-# Granular Specialized Tools with RAG & Human-in-the-loop Capability
+# Granular Specialized Tools with Human-in-the-loop Capability
 orchestrator_tools = [
     ask_user_clarification,
-    retrieve_printway_knowledge_rag,
     fetch_etsy_market_data,
     fetch_amazon_market_data,
     evaluate_5d_opportunity_score,
@@ -43,7 +41,7 @@ orchestrator_tools = [
     list_available_ecommerce_skills
 ]
 
-# Instantiate DeepAgent with Human-in-the-Loop interrupts & RAG (https://docs.langchain.com/oss/python/deepagents/retrieval)
+# Instantiate DeepAgent with Human-in-the-Loop interrupts (https://docs.langchain.com/oss/python/deepagents/human-in-the-loop)
 graph = create_deep_agent(
     model=llm,
     tools=orchestrator_tools,
@@ -58,4 +56,4 @@ graph = create_deep_agent(
 )
 
 if __name__ == "__main__":
-    print(f"Printway Product Opportunity Hub Graph with RAG & HITL ({len(orchestrator_tools)} Tools) initialized!")
+    print(f"Printway Product Opportunity Hub Graph with Human-in-the-Loop ({len(orchestrator_tools)} Tools) initialized!")
