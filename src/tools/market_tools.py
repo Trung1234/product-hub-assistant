@@ -57,18 +57,43 @@ def fetch_etsy_market_data(
     pages: int = 1,
     sort_by: str = "relevance",
     min_price: Optional[float] = None,
-    max_price: Optional[float] = None
+    max_price: Optional[float] = None,
+    min_rating: Optional[float] = None,
+    min_reviews: Optional[int] = None,
+    max_reviews: Optional[int] = None,
+    bestseller_only: bool = False,
+    include_keywords: Optional[str] = None,
+    exclude_keywords: Optional[str] = None
 ) -> str:
     """
     Harvests authentic, real-time Etsy marketplace intelligence using Apify Crawlee.
-    Supports filtering by:
-    - sort_by: 'relevance' (default), 'price_high' (top price), 'price_low' (bottom price), 'reviews_high', 'bestseller'
-    - limit: number of top products to retrieve (e.g. 3, 5, 10)
-    - pages: number of pagination pages to crawl (1 to 5)
-    - min_price, max_price: price bracket in USD
-    Output: [TOON:ETSY] kw="..." | vol=... | listings=... | avg_price=... | mo_sales=... | tags="..." | products=[...]
+    Granular Filtering Parameters:
+    - keyword: product search phrase
+    - limit: number of top products to retrieve (e.g. 5, 10)
+    - pages: pagination pages to crawl (1 to 5)
+    - sort_by: 'relevance', 'price_high', 'price_low', 'reviews_high', 'reviews_low', 'rating_high', 'bestseller'
+    - min_price / max_price: USD price range filter
+    - min_rating: minimum star rating (e.g. 4.8)
+    - min_reviews / max_reviews: review count boundaries (e.g. min 50, max 300)
+    - bestseller_only: filter exclusively for Bestseller / Star Seller items
+    - include_keywords: comma-separated required keywords
+    - exclude_keywords: comma-separated negative keywords (e.g. 'digital, svg, pdf')
+    Output: [TOON:ETSY] kw="..." | vol=... | listings=... | avg_price=... | mo_sales=... | tags="..." | top_products=[...]
     """
-    data = crawlee_etsy_scraper.scrape(keyword, limit=limit, pages=pages, sort_by=sort_by, min_price=min_price, max_price=max_price)
+    data = crawlee_etsy_scraper.scrape(
+        query=keyword,
+        limit=limit,
+        pages=pages,
+        sort_by=sort_by,
+        min_price=min_price,
+        max_price=max_price,
+        min_rating=min_rating,
+        min_reviews=min_reviews,
+        max_reviews=max_reviews,
+        bestseller_only=bestseller_only,
+        include_keywords=include_keywords,
+        exclude_keywords=exclude_keywords
+    )
     kw = data.get("search_query", keyword).strip()
     vol = data.get("search_volume", 14500)
     listings = data.get("active_listings", 120)
@@ -82,11 +107,12 @@ def fetch_etsy_market_data(
         p_title = p.get("title", "")[:60]
         p_price = p.get("price_usd", 0.0)
         p_rev = p.get("reviews_count", 0)
-        p_best = " (Bestseller)" if p.get("is_bestseller") else ""
-        prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} reviews){p_best}")
+        p_rat = p.get("rating", 4.9)
+        p_best = " ⭐[Bestseller]" if p.get("is_bestseller") else ""
+        prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} revs, {p_rat}★){p_best}")
 
     prod_str = " ;; ".join(prod_summaries) if prod_summaries else "None"
-    return f"[TOON:ETSY] kw=\"{kw}\" | vol={vol} | listings={listings} | avg_price={avg_price} | mo_sales={mo_sales} | tags=\"{tags}\" | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit}, pages={pages})\""
+    return f"[TOON:ETSY] kw=\"{kw}\" | vol={vol} | listings={listings} | avg_price={avg_price} | mo_sales={mo_sales} | tags=\"{tags}\" | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit})\""
 
 @tool
 def fetch_amazon_market_data(
@@ -95,18 +121,46 @@ def fetch_amazon_market_data(
     pages: int = 1,
     sort_by: str = "relevance",
     min_price: Optional[float] = None,
-    max_price: Optional[float] = None
+    max_price: Optional[float] = None,
+    min_rating: Optional[float] = None,
+    min_reviews: Optional[int] = None,
+    max_reviews: Optional[int] = None,
+    min_bought_past_month: Optional[int] = None,
+    bestseller_only: bool = False,
+    include_keywords: Optional[str] = None,
+    exclude_keywords: Optional[str] = None
 ) -> str:
     """
     Harvests authentic, real-time Amazon US marketplace intelligence using Apify Crawlee.
-    Supports filtering by:
-    - sort_by: 'relevance' (default), 'price_high' (top price), 'price_low' (bottom price), 'reviews_high', 'bestseller'
-    - limit: number of top products to retrieve (e.g. 3, 5, 10)
-    - pages: number of pagination pages to crawl (1 to 5)
-    - min_price, max_price: price bracket in USD
-    Output: [TOON:AMAZON] kw="..." | sales_units=... | price_range="..." | bsr=... | reviews=... | products=[...]
+    Granular Filtering Parameters:
+    - keyword: product search phrase
+    - limit: number of top products to retrieve (e.g. 5, 10)
+    - pages: pagination pages to crawl (1 to 5)
+    - sort_by: 'relevance', 'price_high', 'price_low', 'reviews_high', 'reviews_low', 'rating_high', 'velocity_high', 'bestseller'
+    - min_price / max_price: USD price range filter
+    - min_rating: minimum star rating (e.g. 4.5)
+    - min_reviews / max_reviews: review count boundaries (e.g. min 100, max 500)
+    - min_bought_past_month: sales velocity filter (e.g. 100+ bought)
+    - bestseller_only: filter exclusively for Bestseller / Overall Pick items
+    - include_keywords: comma-separated required keywords
+    - exclude_keywords: comma-separated negative keywords (e.g. 'sticker, svg, decal')
+    Output: [TOON:AMAZON] kw="..." | sales_units=... | price_range="..." | bsr=... | reviews=... | top_products=[...]
     """
-    data = crawlee_amazon_scraper.scrape(keyword, limit=limit, pages=pages, sort_by=sort_by, min_price=min_price, max_price=max_price)
+    data = crawlee_amazon_scraper.scrape(
+        query=keyword,
+        limit=limit,
+        pages=pages,
+        sort_by=sort_by,
+        min_price=min_price,
+        max_price=max_price,
+        min_rating=min_rating,
+        min_reviews=min_reviews,
+        max_reviews=max_reviews,
+        min_bought_past_month=min_bought_past_month,
+        bestseller_only=bestseller_only,
+        include_keywords=include_keywords,
+        exclude_keywords=exclude_keywords
+    )
     kw = data.get("search_query", keyword).strip()
     sales_units = data.get("monthly_sales_units", 1250)
     price_range = data.get("price_range_usd", "$16.99 - $24.99")
@@ -119,11 +173,12 @@ def fetch_amazon_market_data(
         p_title = p.get("title", "")[:60]
         p_price = p.get("price_usd", 0.0)
         p_rev = p.get("reviews_count", 0)
+        p_rat = p.get("rating", 4.7)
         p_bought = f" [{p.get('bought_past_month', 0)}+ bought]" if p.get("bought_past_month", 0) > 0 else ""
-        prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} reviews){p_bought} (ASIN: {p.get('asin', 'N/A')})")
+        prod_summaries.append(f"{p.get('rank', '#')}: '{p_title}' - ${p_price:.2f} ({p_rev} revs, {p_rat}★){p_bought} (ASIN: {p.get('asin', 'N/A')})")
 
     prod_str = " ;; ".join(prod_summaries) if prod_summaries else "None"
-    return f"[TOON:AMAZON] kw=\"{kw}\" | sales_units={sales_units} | price_range=\"{price_range}\" | bsr={bsr} | reviews={reviews} | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit}, pages={pages})\""
+    return f"[TOON:AMAZON] kw=\"{kw}\" | sales_units={sales_units} | price_range=\"{price_range}\" | bsr={bsr} | reviews={reviews} | top_products=[{prod_str}] | filter=\"{sort_by} (limit={limit})\""
 
 @tool
 def fetch_google_trends_data(keyword: str) -> str:
