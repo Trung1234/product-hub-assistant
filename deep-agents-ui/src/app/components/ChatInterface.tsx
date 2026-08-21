@@ -69,24 +69,24 @@ const getStatusIcon = (status: TodoItem["status"], className?: string) => {
 
 const QUICK_PROMPTS = [
   {
-    title: "Father's Day Grandpa Acrylic Ornament",
-    query: "Nghiên cứu cơ hội sản phẩm 'Personalized Grandpa Gift For Father Day Custom Shape Acrylic Ornament' trên sàn Etsy và Amazon.",
-    badge: "Home Decor / Acrylic"
+    title: "Christmas 2026: Baby First Ornament",
+    query: "Nghiên cứu xu hướng và cơ hội sản phẩm 'Baby First Christmas Ornament 2026 Custom Acrylic Keepsake' trên Etsy, Amazon, Google Trends và Pinterest.",
+    badge: "Holiday Campaign / Acrylic"
   },
   {
-    title: "Cat Mom Ceramic Mug Gift",
-    query: "Phân tích cơ hội thị trường cho ngách: 'Custom Photo Cat Mom Ceramic Mug Gift For Pet Lovers'. Đánh giá nhu cầu tìm kiếm và dải giá bán lẻ.",
-    badge: "Drinkware / Ceramic"
+    title: "Father's Day: Grandpa Acrylic Desk Plaque",
+    query: "Phân tích tiềm năng ngách 'Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light' cho thị trường US.",
+    badge: "Gifts / Wood & Acrylic"
   },
   {
-    title: "Embroidered Mama Sweatshirt",
-    query: "Kiểm tra xu hướng sản phẩm 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Cho biết mức độ cạnh tranh và cửa sổ thời gian ra mắt tối ưu.",
-    badge: "Apparel / Cotton"
+    title: "Mother's Day: Embroidered Mama Sweatshirt",
+    query: "Đánh giá cơ hội thị trường cho 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Phân tích nhu cầu tìm kiếm, cạnh tranh và gu thẩm mỹ Pinterest.",
+    badge: "Apparel / Cotton Embroidery"
   },
   {
-    title: "Acrylic Desk Sign Plaque with Wood Base",
-    query: "Đánh giá cơ hội kinh doanh cho 'Custom Acrylic Desk Sign Plaque With Wood Base Light' trên Etsy và Amazon.",
-    badge: "Gifts / Laser Cut"
+    title: "Everyday Drinkware: Teacher Tumbler 20oz",
+    query: "Kiểm tra tiềm năng sản phẩm 'Custom Stainless Steel Tumbler 20oz Teacher Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon và biên lợi nhuận xưởng Printway.",
+    badge: "Drinkware / Stainless Steel"
   }
 ];
 
@@ -351,25 +351,22 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 );
               })}
 
-              {/* SINGLE Global Glowing Thinking Indicator rendered at the VERY END of the stream */}
+              {/* ULTRA-COMPACT SLEEK GLOWING THINKING PILL */}
               {isLoading && (
-                <div className="my-4 flex items-center gap-3.5 rounded-2xl border border-[#00FF88]/40 bg-[#0E1538]/90 p-4 shadow-[0_0_25px_rgba(0,255,136,0.2)] backdrop-blur-md animate-pulse">
-                  <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_15px_rgba(0,255,136,0.6)]">
-                    <BrainCircuit className="h-5 w-5 text-[#080B21]" />
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-extrabold tracking-wider text-[#00FF88] uppercase">
-                        AI Copilot is Thinking...
-                      </span>
-                      <span className="flex gap-1.5">
-                        <span className="h-2 w-2 rounded-full bg-[#00FF88] animate-bounce [animation-delay:-0.3s]"></span>
-                        <span className="h-2 w-2 rounded-full bg-[#00D2FF] animate-bounce [animation-delay:-0.15s]"></span>
-                        <span className="h-2 w-2 rounded-full bg-[#8B5CF6] animate-bounce"></span>
-                      </span>
+                <div className="my-2.5 flex items-center justify-between rounded-xl border border-[#00FF88]/30 bg-[#0E1538]/80 px-3.5 py-2 shadow-[0_0_15px_rgba(0,255,136,0.12)] backdrop-blur-md">
+                  <div className="flex items-center gap-2.5">
+                    <div className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_8px_rgba(0,255,136,0.5)]">
+                      <BrainCircuit className="h-3 w-3 text-[#080B21]" />
                     </div>
-                    <span className="text-xs text-[#94A3B8] mt-0.5">
-                      Đang cào dữ liệu Etsy & Amazon, tính toán 5D Opportunity Score và tự suy luận chiến lược R&D...
+                    <span className="text-xs font-semibold text-slate-200">
+                      AI Copilot đang phân tích thị trường & tính điểm cơ hội...
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00FF88] animate-ping" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#00D2FF] animate-pulse" />
+                    <span className="text-[10px] font-mono font-bold text-[#00FF88]/80 uppercase tracking-wider">
+                      Thinking
                     </span>
                   </div>
                 </div>
