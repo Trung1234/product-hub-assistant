@@ -1,137 +1,87 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { User, LogIn, LogOut, ShieldCheck, Building2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/providers/AuthProvider";
+import { User, LogIn, LogOut, ShieldCheck, Building2, ChevronDown, Sparkles } from "lucide-react";
 
 export function AuthButton() {
-  const [user, setUser] = useState<any>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { user, profile, signOut } = useAuth();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Close dropdown on outside click
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return;
-
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-
-    return () => subscription.unsubscribe();
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!supabase) return;
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      alert("Sign in error: " + error.message);
-    } else {
-      setShowModal(false);
-    }
-  };
+  if (!user) return null;
 
-  const handleSignOut = async () => {
-    if (supabase) {
-      await supabase.auth.signOut();
-      setUser(null);
-    }
-  };
-
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-medium">
-        <Building2 className="w-3.5 h-3.5" />
-        <span>Printway R&D (Local Workspace)</span>
-      </div>
-    );
-  }
-
-  if (user) {
-    return (
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 text-xs font-medium">
-          <ShieldCheck className="w-3.5 h-3.5 text-indigo-500" />
-          <span>{user.email?.split("@")[0]}</span>
-        </div>
-        <button
-          onClick={handleSignOut}
-          className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-red-500 transition-colors"
-          title="Sign Out"
-        >
-          <LogOut className="w-4 h-4" />
-        </button>
-      </div>
-    );
-  }
+  const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
+  const userRole = profile?.role === "lead_rd" ? "🚀 Lead R&D" : profile?.role === "seller" ? "🛍️ VIP Seller" : "🎨 POD Designer";
+  const userInitials = displayName.slice(0, 2).toUpperCase();
 
   return (
-    <>
+    <div className="relative" ref={dropdownRef}>
+      {/* Avatar Trigger Button */}
       <button
-        onClick={() => setShowModal(true)}
-        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-all"
+        type="button"
+        data-testid="header-profile-trigger"
+        onClick={() => setDropdownOpen((prev) => !prev)}
+        className="flex items-center gap-2 px-2.5 py-1.5 rounded-full bg-[#121A45] border border-[#00FF88]/30 hover:border-[#00FF88] text-white text-xs font-medium transition-all shadow-sm cursor-pointer group"
       >
-        <LogIn className="w-3.5 h-3.5" />
-        <span>Sign In</span>
+        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#080B21] border border-[#00FF88]/50 text-[10px] font-bold text-[#00FF88] group-hover:scale-105 transition-transform">
+          {userInitials}
+        </div>
+        <span className="max-w-[120px] truncate text-slate-200 font-semibold">{displayName}</span>
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${dropdownOpen ? "rotate-180 text-[#00FF88]" : ""}`} />
       </button>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Sign In to Printway Hub</h3>
-            <p className="text-xs text-slate-500 mb-4">Access your multi-tenant opportunity matrix & saved reports.</p>
-
-            <form onSubmit={handleSignIn} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-                  placeholder="designer@printway.io"
-                  required
-                />
+      {/* Floating Logout / Profile Dropdown Menu */}
+      {dropdownOpen && (
+        <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#0E1538] border border-white/10 shadow-2xl p-2.5 z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl">
+          {/* User Details */}
+          <div className="p-2.5 rounded-xl bg-[#080B21]/80 border border-white/5 mb-2">
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/50 text-xs font-bold text-[#00FF88]">
+                {userInitials}
               </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
-                  placeholder="••••••••"
-                  required
-                />
+              <div className="flex flex-col truncate">
+                <span className="text-xs font-bold text-white truncate">{displayName}</span>
+                <span className="text-[10px] text-slate-400 truncate">{user?.email}</span>
               </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="px-4 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
-                >
-                  {loading ? "Signing in..." : "Sign In"}
-                </button>
-              </div>
-            </form>
+            </div>
+            <div className="flex items-center justify-between pt-1.5 border-t border-white/5">
+              <span className="text-[10px] font-bold text-[#00FF88] bg-[#00FF88]/10 px-2 py-0.5 rounded-full border border-[#00FF88]/30">
+                {userRole}
+              </span>
+              <span className="text-[10px] text-slate-400 flex items-center gap-1">
+                <Building2 className="w-3 h-3 text-slate-500" />
+                Printway
+              </span>
+            </div>
           </div>
+
+          {/* Action: Sign Out */}
+          <button
+            type="button"
+            data-testid="header-logout-button"
+            onClick={() => {
+              setDropdownOpen(false);
+              signOut();
+            }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-red-400 hover:text-white hover:bg-red-500/20 transition-all cursor-pointer group"
+          >
+            <LogOut className="w-4 h-4 text-red-400 group-hover:translate-x-0.5 transition-transform" />
+            <span>Đăng Xuất (Sign Out)</span>
+          </button>
         </div>
       )}
-    </>
+    </div>
   );
 }

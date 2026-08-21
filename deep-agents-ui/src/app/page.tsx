@@ -264,7 +264,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
   );
 }
 
-function HomePageContent() {
+function HomePageContentInner() {
   const { user, loading } = useAuth();
   const [config] = useState<StandaloneConfig>(() => getConfig());
   const [assistantId, setAssistantId] = useQueryState("assistantId");
@@ -279,7 +279,7 @@ function HomePageContent() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-[#080B21] text-white">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-[#00FF88]" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#00FF88] border-t-transparent" />
           <p className="text-xs font-semibold text-slate-400">Đang đồng bộ phiên xác thực Printway Supabase...</p>
         </div>
       </div>
@@ -302,6 +302,18 @@ function HomePageContent() {
     </ClientProvider>
   );
 }
+
+const HomePageContent = dynamic(() => Promise.resolve(HomePageContentInner), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-screen w-screen items-center justify-center bg-[#080B21] text-white">
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#00FF88] border-t-transparent" />
+        <p className="text-xs font-semibold text-slate-400">Đang khởi tạo giao diện Printway Opportunity Hub...</p>
+      </div>
+    </div>
+  ),
+});
 
 export default function HomePage() {
   return (

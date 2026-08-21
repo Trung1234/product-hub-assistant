@@ -11,6 +11,8 @@ import { v4 as uuidv4 } from "uuid";
 import type { UseStreamThread } from "@langchain/langgraph-sdk/react";
 import type { TodoItem } from "@/app/types/types";
 import { useClient } from "@/providers/ClientProvider";
+import { useAuth } from "@/providers/AuthProvider";
+import { recordUserThread } from "@/app/hooks/useThreads";
 import { useQueryState } from "nuqs";
 
 export type StateType = {
@@ -36,26 +38,41 @@ export function useChat({
 }) {
   const [threadId, setThreadId] = useQueryState("threadId");
   const client = useClient();
+  const { user, profile } = useAuth();
+
+  const handleCreated = useCallback((newThread: any) => {
+    if (newThread?.thread_id && user?.id) {
+      recordUserThread(newThread.thread_id, "Phiên nghiên cứu mới", user.id, profile?.org_id);
+    }
+    onHistoryRevalidate?.();
+  }, [user, profile, onHistoryRevalidate]);
 
   const stream = useStream<StateType>({
     assistantId: activeAssistant?.assistant_id || "",
     client: client ?? undefined,
     reconnectOnMount: true,
     threadId: threadId ?? null,
-    onThreadId: setThreadId,
+    onThreadId: (id) => {
+      setThreadId(id);
+      if (id && user?.id) {
+        recordUserThread(id, "Phiên nghiên cứu mới", user.id, profile?.org_id);
+      }
+    },
     defaultHeaders: { "x-auth-scheme": "langsmith" },
-    // Enable fetching state history when switching to existing threads
     fetchStateHistory: true,
-    // Revalidate thread list when stream finishes, errors, or creates new thread
     onFinish: onHistoryRevalidate,
     onError: onHistoryRevalidate,
-    onCreated: onHistoryRevalidate,
+    onCreated: handleCreated,
     experimental_thread: thread,
   });
 
   const sendMessage = useCallback(
     (content: string | any[]) => {
       const newMessage: Message = { id: uuidv4(), type: "human", content };
+      const rawText = typeof content === "string" ? content : (content?.[0]?.text || "Phiên nghiên cứu");
+      if (threadId && user?.id) {
+        recordUserThread(threadId, rawText.slice(0, 50), user.id, profile?.org_id);
+      }
       stream.submit(
         { messages: [newMessage] },
         {
@@ -65,10 +82,9 @@ export function useChat({
           config: { ...(activeAssistant?.config ?? {}), recursion_limit: 100 },
         }
       );
-      // Update thread list immediately when sending a message
       onHistoryRevalidate?.();
     },
-    [stream, activeAssistant?.config, onHistoryRevalidate]
+    [stream, threadId, user, profile, activeAssistant?.config, onHistoryRevalidate]
   );
 
   const runSingleStep = useCallback(

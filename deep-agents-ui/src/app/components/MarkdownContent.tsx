@@ -248,7 +248,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                 return <PrintwaySkuCardWidget code={codeStr} />;
               }
 
-              // 6. Interactive follow-up question action chips
+              // 5. Interactive follow-up question action chips
               if (
                 !inline &&
                 (lang === "suggestions" ||

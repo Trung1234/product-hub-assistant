@@ -15,6 +15,8 @@ import {
   HelpCircle,
   Send,
   Paperclip,
+  Mic,
+  MicOff,
   X,
   FileText,
   FileSpreadsheet,
@@ -22,6 +24,7 @@ import {
   Sparkles,
   Loader2
 } from "lucide-react";
+import { toast } from "sonner";
 import { TodoItem } from "@/app/types/types";
 import { cn } from "@/lib/utils";
 import { FilesPopover } from "@/app/components/TasksFilesSidebar";
@@ -81,6 +84,8 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const [previewingFile, setPreviewingFile] = useState<UploadedFileItem | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
 
   // Real-time LLM-generated dynamic completion
   const [llmSuggestion, setLlmSuggestion] = useState<string>("");
@@ -90,6 +95,60 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tasksContainerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const toggleListening = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      toast.error("Trình duyệt hiện tại chưa hỗ trợ nhận diện giọng nói Web Speech.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "vi-VN";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        toast.info("Đang lắng nghe giọng nói... Hãy nói từ khóa hoặc ý tưởng POD của bạn.");
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        if (transcript) {
+          setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+          toast.success("Đã ghi nhận giọng nói!");
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+      recognition.start();
+    } catch (err) {
+      console.error("Speech recognition init error:", err);
+      setIsListening(false);
+    }
+  }, [isListening]);
 
   const hasTasks = todos.length > 0;
   const hasFiles = Object.keys(files).length > 0;
@@ -674,8 +733,8 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
             {/* Bottom Bar: Action Tools & Suggestion Pill */}
             <div className="flex justify-between items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10 relative z-20">
-              {/* Left Side: Attachment Button & File Count */}
-              <div className="flex items-center gap-2 flex-wrap">
+              {/* Left Side: Attachment & Voice Input Button & File Count */}
+              <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -686,8 +745,28 @@ export const ChatInput = React.memo<ChatInputProps>(({
                   <Paperclip className="h-4 w-4" />
                 </button>
 
+                {/* Speech to text Voice Button */}
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-lg border transition-all cursor-pointer",
+                    isListening
+                      ? "border-rose-500/60 bg-rose-500/20 text-rose-400 animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.4)]"
+                      : "border-transparent text-slate-400 hover:text-[#00D2FF] hover:bg-[#121A45] hover:border-[#00D2FF]/30"
+                  )}
+                  title={isListening ? "Đang ghi âm (Bấm để dừng)" : "Nhập bằng giọng nói (Tiếng Việt / English)"}
+                  aria-label="Nhập bằng giọng nói"
+                >
+                  {isListening ? (
+                    <MicOff className="h-4 w-4 text-rose-400" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                </button>
+
                 {attachments.length > 0 && (
-                  <span className="text-[10px] sm:text-[11px] text-[#00FF88] font-semibold flex items-center gap-1">
+                  <span className="text-[10px] sm:text-[11px] text-[#00FF88] font-semibold flex items-center gap-1 ml-1">
                     <CheckCircle className="h-3 w-3" />
                     {attachments.length} tệp
                   </span>

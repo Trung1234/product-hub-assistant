@@ -8,7 +8,8 @@ import {
   ThumbsUp,
   ThumbsDown,
   Sparkles,
-  Share2
+  Share2,
+  Printer
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +56,12 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
     document.body.removeChild(link);
   };
 
+  const handlePrint = () => {
+    if (typeof window !== "undefined") {
+      window.print();
+    }
+  };
+
   const handleShare = async () => {
     try {
       if (typeof window !== "undefined") {
@@ -68,7 +75,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
   };
 
   return (
-    <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-2.5 text-xs text-slate-400">
+    <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-2.5 text-xs text-slate-400 no-print">
       {/* Left Action Buttons */}
       <div className="flex flex-wrap items-center gap-1.5">
         <button
@@ -102,7 +109,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           title="Tải bảng ma trận 23 cột file CSV"
         >
           <Download className="h-3.5 w-3.5" />
-          <span>Tải CSV (23 cột)</span>
+          <span>Tải CSV</span>
         </button>
 
         <button
@@ -113,6 +120,16 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
         >
           <Download className="h-3.5 w-3.5" />
           <span>Tải PDF</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handlePrint}
+          className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-slate-300 transition-all hover:border-amber-400/40 hover:bg-[#121A45] hover:text-amber-300 cursor-pointer"
+          title="In hoặc lưu file PDF từ trình duyệt"
+        >
+          <Printer className="h-3.5 w-3.5" />
+          <span>In báo cáo</span>
         </button>
 
         <button

@@ -13,7 +13,9 @@ import {
   Loader2,
   Search,
   X,
-  Trash2
+  Trash2,
+  ChevronDown,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -64,6 +66,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
 }) => {
   const client = useClient();
   const { user, profile, signOut } = useAuth();
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const threads = useThreads({ limit: 35 });
@@ -334,16 +337,52 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* BOTTOM SECTION: DYNAMIC USER PROFILE & SIGNOUT */}
-        <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 flex flex-col gap-2">
-          {(!collapsed || mobileOpen) ? (
-            <div className="flex items-center justify-between rounded-xl px-2.5 py-2 bg-[#080B21]/70 border border-slate-800/80">
-              <div className="flex items-center gap-2.5 truncate">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 text-[11px] font-bold text-[#00FF88]">
+        {/* BOTTOM SECTION: DYNAMIC USER PROFILE & LOGOUT ACTION */}
+        <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 relative">
+          {profileMenuOpen && (
+            <div className="absolute bottom-full left-3 right-3 mb-2 rounded-2xl bg-[#080B21] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150 backdrop-blur-xl">
+              <div className="flex items-center gap-2.5 mb-2 pb-2 border-b border-white/5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/50 text-xs font-bold text-[#00FF88]">
                   {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || "US")}
                 </div>
                 <div className="flex flex-col truncate">
-                  <span className="text-xs font-bold text-slate-200 truncate">
+                  <span className="text-xs font-bold text-white truncate">{profile?.full_name || user?.email?.split("@")[0]}</span>
+                  <span className="text-[10px] text-slate-400 truncate">{user?.email}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between py-1 mb-2 px-1 text-[10px]">
+                <span className="text-slate-400">Workspace:</span>
+                <span className="text-[#00FF88] font-bold">{profile?.org_id === "org_vip_sellers" ? "VIP Sellers" : "Printway Internal"}</span>
+              </div>
+
+              <button
+                type="button"
+                data-testid="sidebar-logout-button"
+                onClick={() => {
+                  setProfileMenuOpen(false);
+                  signOut();
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold border border-red-500/20 transition-all cursor-pointer"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                <span>Đăng Xuất (Log Out)</span>
+              </button>
+            </div>
+          )}
+
+          {(!collapsed || mobileOpen) ? (
+            <div
+              data-testid="sidebar-profile-trigger"
+              onClick={() => setProfileMenuOpen((prev) => !prev)}
+              className="flex items-center justify-between rounded-xl px-2.5 py-2 bg-[#080B21]/70 border border-slate-800/80 hover:border-[#00FF88]/40 transition-all cursor-pointer group"
+            >
+              <div className="flex items-center gap-2.5 truncate">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 group-hover:border-[#00FF88] text-[11px] font-bold text-[#00FF88]">
+                  {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || "US")}
+                </div>
+                <div className="flex flex-col truncate">
+                  <span className="text-xs font-bold text-slate-200 group-hover:text-white truncate">
                     {profile?.full_name || user?.email?.split("@")[0] || "Printway User"}
                   </span>
                   <span className="text-[9px] text-[#00FF88] font-medium truncate uppercase tracking-wider">
@@ -351,22 +390,14 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                   </span>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => signOut()}
-                className="p-1 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                title="Đăng xuất khỏi hệ thống"
-              >
-                <Trash2 className="hidden" />
-                <PanelLeftClose className="h-4 w-4" />
-              </button>
+              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#00FF88] transition-transform duration-200 ${profileMenuOpen ? "rotate-180" : ""}`} />
             </div>
           ) : (
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  onClick={() => signOut()}
-                  className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 text-[11px] font-bold text-[#00FF88] cursor-pointer hover:border-red-400/50"
+                  onClick={() => setProfileMenuOpen((prev) => !prev)}
+                  className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 text-[11px] font-bold text-[#00FF88] cursor-pointer hover:border-[#00FF88] hover:scale-105 transition-all"
                 >
                   {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : "US"}
                 </div>

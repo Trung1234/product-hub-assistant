@@ -281,3 +281,53 @@ pre {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Print Dossier Stylesheet for 1-Click PDF / Paper Export */
+@media print {
+  body, html {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+    background-image: none !important;
+  }
+
+  aside,
+  header,
+  form,
+  .no-print,
+  button:not(.print-keep),
+  nav {
+    display: none !important;
+  }
+
+  main {
+    background: #FFFFFF !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .prose {
+    color: #0F172A !important;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    color: #0F172A !important;
+    page-break-after: avoid;
+  }
+
+  .prose table {
+    border: 1px solid #CBD5E1 !important;
+    color: #0F172A !important;
+  }
+
+  .prose th, .prose td {
+    border: 1px solid #E2E8F0 !important;
+    color: #0F172A !important;
+    background: #FFFFFF !important;
+  }
+
+  blockquote {
+    border-left-color: #059669 !important;
+    background: #F8FAFC !important;
+    color: #1E293B !important;
+  }
+}
