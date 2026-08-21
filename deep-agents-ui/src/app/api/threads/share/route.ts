@@ -11,10 +11,9 @@ function generateShareToken(): string {
   return result;
 }
 
-// In-memory persistent cache for instant fast response and local fallback
+// In-memory cache for fast local access
 const memoryShareStore = new Map<string, any>();
-const memoryThreadToShare = new Map<string, string>(); // threadId -> shareToken
-const memoryCollaborators = new Map<string, any[]>(); // threadId -> collaborators
+const memoryThreadToShare = new Map<string, string>();
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -24,7 +23,16 @@ export async function GET(request: NextRequest) {
   try {
     // 1. Query by public share token
     if (token) {
+      // A. Check memory cache first
+      const memData = memoryShareStore.get(token);
+      if (memData && memData.is_active) {
+        memData.view_count = (memData.view_count || 0) + 1;
+        return NextResponse.json({ success: true, share: memData });
+      }
+
+      // B. Query Supabase (thread_shares table or user_sessions fallback)
       if (isSupabaseConfigured && supabase) {
+        // Try dedicated thread_shares table
         try {
           const { data, error } = await supabase
             .from("thread_shares")
@@ -37,13 +45,6 @@ export async function GET(request: NextRequest) {
             .single();
 
           if (!error && data) {
-            // Increment view count asynchronously
-            supabase
-              .from("thread_shares")
-              .update({ view_count: (data.view_count || 0) + 1 })
-              .eq("id", data.id)
-              .then(() => {});
-
             return NextResponse.json({
               success: true,
               share: {
@@ -54,16 +55,55 @@ export async function GET(request: NextRequest) {
               },
             });
           }
-        } catch (dbErr) {
-          console.debug("Supabase query fallback to memory:", dbErr);
+        } catch (e) {
+          console.debug("thread_shares query catch:", e);
         }
-      }
 
-      // Fast Memory Cache Fallback
-      const memData = memoryShareStore.get(token);
-      if (memData && memData.is_active) {
-        memData.view_count = (memData.view_count || 0) + 1;
-        return NextResponse.json({ success: true, share: memData });
+        // Robust Fallback: Query user_sessions cloud storage
+        try {
+          const { data: sessionData, error: sessionErr } = await supabase
+            .from("user_sessions")
+            .select("*")
+            .eq("thread_id", `share:${token}`)
+            .single();
+
+          if (!sessionErr && sessionData) {
+            let parsedSnapshot: any = null;
+            try {
+              parsedSnapshot = JSON.parse(sessionData.title || "{}");
+            } catch {
+              parsedSnapshot = { title: sessionData.title };
+            }
+
+            const fallbackShare = {
+              id: sessionData.thread_id,
+              thread_id: sessionData.thread_id,
+              owner_id: sessionData.user_id,
+              org_id: sessionData.org_id || "printway_internal",
+              share_token: token,
+              share_mode: "public_link",
+              permission: "fork",
+              snapshot_data: parsedSnapshot,
+              is_active: true,
+              view_count: 1,
+              created_at: sessionData.created_at,
+              updated_at: sessionData.last_active,
+              owner_name: parsedSnapshot?.authorName || "Printway R&D",
+              owner_email: parsedSnapshot?.authorEmail || "analyst@printway.io",
+              owner_role: parsedSnapshot?.authorRole || "lead_rd",
+            };
+
+            // Cache in memory for subsequent requests
+            memoryShareStore.set(token, fallbackShare);
+
+            return NextResponse.json({
+              success: true,
+              share: fallbackShare,
+            });
+          }
+        } catch (fallbackErr) {
+          console.debug("user_sessions fallback error:", fallbackErr);
+        }
       }
 
       return NextResponse.json(
@@ -82,45 +122,40 @@ export async function GET(request: NextRequest) {
             .eq("thread_id", threadId)
             .single();
 
-          const { data: collabData } = await supabase
-            .from("thread_collaborators")
-            .select(`
-              *,
-              profiles:user_id (full_name, email)
-            `)
-            .eq("thread_id", threadId);
-
           if (shareData) {
-            const collaborators = (collabData || []).map((c: any) => ({
-              id: c.id,
-              thread_id: c.thread_id,
-              user_id: c.user_id,
-              role: c.role,
-              created_at: c.created_at,
-              full_name: c.profiles?.full_name || c.profiles?.email?.split("@")[0],
-              email: c.profiles?.email,
-            }));
-
             return NextResponse.json({
               success: true,
               share: shareData,
-              collaborators,
+              collaborators: [],
             });
           }
         } catch (dbErr) {
-          console.debug("Supabase thread share query fallback to memory:", dbErr);
+          console.debug("Supabase thread share query fallback:", dbErr);
         }
+
+        // Fallback: check session-backed share token
+        try {
+          const memToken = memoryThreadToShare.get(threadId);
+          if (memToken) {
+            const memShare = memoryShareStore.get(memToken);
+            if (memShare) {
+              return NextResponse.json({
+                success: true,
+                share: memShare,
+                collaborators: [],
+              });
+            }
+          }
+        } catch {}
       }
 
-      // Memory fallback
       const memToken = memoryThreadToShare.get(threadId);
       const memShare = memToken ? memoryShareStore.get(memToken) : null;
-      const memCollabs = memoryCollaborators.get(threadId) || [];
 
       return NextResponse.json({
         success: true,
         share: memShare || null,
-        collaborators: memCollabs,
+        collaborators: [],
       });
     }
 
@@ -158,9 +193,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let shareToken = body.shareToken || memoryThreadToShare.get(threadId) || generateShareToken();
+    const shareToken = body.shareToken || memoryThreadToShare.get(threadId) || generateShareToken();
 
-    // 1. Always populate Memory Store for instant fast retrieval & offline reliability
+    // 1. Populate Memory Store
     const shareObject = {
       id: uuidv4(),
       thread_id: threadId,
@@ -181,15 +216,25 @@ export async function POST(request: NextRequest) {
 
     memoryShareStore.set(shareToken, shareObject);
     memoryThreadToShare.set(threadId, shareToken);
-    if (collaborators.length > 0) {
-      memoryCollaborators.set(threadId, collaborators);
-    }
 
-    // 2. Persist to Supabase if configured
+    // 2. Persist to Cloud Supabase
     if (isSupabaseConfigured && supabase) {
+      // A. Save to user_sessions fallback storage (guaranteed to work across all serverless lambdas)
       try {
-        // Ensure user_session exists
-        if (ownerId) {
+        await supabase.from("user_sessions").upsert({
+          thread_id: `share:${shareToken}`,
+          user_id: ownerId && ownerId.length === 36 ? ownerId : null,
+          org_id: orgId || "printway_internal",
+          title: JSON.stringify(snapshotData || {}),
+          last_active: new Date().toISOString(),
+        });
+      } catch (sessionErr) {
+        console.debug("Error upserting share to user_sessions:", sessionErr);
+      }
+
+      // B. Try dedicated thread_shares table
+      try {
+        if (ownerId && ownerId.length === 36) {
           await supabase.from("user_sessions").upsert({
             thread_id: threadId,
             user_id: ownerId,
@@ -199,13 +244,12 @@ export async function POST(request: NextRequest) {
           });
         }
 
-        // Upsert thread_shares
         await supabase
           .from("thread_shares")
           .upsert(
             {
               thread_id: threadId,
-              owner_id: ownerId || null,
+              owner_id: ownerId && ownerId.length === 36 ? ownerId : null,
               org_id: orgId,
               share_token: shareToken,
               share_mode: shareMode,
@@ -217,7 +261,7 @@ export async function POST(request: NextRequest) {
             { onConflict: "thread_id" }
           );
       } catch (dbErr) {
-        console.debug("Supabase upsert share record notice:", dbErr);
+        console.debug("Supabase thread_shares upsert note:", dbErr);
       }
     }
 
@@ -253,6 +297,15 @@ export async function DELETE(request: NextRequest) {
     }
 
     if (isSupabaseConfigured && supabase) {
+      if (memToken) {
+        try {
+          await supabase
+            .from("user_sessions")
+            .delete()
+            .eq("thread_id", `share:${memToken}`);
+        } catch {}
+      }
+
       try {
         await supabase
           .from("thread_shares")

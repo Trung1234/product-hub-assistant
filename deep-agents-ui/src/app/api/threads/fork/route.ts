@@ -25,23 +25,42 @@ export async function POST(request: NextRequest) {
     let snapshotData: any = null;
     let originalTitle = "Phiên nghiên cứu";
 
-    // 1. Fetch source snapshot from Supabase or share API
+    // 1. Fetch source snapshot from Supabase or session fallback
     if (shareToken && isSupabaseConfigured && supabase) {
-      const { data } = await supabase
-        .from("thread_shares")
-        .select("snapshot_data, thread_id")
-        .eq("share_token", shareToken)
-        .single();
+      try {
+        const { data } = await supabase
+          .from("thread_shares")
+          .select("snapshot_data, thread_id")
+          .eq("share_token", shareToken)
+          .single();
 
-      if (data?.snapshot_data) {
-        snapshotData = data.snapshot_data;
-        originalTitle = snapshotData.title || originalTitle;
+        if (data?.snapshot_data) {
+          snapshotData = data.snapshot_data;
+          originalTitle = snapshotData.title || originalTitle;
+        }
+      } catch {}
+
+      if (!snapshotData) {
+        try {
+          const { data: sessionData } = await supabase
+            .from("user_sessions")
+            .select("title")
+            .eq("thread_id", `share:${shareToken}`)
+            .single();
+
+          if (sessionData?.title) {
+            try {
+              snapshotData = JSON.parse(sessionData.title);
+              originalTitle = snapshotData.title || originalTitle;
+            } catch {}
+          }
+        } catch {}
       }
     }
 
     // 2. Generate a new thread ID
     const newThreadId = uuidv4();
-    const forkedTitle = customTitle || `Bản sao: ${originalTitle}`;
+    const forkedTitle = customTitle || (originalTitle.startsWith("Bản sao:") ? originalTitle : `Bản sao: ${originalTitle}`);
 
     // 3. Try to initialize state on LangGraph API Server if available
     const deploymentUrl =
@@ -93,7 +112,7 @@ export async function POST(request: NextRequest) {
       try {
         await supabase.from("user_sessions").insert({
           thread_id: newThreadId,
-          user_id: targetUserId,
+          user_id: targetUserId.length === 36 ? targetUserId : null,
           org_id: orgId,
           title: forkedTitle,
           last_active: new Date().toISOString(),
