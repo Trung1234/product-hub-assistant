@@ -46,7 +46,7 @@ function truncateTitle(title: string, maxLength: number = 28): string {
   return clean.slice(0, maxLength) + "...";
 }
 
-export const AppSidebar: React.FC<AppSidebarProps> = ({
+export const AppSidebar = React.memo<AppSidebarProps>(({
   currentThreadId,
   onThreadSelect,
   onNewResearch,

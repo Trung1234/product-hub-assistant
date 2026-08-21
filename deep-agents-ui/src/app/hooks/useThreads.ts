@@ -129,8 +129,10 @@ export function useThreads(props: {
       });
     },
     {
-      revalidateFirstPage: true,
-      revalidateOnFocus: true,
+      revalidateFirstPage: false,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      dedupingInterval: 15000,
     }
   );
 }

@@ -40,7 +40,7 @@ const DEFAULT_COLORS = [
   "#3B82F6", // Blue
 ];
 
-export const CyberpunkChartRenderer: React.FC<{ code: string }> = ({ code }) => {
+export const CyberpunkChartRenderer = React.memo<{ code: string }>(({ code }) => {
   let parsed: ChartPayload = {};
   try {
     parsed = JSON.parse(code.trim());
