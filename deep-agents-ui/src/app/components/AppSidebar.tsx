@@ -180,7 +180,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                 </div>
               )}
 
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 {flattened.map((thread) => {
                   const isActive = currentThreadId === thread.id;
                   const title = thread.title || thread.description || "Research Session";
@@ -190,15 +190,18 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                       key={thread.id}
                       type="button"
                       onClick={() => onThreadSelect(thread.id)}
+                      title={title}
                       className={cn(
-                        "group relative flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-all",
+                        "group relative flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs transition-all",
                         isActive
-                          ? "border border-[#00FF88]/40 bg-[#0E1538] text-[#00FF88] font-semibold shadow-[0_0_10px_rgba(0,255,136,0.1)]"
+                          ? "border border-[#00FF88]/40 bg-[#0E1538] text-[#00FF88] font-semibold shadow-[0_0_10px_rgba(0,255,136,0.12)]"
                           : "border border-transparent text-slate-300 hover:bg-[#121A45]/70 hover:text-white"
                       )}
                     >
-                      <span className="truncate flex-1">{title}</span>
-                      <span className="shrink-0 text-[10px] text-slate-400 opacity-60 group-hover:opacity-100 font-mono">
+                      <span className="block min-w-0 flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap text-[12px] leading-snug">
+                        {title}
+                      </span>
+                      <span className="shrink-0 text-[10px] text-slate-400 opacity-60 group-hover:opacity-100 font-mono pl-1">
                         {formatTime(thread.updatedAt)}
                       </span>
                     </button>
