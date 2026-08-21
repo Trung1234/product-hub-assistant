@@ -18,7 +18,11 @@ export const metadata: Metadata = {
   title: "Printway Nexus | AI R&D Copilot & POD Opportunity Discovery",
   description: "Printway Nexus - Hệ thống AI Copilot phát hiện cơ hội sản phẩm Print-on-Demand (POD) xuyên biên giới thời gian thực qua Amazon, Etsy & Pinterest.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
     apple: "/printway-logo.png",
   },
 };
