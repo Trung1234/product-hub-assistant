@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback, FormEvent, useMemo } from "react";
+import React, { useState, useRef, useCallback, FormEvent, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Square,
@@ -18,7 +18,8 @@ import {
   FileText,
   FileSpreadsheet,
   Image as ImageIcon,
-  Sparkles
+  Sparkles,
+  Loader2
 } from "lucide-react";
 import { TodoItem } from "@/app/types/types";
 import { cn } from "@/lib/utils";
@@ -37,23 +38,6 @@ interface ChatInputProps {
   clarificationData: { question: string; options: string[] } | null;
   onClarificationSubmit: (response: string) => void;
 }
-
-const PROMPT_SUGGESTIONS: string[] = [
-  "Nghiên cứu xu hướng và tiềm năng sản phẩm Baby First Christmas Ornament 2026 Custom Acrylic Keepsake trên Etsy và Amazon",
-  "Phân tích tiềm năng ngách Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light cho thị trường US",
-  "Đánh giá cơ hội thị trường cho Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve",
-  "Kiểm tra tiềm năng sản phẩm Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift",
-  "So sánh biên lợi nhuận giữa phôi Mica Đài Loan 3mm và Gỗ Plywood xưởng Printway",
-  "Phân tích 5 shop đối thủ bán chạy nhất ngách Suncatcher Acrylic trên Etsy",
-  "Lập kế hoạch chạy Ads TikTok Shop và thời điểm mở bán đón sóng Q4",
-  "Tối ưu chi phí fulfillment và thời gian ship US cho đơn hàng 500 units",
-  "Nghiên cứu từ khóa SEO và 13 Etsy Tags cho ngách móc khóa mica theo yêu cầu",
-  "Đánh giá nhu cầu Google Trends và thời điểm đạt đỉnh trong 12 tháng qua",
-  "Phân tích chi phí và giá bán đề xuất cho dòng ly giữ nhiệt 40oz in UV",
-  "Tư vấn công nghệ in UV 4 lớp chống phai màu cho phôi Mica trong suốt",
-  "Phân tích xu hướng màu sắc và phong cách thiết kế thịnh hành trên Pinterest",
-  "Đánh giá rủi ro cạnh tranh và tính khả thi sản xuất tại xưởng Printway Việt Nam",
-];
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -81,6 +65,11 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const [isDragging, setIsDragging] = useState(false);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
 
+  // Real-time LLM-generated dynamic completion
+  const [llmSuggestion, setLlmSuggestion] = useState<string>("");
+  const [isLlmFetching, setIsLlmFetching] = useState<boolean>(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tasksContainerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -88,25 +77,59 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const hasTasks = todos.length > 0;
   const hasFiles = Object.keys(files).length > 0;
 
-  // Intelligent Prompt Auto-Completion calculation
+  // Real-time Dynamic LLM Autocomplete Effect
+  useEffect(() => {
+    const trimmed = input.trim();
+    if (suggestionDismissed || trimmed.length < 3) {
+      setLlmSuggestion("");
+      return;
+    }
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const timer = setTimeout(async () => {
+      try {
+        setIsLlmFetching(true);
+        const res = await fetch("/api/prompt-autocomplete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prefix: trimmed }),
+          signal: controller.signal,
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.completion && typeof data.completion === "string" && data.completion.trim().length > trimmed.length) {
+            setLlmSuggestion(data.completion.trim());
+          }
+        }
+      } catch (err: any) {
+        if (err.name !== "AbortError") {
+          console.error("Dynamic LLM autocomplete error:", err);
+        }
+      } finally {
+        setIsLlmFetching(false);
+      }
+    }, 220);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [input, suggestionDismissed]);
+
   const activeSuggestion = useMemo(() => {
     if (suggestionDismissed) return null;
-    const trimmed = input.trim();
-    if (!trimmed || trimmed.length < 2) return null;
-    const lower = trimmed.toLowerCase();
-
-    // 1. Direct prefix match
-    const prefixMatch = PROMPT_SUGGESTIONS.find(
-      (s) => s.toLowerCase().startsWith(lower) && s.length > trimmed.length
-    );
-    if (prefixMatch) return prefixMatch;
-
-    // 2. Substring match
-    const subMatch = PROMPT_SUGGESTIONS.find(
-      (s) => s.toLowerCase().includes(lower) && s.length > trimmed.length
-    );
-    return subMatch || null;
-  }, [input, suggestionDismissed]);
+    if (llmSuggestion && llmSuggestion.length > input.trim().length) {
+      return llmSuggestion;
+    }
+    return null;
+  }, [llmSuggestion, input, suggestionDismissed]);
 
   const ghostSuffix = useMemo(() => {
     if (!activeSuggestion) return "";
@@ -216,6 +239,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
     if (activeSuggestion) {
       setInput(activeSuggestion);
       setSuggestionDismissed(true);
+      setLlmSuggestion("");
       if (textareaRef.current) {
         textareaRef.current.focus();
       }
@@ -250,6 +274,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
       setInput("");
       setAttachments([]);
       setSuggestionDismissed(false);
+      setLlmSuggestion("");
       if (textareaRef.current) {
         textareaRef.current.value = "";
       }
@@ -285,7 +310,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      // TAB key: Accept Auto-Complete Suggestion
+      // TAB key: Accept Dynamic LLM Auto-Complete Suggestion
       if (e.key === "Tab" && activeSuggestion && !e.shiftKey) {
         e.preventDefault();
         e.stopPropagation();
@@ -297,6 +322,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
       if (e.key === "Escape" && activeSuggestion) {
         e.preventDefault();
         setSuggestionDismissed(true);
+        setLlmSuggestion("");
         return;
       }
 
@@ -654,7 +680,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                     type="button"
                     onClick={handleAcceptSuggestion}
                     className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-2.5 py-1 text-[11px] font-medium text-[#00FF88] hover:bg-[#00FF88]/30 transition-all shadow-[0_0_10px_rgba(0,255,136,0.2)] cursor-pointer animate-in fade-in zoom-in-95"
-                    title="Bấm hoặc nhấn Tab để hoàn thành gợi ý"
+                    title="Bấm hoặc nhấn Tab để hoàn thành gợi ý từ LLM"
                   >
                     <Sparkles className="h-3 w-3 text-[#00FF88]" />
                     <span className="rounded bg-[#00FF88]/25 px-1 py-0.5 font-mono text-[9px] font-bold text-white">
@@ -664,6 +690,13 @@ export const ChatInput = React.memo<ChatInputProps>(({
                       {activeSuggestion}
                     </span>
                   </button>
+                )}
+
+                {isLlmFetching && !activeSuggestion && (
+                  <span className="flex items-center gap-1 text-[10px] text-slate-400 italic">
+                    <Loader2 className="h-2.5 w-2.5 animate-spin text-[#00FF88]" />
+                    <span>AI đang suy luận gợi ý...</span>
+                  </span>
                 )}
               </div>
 
