@@ -28,7 +28,7 @@ llm = ChatOpenAI(
     temperature=0.1
 )
 
-# Granular Specialized Tools with Human-in-the-loop Capability
+# Granular Specialized Tools with Clarification Capability
 orchestrator_tools = [
     ask_user_clarification,
     fetch_etsy_market_data,
@@ -41,19 +41,14 @@ orchestrator_tools = [
     list_available_ecommerce_skills
 ]
 
-# Instantiate DeepAgent with Human-in-the-Loop interrupts (https://docs.langchain.com/oss/python/deepagents/human-in-the-loop)
+# Instantiate DeepAgent without tool approval interrupts (autonomous execution)
+# Clarification tool ask_user_clarification handles user handoff for intent clarification
 graph = create_deep_agent(
     model=llm,
     tools=orchestrator_tools,
     subagents=SUBAGENTS_CONFIG,
-    system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
-    interrupt_on={
-        "record_product_opportunity_matrix": {
-            "allowed_decisions": ["approve", "edit", "reject"],
-            "description": "Please review the calculated 23-column Product Opportunity Matrix row and strategic parameters before officially committing to the Printway R&D CSV database."
-        }
-    }
+    system_prompt=ORCHESTRATOR_SYSTEM_PROMPT
 )
 
 if __name__ == "__main__":
-    print(f"Printway Product Opportunity Hub Graph with Human-in-the-Loop ({len(orchestrator_tools)} Tools) initialized!")
+    print(f"Printway Product Opportunity Hub Graph initialized ({len(orchestrator_tools)} Tools)!")
