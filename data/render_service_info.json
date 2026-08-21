@@ -1,0 +1,55 @@
+{
+  "deployId": "dep-da48ibrbc2fs73c937i0",
+  "service": {
+    "autoDeploy": "yes",
+    "autoDeployTrigger": "commit",
+    "branch": "main",
+    "createdAt": "2026-08-21T17:21:50.559241Z",
+    "dashboardUrl": "https://dashboard.render.com/web/srv-da48ibbbc2fs73c936mg",
+    "id": "srv-da48ibbbc2fs73c936mg",
+    "name": "printway-product-hub-backend",
+    "notifyOnFail": "default",
+    "ownerId": "tea-cspserq3esus738f06eg",
+    "repo": "https://github.com/Trung1234/product-hub-assistant",
+    "rootDir": "",
+    "serviceDetails": {
+      "buildPlan": "starter",
+      "cache": {
+        "profile": "no-cache"
+      },
+      "env": "docker",
+      "envSpecificDetails": {
+        "dockerCommand": "",
+        "dockerContext": ".",
+        "dockerfilePath": "./Dockerfile"
+      },
+      "healthCheckPath": "/ok",
+      "ipAllowList": [
+        {
+          "cidrBlock": "0.0.0.0/0",
+          "description": "everywhere"
+        }
+      ],
+      "maintenanceMode": {
+        "enabled": false,
+        "uri": ""
+      },
+      "numInstances": 1,
+      "openPorts": null,
+      "plan": "free",
+      "previews": {
+        "generation": "off"
+      },
+      "pullRequestPreviewsEnabled": "no",
+      "region": "oregon",
+      "runtime": "docker",
+      "sshAddress": "srv-da48ibbbc2fs73c936mg@ssh.oregon.render.com",
+      "url": "https://printway-product-hub-backend.onrender.com"
+    },
+    "slug": "printway-product-hub-backend",
+    "suspended": "not_suspended",
+    "suspenders": [],
+    "type": "web_service",
+    "updatedAt": "2026-08-21T17:21:50.559241Z"
+  }
+}
