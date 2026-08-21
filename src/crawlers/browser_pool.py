@@ -1,7 +1,7 @@
 """
 BROWSER POOL & BROWSERLESS CLOUD INTEGRATION MODULE
 Connects to Browserless.io Cloud via Chrome DevTools Protocol (CDP)
-with automatic fallback to local Playwright Chromium.
+with built-in Residential Proxies, Captcha Solving, and automatic fallback to local Chromium.
 """
 
 import os
@@ -15,10 +15,18 @@ load_dotenv()
 logger = logging.getLogger("BrowserPool")
 
 def get_browserless_cdp_url() -> Optional[str]:
-    """Retrieves or constructs Browserless CDP WebSocket endpoint from environment variables."""
+    """
+    Constructs Browserless CDP WebSocket URL with built-in:
+    - Residential / Datacenter Proxy
+    - Stealth Anti-Detection
+    - Ad & Asset Blocking
+    - Captcha Solving
+    """
     api_key = os.getenv("BROWSERLESS_API_KEY", "").strip()
     if api_key:
-        return f"wss://chrome.browserless.io?token={api_key}&stealth=true&blockAds=true"
+        use_residential = os.getenv("BROWSERLESS_USE_RESIDENTIAL", "false").lower() == "true"
+        proxy_param = "&proxy=residential&proxyCountry=us" if use_residential else ""
+        return f"wss://chrome.browserless.io?token={api_key}{proxy_param}&stealth=true&blockAds=true"
 
     endpoint = os.getenv("BROWSERLESS_WS_ENDPOINT") or os.getenv("BROWSERLESS_URL")
     if endpoint:
