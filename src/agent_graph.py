@@ -4,7 +4,8 @@ from deepagents import create_deep_agent
 from src.config import OPENAI_API_KEY, OPENAI_API_BASE, MODEL_NAME
 from src.tools.market_tools import (
     fetch_etsy_market_data,
-    fetch_amazon_market_data
+    fetch_amazon_market_data,
+    fetch_google_trends_data
 )
 from src.tools.scoring_tools import evaluate_5d_opportunity_score
 from src.tools.dataset_tools import (
@@ -20,7 +21,7 @@ from src.tools.human_tools import ask_user_clarification
 from src.subagents.subagents_config import SUBAGENTS_CONFIG
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
-# Configure LLM using Vilao AI API parameters
+# Configure LLM using Printway 9router API parameters
 llm = ChatOpenAI(
     model=MODEL_NAME,
     openai_api_key=OPENAI_API_KEY,
@@ -28,11 +29,12 @@ llm = ChatOpenAI(
     temperature=0.1
 )
 
-# Granular Specialized Tools with Clarification Capability
+# Granular Specialized Tools with Google Trends, Marketplace Scrapers & Skills
 orchestrator_tools = [
     ask_user_clarification,
     fetch_etsy_market_data,
     fetch_amazon_market_data,
+    fetch_google_trends_data,
     evaluate_5d_opportunity_score,
     record_product_opportunity_matrix,
     retrieve_offloaded_product_context,
@@ -42,7 +44,6 @@ orchestrator_tools = [
 ]
 
 # Instantiate DeepAgent without tool approval interrupts (autonomous execution)
-# Clarification tool ask_user_clarification handles user handoff for intent clarification
 graph = create_deep_agent(
     model=llm,
     tools=orchestrator_tools,
@@ -51,4 +52,4 @@ graph = create_deep_agent(
 )
 
 if __name__ == "__main__":
-    print(f"Printway Product Opportunity Hub Graph initialized ({len(orchestrator_tools)} Tools)!")
+    print(f"Printway Product Opportunity Hub Graph with Google Trends ({len(orchestrator_tools)} Tools) initialized!")

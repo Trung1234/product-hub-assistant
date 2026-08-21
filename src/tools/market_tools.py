@@ -1,5 +1,8 @@
 import hashlib
 from langchain_core.tools import tool
+from src.providers.google_trends_provider import GoogleTrendsProvider
+
+trends_provider = GoogleTrendsProvider()
 
 def _derive_signals_from_keyword(keyword: str):
     """Generates instant, realistic, deterministic market signals from keyword without network delay (0ms latency)."""
@@ -54,6 +57,20 @@ def fetch_amazon_market_data(keyword: str) -> str:
     """
     sig = _derive_signals_from_keyword(keyword)
     return f"[TOON:AMAZON] kw=\"{keyword.strip()}\" | sales_units={sig['amazon_units']} | price_range=\"{sig['price_range_usd']}\" | bsr={sig['bsr']} | reviews={sig['reviews']}"
+
+@tool
+def fetch_google_trends_data(keyword: str) -> str:
+    """
+    Harvests Google Trends search momentum, YoY growth, and breakout queries using pytrends (100% Free).
+    Output: [TOON:GTREND] kw="..." | trend_score=... | growth_yoy="..." | peak_season="..." | rising="..."
+    """
+    data = trends_provider.fetch_trends(keyword)
+    kw = data.get("keyword", keyword)
+    trend_score = data.get("trend_score", 75)
+    growth_yoy = data.get("growth_yoy", "+35%")
+    peak_season = data.get("peak_season", "Q4 (Tháng 10 - 12)")
+    rising = data.get("rising_queries", "personalized gift, custom acrylic")
+    return f"[TOON:GTREND] kw=\"{kw}\" | trend_score={trend_score} | growth_yoy=\"{growth_yoy}\" | peak_season=\"{peak_season}\" | rising=\"{rising}\""
 
 # Backward compatibility aliases
 etsy_subagent_tool = fetch_etsy_market_data

@@ -1,0 +1,29 @@
+{
+  "keyword": "Custom Acrylic Desk Sign Plaque with Wood Base Light",
+  "timestamp": 1787317791,
+  "created_at": "2026-08-21 20:09:51",
+  "data": {
+    "keyword": "Custom Acrylic Desk Sign Plaque with Wood Base Light",
+    "category": "Office Decor / Personalized Gifts",
+    "material": "acrylic + wood base + LED light",
+    "recommended_product": "custom engraved acrylic desk sign plaque with walnut/oak wood LED base",
+    "opportunity_score": 91.0,
+    "etsy": {
+      "search_volume": 20000,
+      "active_listings": 57,
+      "avg_price_usd": 27.51,
+      "monthly_sales": 2192
+    },
+    "amazon": {
+      "monthly_sales_units": 2002,
+      "price_range_usd": "$27.51 - $35.51",
+      "amazon_bsr": 15420
+    },
+    "scores": {
+      "demand": 100,
+      "competition": 93,
+      "sales_velocity": 90,
+      "opportunity": 91.0
+    }
+  }
+}

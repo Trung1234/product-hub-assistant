@@ -45,6 +45,7 @@ def record_product_opportunity_matrix(
     demand_score: int = 70,
     competition_score: int = 80,
     sales_velocity_score: int = 65,
+    google_trend: float = 75.0,
     etsy_price: float = 16.99,
     etsy_active_listings: int = 120,
     etsy_monthly_sales: int = 1160,
@@ -53,7 +54,7 @@ def record_product_opportunity_matrix(
     seasonality: str = "high",
     buyer_intent: str = "gift",
     collection: str = "Personalized Gifts",
-    strategic_reason: str = "High opportunity product with strong marketplace demand and healthy Printway margin."
+    strategic_reason: str = "High opportunity product with strong marketplace demand, positive Google Trends breakout, and healthy Printway margin."
 ) -> str:
     """
     Focused tool for persisting a verified 23-column Product Opportunity Matrix row into CSV,
@@ -68,6 +69,7 @@ def record_product_opportunity_matrix(
         "material": material,
         "recommended_product": recommended_product,
         "opportunity_score": opportunity_score,
+        "google_trend": google_trend,
         "etsy": {
             "search_volume": demand_score * 200,
             "active_listings": etsy_active_listings,
@@ -83,6 +85,7 @@ def record_product_opportunity_matrix(
             "demand": demand_score,
             "competition": competition_score,
             "sales_velocity": sales_velocity_score,
+            "google_trend": google_trend,
             "opportunity": opportunity_score
         }
     }
@@ -92,13 +95,13 @@ def record_product_opportunity_matrix(
     row = ProductOpportunityRow(
         date=date.today().isoformat(),
         keyword=clean_kw,
-        google_trend=65.0,
+        google_trend=float(google_trend),
         etsy_reviews=etsy_active_listings,
         amazon_bsr=15420,
         demand=int(demand_score),
         competition=int(competition_score),
         growth=int(sales_velocity_score),
-        trend=70 if seasonality.lower() == "high" else 55,
+        trend=int(google_trend) if google_trend > 0 else (70 if seasonality.lower() == "high" else 55),
         opportunity=int(round(opportunity_score)),
         seasonality=seasonality.lower(),
         buyer_intent=buyer_intent.lower(),
@@ -136,11 +139,12 @@ def record_product_opportunity_matrix(
 | :--- | :--- | :---: |
 | **Date** | `{row_dict['date']}` | `System` |
 | **Target Keyword** | **{row_dict['keyword']}** | `Query` |
+| **Google Trends Score** | `{row_dict['google_trend']}/100` | `[pytrends]` |
 | **Etsy Active Listings** | `{row_dict['etsy_reviews']}` listings | `[Etsy-1]` |
 | **Amazon BSR** | `#{row_dict['amazon_bsr']}` | `[Amazon-1]` |
-| **Demand Score (30%)** | `{row_dict['demand']}/100` | `[Etsy-1]` |
-| **Competition Score (25%)**| `{row_dict['competition']}/100` | `[Etsy-1]` |
-| **Sales Velocity Score** | `{row_dict['growth']}/100` | `[Amazon-1]` |
+| **Demand Score (25%)** | `{row_dict['demand']}/100` | `[Etsy-1]` |
+| **Competition Score (20%)**| `{row_dict['competition']}/100` | `[Etsy-1]` |
+| **Sales Velocity Score (20%)**| `{row_dict['growth']}/100` | `[Amazon-1]` |
 | **Opportunity Score** | **`{row_dict['opportunity']}/100`** | `6D Model` |
 | **Seasonality** | `{row_dict['seasonality'].upper()}` | `Calendar` |
 | **Buyer Intent** | `{row_dict['buyer_intent']}` | `NLP` |

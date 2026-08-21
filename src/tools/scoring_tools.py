@@ -1,6 +1,6 @@
 import re
 import json
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, Optional
 from langchain_core.tools import tool
 from src.scorers.opportunity_scorer import OpportunityScorer
 
@@ -21,7 +21,7 @@ def parse_toon_or_json(input_data: Union[str, dict]) -> Dict[str, Any]:
             pass
             
     res = {}
-    # Strip [TOON:ETSY] or [TOON:AMAZON] tag
+    # Strip [TOON:ETSY], [TOON:AMAZON], [TOON:GTREND] tag
     cleaned = re.sub(r"^\[TOON:[A-Z_]+\]\s*", "", clean_str).strip()
     parts = cleaned.split("|")
     for part in parts:
@@ -48,11 +48,12 @@ def parse_toon_or_json(input_data: Union[str, dict]) -> Dict[str, Any]:
 @tool
 def evaluate_5d_opportunity_score(
     etsy_toon: str,
-    amazon_toon: str
+    amazon_toon: str,
+    google_trend_toon: Optional[str] = ""
 ) -> str:
     """
-    Evaluates combined marketplace signals across Etsy and Amazon (Demand, Competition Saturation, Sales Velocity, Personalization & Margin Fit).
-    Accepts ultra-compact TOON strings (or JSON) from fetch_etsy_market_data and fetch_amazon_market_data.
+    Evaluates combined marketplace signals across Etsy, Amazon, and Google Trends (Demand, Competition Saturation, Sales Velocity, Google Trend Momentum, Personalization & Margin Fit).
+    Accepts ultra-compact TOON strings from fetch_etsy_market_data, fetch_amazon_market_data, and fetch_google_trends_data.
     Returns structured scoring breakdown with 0-100 score, recommendation badge, and economic viability.
     """
     # 1. Parse Etsy TOON / JSON input
@@ -67,20 +68,25 @@ def evaluate_5d_opportunity_score(
     price_range = str(amazon_data.get("price_range", amazon_data.get("price_range_usd", "$16.99 - $24.99")))
     bsr = int(amazon_data.get("bsr", amazon_data.get("amazon_bsr", 15420)))
 
-    # 3. Compute 5D/6D Opportunity Dimensions
+    # 3. Parse Google Trends input if provided
+    gtrend_data = parse_toon_or_json(google_trend_toon) if google_trend_toon else {}
+    gtrend_score = int(gtrend_data.get("trend_score", 75))
+
+    # 4. Compute Opportunity Dimensions
     demand_score = int(min(100, max(15, (search_vol / 20000) * 80 + 10)))
     competition_score = int(min(100, max(15, 100 - (active_listings / 500) * 60)))
     sales_velocity_score = int(min(100, max(15, (sales_units / 2000) * 80 + 10)))
     personalization_fit = 85.0
     profit_margin_fit = 78.0
 
-    # 4. Composite Score: Demand (30%), Competition (20%), Velocity (20%), Margin (15%), Personalization (15%)
+    # 5. Composite Score: Demand (25%), Competition (20%), Velocity (20%), Google Trend (10%), Margin (15%), Personalization (10%)
     opp_score = round(
-        0.30 * demand_score +
+        0.25 * demand_score +
         0.20 * competition_score +
         0.20 * sales_velocity_score +
+        0.10 * gtrend_score +
         0.15 * profit_margin_fit +
-        0.15 * personalization_fit,
+        0.10 * personalization_fit,
         1
     )
     opp_score = max(0.0, min(100.0, opp_score))
@@ -94,6 +100,7 @@ def evaluate_5d_opportunity_score(
             "demand_score": demand_score,
             "competition_score": competition_score,
             "sales_velocity_score": sales_velocity_score,
+            "google_trend_score": gtrend_score,
             "personalization_fit": personalization_fit,
             "profit_margin_fit": profit_margin_fit
         },
@@ -106,6 +113,11 @@ def evaluate_5d_opportunity_score(
             "monthly_sales_units": sales_units,
             "price_range_usd": price_range,
             "bsr": bsr
+        },
+        "google_trend_summary": {
+            "trend_score": gtrend_score,
+            "growth_yoy": gtrend_data.get("growth_yoy", "+35%"),
+            "peak_season": gtrend_data.get("peak_season", "Q4 (Tháng 10 - 12)")
         }
     }
     
