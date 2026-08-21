@@ -514,7 +514,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 ) : (
                   <>
                     <ArrowUp className="mr-1.5 h-3.5 w-3.5" />
-                    Analyze Product
+                    Submit
                   </>
                 )}
               </Button>

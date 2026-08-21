@@ -88,29 +88,21 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         {/* TOP SECTION: Header / Logo & Collapse Toggle */}
         <div className="flex h-14 shrink-0 items-center justify-between px-3.5 border-b border-[#00FF88]/10 bg-[#0E1538]/60">
           {!collapsed ? (
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="flex h-8 px-2 shrink-0 items-center justify-center rounded-lg bg-[#080B21]/80 border border-[#00FF88]/30 shadow-[0_0_12px_rgba(0,255,136,0.15)]">
+            <div className="flex items-center">
+              <div className="flex h-8 px-2.5 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm">
                 <img
                   src="/logo_header.png"
                   alt="Printway.io"
-                  className="h-5 w-auto object-contain brightness-110"
+                  className="h-4.5 w-auto object-contain"
                 />
-              </div>
-              <div className="flex flex-col truncate">
-                <span className="font-extrabold text-[11px] tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#00D2FF]">
-                  R&D COPILOT
-                </span>
-                <span className="text-[9px] font-medium text-[#94A3B8] tracking-widest uppercase">
-                  Opportunity Hub
-                </span>
               </div>
             </div>
           ) : (
-            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-[#080B21] border border-[#00FF88]/30 shadow-[0_0_10px_rgba(0,255,136,0.2)] overflow-hidden p-1">
+            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm overflow-hidden p-1">
               <img
                 src="/logo_header.png"
                 alt="Printway"
-                className="h-4 w-auto object-contain"
+                className="h-3.5 w-auto object-contain"
               />
             </div>
           )}

@@ -280,12 +280,12 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
               </div>
 
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <div className="flex items-center justify-center px-4 py-2 rounded-xl bg-[#0E1538]/90 border border-[#00FF88]/30 shadow-[0_0_20px_rgba(0,255,136,0.25)]">
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="flex items-center justify-center px-4 py-2 rounded-xl bg-white shadow-[0_0_25px_rgba(255,255,255,0.2)]">
                   <img
                     src="/logo_header.png"
                     alt="Printway.io"
-                    className="h-6 w-auto object-contain brightness-110"
+                    className="h-6 w-auto object-contain"
                   />
                 </div>
               </div>
