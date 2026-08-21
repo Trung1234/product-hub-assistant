@@ -11,14 +11,21 @@ export async function POST(req: Request) {
     const apiKey = "sk-4253d9122c086e71-259q49-bbb82a3f";
     const apiBase = "https://9router.printway.io/v1";
 
-    const systemPrompt = `Bạn là trợ lý AI. Dựa trên nội dung câu trả lời của AI vừa gửi cho người dùng, hãy sinh ra chính xác 4 câu hỏi gợi ý tiếp theo (follow-up questions) ngắn gọn, sắc bén, mang tính hành động cao và bám sát 100% ngữ cảnh câu trả lời của AI.
-Nếu câu trả lời là về POD/E-commerce/R&D, hãy gợi ý các câu hỏi đào sâu về thị trường, đối thủ, thiết kế Pinterest, xu hướng Google Trends, giá và chi phí xưởng Printway.
-Nếu câu trả lời là về lập trình, hãy gợi ý các bước kỹ thuật tiếp theo.
-Nếu là câu chào hỏi, hãy gợi ý các tác vụ nổi bật mà AI có thể thực hiện.
+    const systemPrompt = `Bạn là chuyên gia Print-on-Demand (POD) & E-commerce Market Strategist.
+Dựa trên báo cáo vừa rồi của AI, hãy tạo ra ĐÚNG 4 CÂU PROMPT HÀNH ĐỘNG TIẾP THEO MÀ NGƯỜI DÙNG CÓ THỂ CLICK ĐỂ GỬI YÊU CẦU CHO AI.
 
-Quy tắc bắt buộc:
-Trả về DUY NHẤT định dạng JSON array chứa 4 chuỗi câu hỏi:
-["Câu hỏi 1", "Câu hỏi 2", "Câu hỏi 3", "Câu hỏi 4"]`;
+QUY TẮC VAI TRÒ TUYỆT ĐỐI (CRITICAL ROLE ENFORCEMENT):
+- Phải viết 100% dưới góc nhìn của NGƯỜI DÙNG (User Action Prompts) đang yêu cầu/hỏi AI tiếp tục phân tích.
+- TUYỆT ĐỐI KHÔNG viết dưới góc nhìn của AI hỏi người dùng (KHÔNG dùng: "Bạn có muốn...", "Bạn chọn gì...", "Hãy cho tôi biết...", "Bạn có cần...").
+- VÍ DỤ ĐÚNG (User Action Prompts):
+  • "Phân tích chi tiết 5 shop bán chạy nhất ngách này trên Etsy"
+  • "So sánh biên lợi nhuận giữa phôi Mica 3mm và Gỗ Plywood xưởng Printway"
+  • "Lập kế hoạch chạy Ads TikTok Shop và thời điểm mở bán đón sóng Q4"
+  • "Tạo thêm 3 mẫu prompt Midjourney phong cách Watercolor và Vintage"
+
+Quy tắc định dạng:
+Trả về DUY NHẤT một JSON array chứa đúng 4 chuỗi câu prompt:
+["Prompt người dùng 1", "Prompt người dùng 2", "Prompt người dùng 3", "Prompt người dùng 4"]`;
 
     const userMessage = userPrompt
       ? `User Prompt: ${userPrompt}\n\nAI Response:\n${content.slice(0, 3000)}`
@@ -36,7 +43,7 @@ Trả về DUY NHẤT định dạng JSON array chứa 4 chuỗi câu hỏi:
           { role: "system", content: systemPrompt },
           { role: "user", content: userMessage }
         ],
-        temperature: 0.3,
+        temperature: 0.2,
       }),
     });
 
