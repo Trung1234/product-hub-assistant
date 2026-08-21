@@ -283,6 +283,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
             />
           ) : (
             <ChatProvider
+              key={threadId || "new-session"}
               activeAssistant={assistant}
               onHistoryRevalidate={() => mutateThreads?.()}
             >
