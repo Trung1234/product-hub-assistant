@@ -1,0 +1,31 @@
+{
+  "keyword": "Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift",
+  "timestamp": 1787325822,
+  "created_at": "2026-08-21 22:23:42",
+  "data": {
+    "keyword": "Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift",
+    "category": "Drinkware / Teacher Gift",
+    "material": "Inox 304 40oz có quai",
+    "recommended_product": "Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift",
+    "opportunity_score": 71.4,
+    "google_trend": 7.0,
+    "etsy": {
+      "search_volume": 16400,
+      "active_listings": 211,
+      "avg_price_usd": 15.05,
+      "monthly_sales": 1446
+    },
+    "amazon": {
+      "monthly_sales_units": 1656,
+      "price_range_usd": "$15.05 - $22.05",
+      "amazon_bsr": 15420
+    },
+    "scores": {
+      "demand": 82,
+      "competition": 74,
+      "sales_velocity": 76,
+      "google_trend": 7.0,
+      "opportunity": 71.4
+    }
+  }
+}

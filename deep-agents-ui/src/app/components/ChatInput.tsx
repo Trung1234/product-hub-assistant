@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useCallback, FormEvent } from "react";
+import React, { useState, useRef, useCallback, FormEvent, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Square,
@@ -17,7 +17,8 @@ import {
   X,
   FileText,
   FileSpreadsheet,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Sparkles
 } from "lucide-react";
 import { TodoItem } from "@/app/types/types";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,23 @@ interface ChatInputProps {
   clarificationData: { question: string; options: string[] } | null;
   onClarificationSubmit: (response: string) => void;
 }
+
+const PROMPT_SUGGESTIONS: string[] = [
+  "Nghiên cứu xu hướng và tiềm năng sản phẩm Baby First Christmas Ornament 2026 Custom Acrylic Keepsake trên Etsy và Amazon",
+  "Phân tích tiềm năng ngách Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light cho thị trường US",
+  "Đánh giá cơ hội thị trường cho Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve",
+  "Kiểm tra tiềm năng sản phẩm Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift",
+  "So sánh biên lợi nhuận giữa phôi Mica Đài Loan 3mm và Gỗ Plywood xưởng Printway",
+  "Phân tích 5 shop đối thủ bán chạy nhất ngách Suncatcher Acrylic trên Etsy",
+  "Lập kế hoạch chạy Ads TikTok Shop và thời điểm mở bán đón sóng Q4",
+  "Tối ưu chi phí fulfillment và thời gian ship US cho đơn hàng 500 units",
+  "Nghiên cứu từ khóa SEO và 13 Etsy Tags cho ngách móc khóa mica theo yêu cầu",
+  "Đánh giá nhu cầu Google Trends và thời điểm đạt đỉnh trong 12 tháng qua",
+  "Phân tích chi phí và giá bán đề xuất cho dòng ly giữ nhiệt 40oz in UV",
+  "Tư vấn công nghệ in UV 4 lớp chống phai màu cho phôi Mica trong suốt",
+  "Phân tích xu hướng màu sắc và phong cách thiết kế thịnh hành trên Pinterest",
+  "Đánh giá rủi ro cạnh tranh và tính khả thi sản xuất tại xưởng Printway Việt Nam",
+];
 
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -61,6 +79,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
   const [attachments, setAttachments] = useState<UploadedFileItem[]>([]);
   const [previewingFile, setPreviewingFile] = useState<UploadedFileItem | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [suggestionDismissed, setSuggestionDismissed] = useState(false);
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tasksContainerRef = useRef<HTMLDivElement | null>(null);
@@ -68,6 +87,34 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
   const hasTasks = todos.length > 0;
   const hasFiles = Object.keys(files).length > 0;
+
+  // Intelligent Prompt Auto-Completion calculation
+  const activeSuggestion = useMemo(() => {
+    if (suggestionDismissed) return null;
+    const trimmed = input.trim();
+    if (!trimmed || trimmed.length < 2) return null;
+    const lower = trimmed.toLowerCase();
+
+    // 1. Direct prefix match
+    const prefixMatch = PROMPT_SUGGESTIONS.find(
+      (s) => s.toLowerCase().startsWith(lower) && s.length > trimmed.length
+    );
+    if (prefixMatch) return prefixMatch;
+
+    // 2. Substring match
+    const subMatch = PROMPT_SUGGESTIONS.find(
+      (s) => s.toLowerCase().includes(lower) && s.length > trimmed.length
+    );
+    return subMatch || null;
+  }, [input, suggestionDismissed]);
+
+  const ghostSuffix = useMemo(() => {
+    if (!activeSuggestion) return "";
+    if (activeSuggestion.toLowerCase().startsWith(input.toLowerCase())) {
+      return activeSuggestion.slice(input.length);
+    }
+    return "";
+  }, [activeSuggestion, input]);
 
   const groupedTodos = React.useMemo(() => ({
     in_progress: todos.filter((t) => t.status === "in_progress"),
@@ -165,6 +212,16 @@ export const ChatInput = React.memo<ChatInputProps>(({
     }
   };
 
+  const handleAcceptSuggestion = useCallback(() => {
+    if (activeSuggestion) {
+      setInput(activeSuggestion);
+      setSuggestionDismissed(true);
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }
+  }, [activeSuggestion]);
+
   const handleSubmit = useCallback(
     (e?: FormEvent) => {
       if (e) {
@@ -192,6 +249,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
       setInput("");
       setAttachments([]);
+      setSuggestionDismissed(false);
       if (textareaRef.current) {
         textareaRef.current.value = "";
       }
@@ -227,13 +285,29 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      // TAB key: Accept Auto-Complete Suggestion
+      if (e.key === "Tab" && activeSuggestion && !e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        handleAcceptSuggestion();
+        return;
+      }
+
+      // Escape key: Dismiss Suggestion
+      if (e.key === "Escape" && activeSuggestion) {
+        e.preventDefault();
+        setSuggestionDismissed(true);
+        return;
+      }
+
+      // Enter key: Submit
       if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
         e.preventDefault();
         e.stopPropagation();
         handleSubmit();
       }
     },
-    [handleSubmit]
+    [handleSubmit, activeSuggestion, handleAcceptSuggestion]
   );
 
   const handleClarificationSend = useCallback(
@@ -519,24 +593,45 @@ export const ChatInput = React.memo<ChatInputProps>(({
             </div>
           )}
 
-          {/* Main Prompt Form */}
+          {/* Main Prompt Form with Ghost Text Overlay */}
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col"
+            className="flex flex-col relative"
           >
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onPaste={handlePaste}
-              placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc kéo thả/dán ảnh & tài liệu để phân tích..."}
-              className="font-inherit field-sizing-content flex-1 resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-relaxed text-white outline-none placeholder:text-[#64748B]"
-              rows={1}
-            />
-            <div className="flex justify-between items-center gap-2 px-4 py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10">
-              {/* Attachment Button */}
-              <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              {/* Ghost Text Overlay */}
+              {ghostSuffix && (
+                <div
+                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden px-[18px] pb-[13px] pt-[14px] text-sm leading-relaxed whitespace-pre-wrap break-words font-inherit select-none"
+                  aria-hidden="true"
+                >
+                  <span className="opacity-0">{input}</span>
+                  <span className="text-slate-500/70 font-normal italic">
+                    {ghostSuffix}
+                  </span>
+                </div>
+              )}
+
+              {/* Real Input Textarea */}
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  setSuggestionDismissed(false);
+                }}
+                onKeyDown={handleKeyDown}
+                onPaste={handlePaste}
+                placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc kéo thả/dán ảnh & tài liệu để phân tích..."}
+                className="font-inherit field-sizing-content relative z-10 w-full resize-none border-0 bg-transparent px-[18px] pb-[13px] pt-[14px] text-sm leading-relaxed text-white outline-none placeholder:text-[#64748B]"
+                rows={1}
+              />
+            </div>
+
+            {/* Bottom Bar: Action Tools & Suggestion Pill */}
+            <div className="flex justify-between items-center gap-2 px-4 py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10 relative z-20">
+              {/* Left Side: Attachment Button & Suggestion Pill */}
+              <div className="flex items-center gap-2.5 flex-wrap">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -545,11 +640,30 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 >
                   <Paperclip className="h-4 w-4" />
                 </button>
+
                 {attachments.length > 0 && (
                   <span className="text-[11px] text-[#00FF88] font-semibold flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
                     {attachments.length} tệp sẵn sàng gửi
                   </span>
+                )}
+
+                {/* Inline Tab Suggestion Pill */}
+                {activeSuggestion && (
+                  <button
+                    type="button"
+                    onClick={handleAcceptSuggestion}
+                    className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-2.5 py-1 text-[11px] font-medium text-[#00FF88] hover:bg-[#00FF88]/30 transition-all shadow-[0_0_10px_rgba(0,255,136,0.2)] cursor-pointer animate-in fade-in zoom-in-95"
+                    title="Bấm hoặc nhấn Tab để hoàn thành gợi ý"
+                  >
+                    <Sparkles className="h-3 w-3 text-[#00FF88]" />
+                    <span className="rounded bg-[#00FF88]/25 px-1 py-0.5 font-mono text-[9px] font-bold text-white">
+                      Tab
+                    </span>
+                    <span className="truncate max-w-[240px] sm:max-w-[360px]">
+                      {activeSuggestion}
+                    </span>
+                  </button>
                 )}
               </div>
 
@@ -560,7 +674,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 size="sm"
                 onClick={isLoading ? onStopStream : undefined}
                 disabled={submitDisabled && !isLoading}
-                className="rounded-lg border border-[#00FF88] bg-[#00FF88] px-4 py-1.5 text-xs font-bold text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all cursor-pointer"
+                className="rounded-lg border border-[#00FF88] bg-[#00FF88] px-4 py-1.5 text-xs font-bold text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all cursor-pointer shrink-0"
               >
                 {isLoading ? (
                   <>
