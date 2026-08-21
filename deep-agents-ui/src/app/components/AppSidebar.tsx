@@ -39,6 +39,13 @@ function formatTime(date: Date, now = new Date()): string {
   return format(date, "MM/dd");
 }
 
+function truncateTitle(title: string, maxLength: number = 28): string {
+  if (!title) return "Research Session";
+  const clean = title.trim();
+  if (clean.length <= maxLength) return clean;
+  return clean.slice(0, maxLength) + "...";
+}
+
 export const AppSidebar: React.FC<AppSidebarProps> = ({
   currentThreadId,
   onThreadSelect,
@@ -49,7 +56,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   interruptCount = 0,
   onMutateReady,
 }) => {
-  const threads = useThreads({ limit: 30 });
+  const threads = useThreads({ limit: 35 });
 
   const flattened = useMemo(() => {
     return threads.data?.flat() ?? [];
@@ -61,16 +68,16 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
     <TooltipProvider delayDuration={200}>
       <aside
         className={cn(
-          "relative flex h-screen flex-col border-r border-[#00FF88]/15 bg-[#0A0E2A] text-white transition-all duration-300 ease-in-out select-none",
-          collapsed ? "w-16" : "w-[270px]"
+          "relative flex h-screen flex-col border-r border-[#00FF88]/15 bg-[#0A0E2A] text-white transition-all duration-300 ease-in-out select-none shrink-0 z-30",
+          collapsed ? "w-16" : "w-[280px]"
         )}
       >
         {/* TOP SECTION: Header / Logo & Collapse Toggle */}
-        <div className="flex h-14 items-center justify-between px-3.5 border-b border-[#00FF88]/10 bg-[#0E1538]/50">
+        <div className="flex h-14 shrink-0 items-center justify-between px-3.5 border-b border-[#00FF88]/10 bg-[#0E1538]/60">
           {!collapsed ? (
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_12px_rgba(0,255,136,0.4)] p-0.5">
-                <img src="/assets/mascot_ball.png" alt="Mascot" className="h-full w-full object-contain" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_12px_rgba(0,255,136,0.4)]">
+                <Sparkles className="h-4 w-4 text-[#080B21]" />
               </div>
               <div className="flex flex-col truncate">
                 <span className="font-extrabold text-xs tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] to-[#00D2FF]">
@@ -82,8 +89,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               </div>
             </div>
           ) : (
-            <div className="mx-auto flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_10px_rgba(0,255,136,0.4)] p-0.5">
-              <img src="/assets/mascot_ball.png" alt="Mascot" className="h-full w-full object-contain" />
+            <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_10px_rgba(0,255,136,0.4)]">
+              <Sparkles className="h-4 w-4 text-[#080B21]" />
             </div>
           )}
 
@@ -106,12 +113,12 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         </div>
 
         {/* NEW RESEARCH BUTTON */}
-        <div className="p-2.5">
+        <div className="p-3 shrink-0">
           {!collapsed ? (
             <Button
               type="button"
               onClick={onNewResearch}
-              className="w-full justify-start gap-2.5 rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 px-3 py-2 text-xs font-bold text-[#00FF88] shadow-[0_0_12px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all"
+              className="w-full justify-start gap-2.5 rounded-xl border border-[#00FF88]/40 bg-[#00FF88]/15 px-3.5 py-2 text-xs font-bold text-[#00FF88] shadow-[0_0_12px_rgba(0,255,136,0.15)] hover:bg-[#00FF88] hover:text-[#080B21] transition-all"
             >
               <SquarePen className="h-4 w-4 shrink-0" />
               <span className="truncate">New research</span>
@@ -136,7 +143,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
         {/* COLLAPSED EXPAND BUTTON */}
         {collapsed && (
-          <div className="px-2.5 pb-2">
+          <div className="px-3 pb-2 shrink-0">
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -155,10 +162,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         )}
 
         {/* MIDDLE SECTION: RECENTS / HISTORY LIST */}
-        <ScrollArea className="flex-1 px-2">
+        <ScrollArea className="flex-1 px-3">
           {!collapsed && (
-            <div className="py-2">
-              <div className="px-2 mb-1.5 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+            <div className="py-2 pb-6 space-y-1">
+              <div className="px-2 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
                 <span>Recents</span>
                 {interruptCount > 0 && (
                   <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-400 border border-amber-500/40">
@@ -183,26 +190,24 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               <div className="space-y-1">
                 {flattened.map((thread) => {
                   const isActive = currentThreadId === thread.id;
-                  const title = thread.title || thread.description || "Research Session";
+                  const rawTitle = thread.title || thread.description || "Research Session";
+                  const displayTitle = truncateTitle(rawTitle, 28);
 
                   return (
                     <button
                       key={thread.id}
                       type="button"
                       onClick={() => onThreadSelect(thread.id)}
-                      title={title}
+                      title={rawTitle}
                       className={cn(
-                        "group relative flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs transition-all",
+                        "group relative flex w-full items-center justify-between gap-1.5 rounded-lg px-2.5 py-2 text-left text-xs transition-all",
                         isActive
                           ? "border border-[#00FF88]/40 bg-[#0E1538] text-[#00FF88] font-semibold shadow-[0_0_10px_rgba(0,255,136,0.12)]"
                           : "border border-transparent text-slate-300 hover:bg-[#121A45]/70 hover:text-white"
                       )}
                     >
-                      <span className="block min-w-0 flex-1 truncate overflow-hidden text-ellipsis whitespace-nowrap text-[12px] leading-snug">
-                        {title}
-                      </span>
-                      <span className="shrink-0 text-[10px] text-slate-400 opacity-60 group-hover:opacity-100 font-mono pl-1">
-                        {formatTime(thread.updatedAt)}
+                      <span className="block min-w-0 flex-1 truncate text-[12px] leading-snug">
+                        {displayTitle}
                       </span>
                     </button>
                   );
@@ -213,7 +218,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         </ScrollArea>
 
         {/* BOTTOM SECTION: SETTINGS & USER AVATAR */}
-        <div className="border-t border-[#00FF88]/15 bg-[#0E1538]/70 p-2.5 space-y-1">
+        <div className="shrink-0 border-t border-[#00FF88]/15 bg-[#0E1538]/90 p-3 space-y-1.5 z-40 backdrop-blur-md">
           {/* Settings Button */}
           {!collapsed ? (
             <button
@@ -243,7 +248,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
           {/* User Profile Bar */}
           {!collapsed ? (
-            <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-[#080B21]/50 border border-slate-800">
+            <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-[#080B21]/70 border border-slate-800/80">
               <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/30 text-[11px] font-bold text-[#00FF88]">
                 PN
               </div>

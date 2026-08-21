@@ -275,50 +275,30 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               <p className="text-[#00FF88] font-mono animate-pulse">Loading conversation...</p>
             </div>
           ) : processedMessages.length === 0 ? (
-            /* Cross Border AI Summit 2026 Welcome Hero Section with Extracted 3D Motifs */
-            <div className="my-4 flex flex-col items-center justify-center text-center">
-              {/* 3D Cyberpunk Mascot & Gate Scene */}
-              <div className="relative mb-4 flex w-full items-center justify-between overflow-hidden rounded-2xl border border-[#00FF88]/25 bg-gradient-to-b from-[#0E1538]/90 via-[#0A0E2A]/80 to-[#080B21] px-6 py-4 shadow-[0_0_30px_rgba(0,255,136,0.15)] backdrop-blur-md">
-                {/* Left Motif: AI Kiosk Booth */}
-                <div className="hidden sm:block shrink-0 opacity-80 hover:opacity-100 transition-opacity">
-                  <img
-                    src="/assets/ai_kiosk_booth.png"
-                    alt="Build AI for Global Market"
-                    className="h-28 w-auto object-contain drop-shadow-[0_0_15px_rgba(0,210,255,0.4)]"
-                  />
-                </div>
-
-                {/* Center Main Hero: Flying Cyber Bus with Mascot Robot */}
-                <div className="flex flex-col items-center justify-center mx-auto">
-                  <div className="relative animate-bounce [animation-duration:3s]">
-                    <img
-                      src="/assets/cyber_bus_robot.png"
-                      alt="Cyber Bus & AI Robot"
-                      className="h-32 sm:h-36 w-auto object-contain drop-shadow-[0_0_25px_rgba(0,255,136,0.6)]"
-                    />
-                  </div>
-                  <h2 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF]">
-                      PRINTWAY PRODUCT OPPORTUNITY HUB
-                    </span>
-                  </h2>
-                  <p className="mt-1 max-w-md text-xs text-[#94A3B8]">
-                    Hệ thống AI R&D tự động phân tích đa sàn Etsy, Amazon, Google Trends & Pinterest
-                  </p>
-                </div>
-
-                {/* Right Motif: Khuê Văn Các Pagoda Gate */}
-                <div className="hidden sm:block shrink-0 opacity-80 hover:opacity-100 transition-opacity">
-                  <img
-                    src="/assets/khue_van_cac_gate.png"
-                    alt="Khuê Văn Các Cyber Gate"
-                    className="h-28 w-auto object-contain drop-shadow-[0_0_15px_rgba(0,255,136,0.4)]"
-                  />
-                </div>
+            /* Cross Border AI Summit 2026 Welcome Hero Section */
+            <div className="my-6 flex flex-col items-center justify-center text-center">
+              {/* Banner Image */}
+              <div className="relative mb-6 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+                <img
+                  src="/banner_crossborder.png"
+                  alt="Cross Border AI Innovation Summit 2026"
+                  className="h-auto w-full max-h-[220px] object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
               </div>
 
+              {/* Title & Tagline */}
+              <h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF]">
+                  PRINTWAY PRODUCT OPPORTUNITY HUB
+                </span>
+              </h2>
+              <p className="mt-2 max-w-xl text-sm text-[#94A3B8]">
+                AI Copilot tự động cào tín hiệu thị trường Etsy & Amazon, tính toán Opportunity Score 0-100 và tự suy luận chiến lược R&D sản phẩm POD toàn cầu.
+              </p>
+
               {/* Quick Prompt Cards */}
-              <div className="mt-2 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 text-left">
+              <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 text-left">
                 {QUICK_PROMPTS.map((p, idx) => (
                   <button
                     key={idx}
@@ -371,17 +351,13 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 );
               })}
 
-              {/* MINIMALIST THINKING: MASCOT ROBOT + 3 ANIMATED DOTS */}
+              {/* MINIMALIST THINKING: LOGO + 3 ANIMATED DOTS ONLY */}
               {isLoading && (
-                <div className="my-3 flex items-center gap-3 w-fit rounded-full border border-[#00FF88]/30 bg-[#0E1538]/80 px-3 py-1 shadow-[0_0_15px_rgba(0,255,136,0.15)] backdrop-blur-md">
-                  <div className="relative flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_8px_rgba(0,255,136,0.5)]">
-                    <img
-                      src="/assets/mascot_ball.png"
-                      alt="AI Mascot"
-                      className="h-5 w-5 object-contain"
-                    />
+                <div className="my-3 flex items-center gap-3 w-fit rounded-full border border-[#00FF88]/30 bg-[#0E1538]/80 px-3.5 py-1.5 shadow-[0_0_15px_rgba(0,255,136,0.15)] backdrop-blur-md">
+                  <div className="relative flex h-5 w-5 items-center justify-center rounded-md bg-gradient-to-tr from-[#00FF88] to-[#00D2FF] shadow-[0_0_8px_rgba(0,255,136,0.5)]">
+                    <Sparkles className="h-3 w-3 text-[#080B21]" />
                   </div>
-                  <div className="flex items-center gap-1.5 pr-1">
+                  <div className="flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full bg-[#00FF88] animate-bounce [animation-delay:-0.3s]" />
                     <span className="h-2 w-2 rounded-full bg-[#00D2FF] animate-bounce [animation-delay:-0.15s]" />
                     <span className="h-2 w-2 rounded-full bg-[#8B5CF6] animate-bounce" />
