@@ -41,8 +41,17 @@ export function AuthScreen() {
     setLoading(false);
   };
 
-  const handleQuickDemo = (demoEmail: string, demoRole: string) => {
-    signInDemo(demoEmail, demoRole);
+  const handleQuickDemo = async (demoEmail: string, demoRole: string) => {
+    setEmail(demoEmail);
+    setPassword("Printway@2026");
+    setLoading(true);
+    setErrorMsg(null);
+    const res = await signIn(demoEmail, "Printway@2026");
+    if (res.error) {
+      // Fallback demo
+      signInDemo(demoEmail, demoRole);
+    }
+    setLoading(false);
   };
 
   return (
@@ -231,7 +240,7 @@ export function AuthScreen() {
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => handleQuickDemo("lead_rd@printway.io", "lead_rd")}
+                onClick={() => handleQuickDemo("admin@printway.io", "lead_rd")}
                 className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00FF88]/50 hover:bg-[#00FF88]/10 text-left transition-all group cursor-pointer"
               >
                 <div className="text-[10px] font-bold text-slate-200 group-hover:text-[#00FF88]">Lead R&D</div>
@@ -239,7 +248,7 @@ export function AuthScreen() {
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickDemo("designer_alex@printway.io", "designer")}
+                onClick={() => handleQuickDemo("designer@printway.io", "designer")}
                 className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00D2FF]/50 hover:bg-[#00D2FF]/10 text-left transition-all group cursor-pointer"
               >
                 <div className="text-[10px] font-bold text-slate-200 group-hover:text-[#00D2FF]">Designer</div>
@@ -247,7 +256,7 @@ export function AuthScreen() {
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickDemo("vip_seller@crossborder.com", "seller")}
+                onClick={() => handleQuickDemo("seller@crossborder.com", "seller")}
                 className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-500/10 text-left transition-all group cursor-pointer"
               >
                 <div className="text-[10px] font-bold text-slate-200 group-hover:text-purple-400">VIP Seller</div>
