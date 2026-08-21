@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CyberpunkChartRenderer } from "@/app/components/CyberpunkChartRenderer";
@@ -18,6 +18,49 @@ interface MarkdownContentProps {
   content: string;
   className?: string;
   isStreaming?: boolean;
+}
+
+/**
+ * Throttles content updates during active LLM token streaming.
+ * Batches incoming tokens to ~50ms intervals so React AST Remark parser
+ * doesn't block the browser's main thread on every single character.
+ */
+function useThrottledContent(
+  content: string,
+  isStreaming?: boolean,
+  throttleMs = 50
+): string {
+  const [throttled, setThrottled] = useState(content);
+  const lastUpdateRef = useRef(Date.now());
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!isStreaming) {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setThrottled(content);
+      return;
+    }
+
+    const now = Date.now();
+    const elapsed = now - lastUpdateRef.current;
+
+    if (elapsed >= throttleMs) {
+      lastUpdateRef.current = now;
+      setThrottled(content);
+    } else {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => {
+        lastUpdateRef.current = Date.now();
+        setThrottled(content);
+      }, throttleMs - elapsed);
+    }
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [content, isStreaming, throttleMs]);
+
+  return throttled;
 }
 
 // Lightweight, ultra-fast code renderer that avoids heavy Prism thread blocking during streaming
@@ -68,6 +111,9 @@ FastCodeBlock.displayName = "FastCodeBlock";
 
 export const MarkdownContent = React.memo<MarkdownContentProps>(
   ({ content, className, isStreaming }) => {
+    // Throttle content parsing during streaming
+    const displayContent = useThrottledContent(content, isStreaming, 50);
+
     return (
       <div
         className={cn(
@@ -223,7 +269,7 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
             },
           }}
         >
-          {content}
+          {displayContent}
         </ReactMarkdown>
       </div>
     );

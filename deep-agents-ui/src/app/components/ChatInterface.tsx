@@ -126,14 +126,17 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       if (message.type === "ai") {
         const rawToolCalls = message.tool_calls || [];
         const toolCallsWithStatus: ToolCall[] = rawToolCalls.map(
-          (toolCall: {
-            id?: string;
-            name?: string;
-            function?: { name?: string; arguments?: unknown };
-            args?: unknown;
-            type?: string;
-            input?: unknown;
-          }) => {
+          (
+            toolCall: {
+              id?: string;
+              name?: string;
+              function?: { name?: string; arguments?: unknown };
+              args?: unknown;
+              type?: string;
+              input?: unknown;
+            },
+            tcIdx: number
+          ) => {
             const name =
               toolCall.function?.name ||
               toolCall.name ||
@@ -145,7 +148,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               toolCall.input ||
               {};
             return {
-              id: toolCall.id || `tool-${Math.random()}`,
+              id: toolCall.id || `tc-${message.id}-${tcIdx}`,
               name,
               args,
               status: interrupt ? "interrupted" : ("pending" as const),

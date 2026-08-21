@@ -109,11 +109,11 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     const hasContent = rawMessageContent && rawMessageContent.trim() !== "";
     const hasToolCalls = toolCalls.length > 0;
 
-    // 1. Direct tag-based questions from response
+    // 1. Direct tag-based questions from response (only extracted when stream finishes)
     const tagQuestions = useMemo(() => {
-      if (isUser || !hasContent) return [];
+      if (isUser || !hasContent || isLoading) return [];
       return extractFollowUpQuestions(rawMessageContent);
-    }, [isUser, hasContent, rawMessageContent]);
+    }, [isUser, hasContent, isLoading, rawMessageContent]);
 
     // 2. Real-time LLM-generated questions fallback if not embedded in response
     const [apiQuestions, setApiQuestions] = useState<string[]>([]);
@@ -153,11 +153,12 @@ export const ChatMessage = React.memo<ChatMessageProps>(
       return apiQuestions;
     }, [tagQuestions, apiQuestions]);
 
-    // Trim the tagged follow-up section from main response markdown
+    // Trim the tagged follow-up section from main response markdown (only after stream completes)
     const trimmedContent = useMemo(() => {
       if (!hasContent) return "";
+      if (isLoading) return rawMessageContent;
       return trimFollowUpSection(rawMessageContent);
-    }, [rawMessageContent, hasContent]);
+    }, [rawMessageContent, hasContent, isLoading]);
 
     const subAgents = useMemo(() => {
       return toolCalls
