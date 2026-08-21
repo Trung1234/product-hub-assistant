@@ -262,6 +262,8 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 <img
                   src="/banner_crossborder.png"
                   alt="Cross Border AI Innovation Summit 2026"
+                  loading="lazy"
+                  decoding="async"
                   className="h-auto w-full max-h-[150px] sm:max-h-[200px] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
@@ -272,6 +274,8 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                   <img
                     src="/logo_header.png"
                     alt="Printway.io"
+                    loading="lazy"
+                    decoding="async"
                     className="h-5 sm:h-6 w-auto object-contain"
                   />
                 </div>

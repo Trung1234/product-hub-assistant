@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, Suspense } from "react";
+import dynamic from "next/dynamic";
 import { useQueryState } from "nuqs";
 import { getConfig, StandaloneConfig } from "@/lib/config";
 import { Assistant } from "@langchain/langgraph-sdk";
@@ -8,10 +9,21 @@ import { ClientProvider, useClient } from "@/providers/ClientProvider";
 import { ChatProvider } from "@/providers/ChatProvider";
 import { ChatInterface } from "@/app/components/ChatInterface";
 import { AppSidebar } from "@/app/components/AppSidebar";
-import { ImageLightboxModal } from "@/app/components/ImageLightboxModal";
-import { CommandPalette } from "@/app/components/CommandPalette";
 import { AuthButton } from "@/app/components/AuthButton";
-import { PanelLeft, SquarePen, Search } from "lucide-react";
+import { AuthProvider, useAuth } from "@/providers/AuthProvider";
+import { AuthScreen } from "@/app/components/AuthScreen";
+import { PanelLeft, SquarePen, Search, Loader2 } from "lucide-react";
+
+// Lazy-loaded interactive modals with zero initial bundle overhead
+const CommandPalette = dynamic(
+  () => import("@/app/components/CommandPalette").then((m) => m.CommandPalette),
+  { ssr: false }
+);
+
+const ImageLightboxModal = dynamic(
+  () => import("@/app/components/ImageLightboxModal").then((m) => m.ImageLightboxModal),
+  { ssr: false }
+);
 
 interface HomePageInnerProps {
   config: StandaloneConfig;
@@ -150,23 +162,27 @@ function HomePageInner({ config }: HomePageInnerProps) {
 
   return (
     <>
-      {/* Command Palette (Cmd + K) */}
-      <CommandPalette
-        isOpen={commandPaletteOpen}
-        onClose={() => setCommandPaletteOpen(false)}
-        onSelectPrompt={handleSelectPalettePrompt}
-        onNewResearch={() => setThreadId(null)}
-        onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
+      {/* Command Palette (Cmd + K) - Lazily Loaded */}
+      {commandPaletteOpen && (
+        <CommandPalette
+          isOpen={commandPaletteOpen}
+          onClose={() => setCommandPaletteOpen(false)}
+          onSelectPrompt={handleSelectPalettePrompt}
+          onNewResearch={() => setThreadId(null)}
+          onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      )}
 
-      {/* Image Lightbox & Spec Inspector Modal */}
-      <ImageLightboxModal
-        isOpen={lightboxData.isOpen}
-        imageUrl={lightboxData.imageUrl}
-        alt={lightboxData.alt}
-        caption={lightboxData.caption}
-        onClose={() => setLightboxData((prev) => ({ ...prev, isOpen: false }))}
-      />
+      {/* Image Lightbox & Spec Inspector Modal - Lazily Loaded */}
+      {lightboxData.isOpen && (
+        <ImageLightboxModal
+          isOpen={lightboxData.isOpen}
+          imageUrl={lightboxData.imageUrl}
+          alt={lightboxData.alt}
+          caption={lightboxData.caption}
+          onClose={() => setLightboxData((prev) => ({ ...prev, isOpen: false }))}
+        />
+      )}
 
       <div className="flex h-screen w-screen overflow-hidden bg-[#080B21] text-white">
         {/* ChatGPT-Style Left Sidebar (Unified Navigation & History, Drawer on Mobile) */}
@@ -249,6 +265,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
 }
 
 function HomePageContent() {
+  const { user, loading } = useAuth();
   const [config] = useState<StandaloneConfig>(() => getConfig());
   const [assistantId, setAssistantId] = useQueryState("assistantId");
 
@@ -257,6 +274,21 @@ function HomePageContent() {
       setAssistantId(config.assistantId);
     }
   }, [config, assistantId, setAssistantId]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-[#080B21] text-white">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-[#00FF88]" />
+          <p className="text-xs font-semibold text-slate-400">Đang đồng bộ phiên xác thực Printway Supabase...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthScreen />;
+  }
 
   const langsmithApiKey =
     config.langsmithApiKey || process.env.NEXT_PUBLIC_LANGSMITH_API_KEY || "";
@@ -273,14 +305,16 @@ function HomePageContent() {
 
 export default function HomePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex h-screen items-center justify-center bg-[#080B21]">
-          <p className="text-[#00FF88] font-mono animate-pulse">Đang khởi tạo giao diện Printway Opportunity Hub...</p>
-        </div>
-      }
-    >
-      <HomePageContent />
-    </Suspense>
+    <AuthProvider>
+      <Suspense
+        fallback={
+          <div className="flex h-screen items-center justify-center bg-[#080B21]">
+            <p className="text-[#00FF88] font-mono animate-pulse">Đang khởi tạo giao diện Printway Opportunity Hub...</p>
+          </div>
+        }
+      >
+        <HomePageContent />
+      </Suspense>
+    </AuthProvider>
   );
 }

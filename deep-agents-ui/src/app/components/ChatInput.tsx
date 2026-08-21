@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback, FormEvent, useMemo, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import {
   Square,
@@ -24,7 +25,12 @@ import {
 import { TodoItem } from "@/app/types/types";
 import { cn } from "@/lib/utils";
 import { FilesPopover } from "@/app/components/TasksFilesSidebar";
-import { FilePreviewModal, UploadedFileItem } from "@/app/components/FilePreviewModal";
+import type { UploadedFileItem } from "@/app/components/FilePreviewModal";
+
+const FilePreviewModal = dynamic(
+  () => import("@/app/components/FilePreviewModal").then((m) => m.FilePreviewModal),
+  { ssr: false }
+);
 
 interface ChatInputProps {
   isLoading: boolean;
@@ -356,11 +362,13 @@ export const ChatInput = React.memo<ChatInputProps>(({
 
   return (
     <>
-      {/* File Preview Modal */}
-      <FilePreviewModal
-        file={previewingFile}
-        onClose={() => setPreviewingFile(null)}
-      />
+      {/* File Preview Modal - Mounted conditionally on demand */}
+      {previewingFile && (
+        <FilePreviewModal
+          file={previewingFile}
+          onClose={() => setPreviewingFile(null)}
+        />
+      )}
 
       {/* Hidden File Input */}
       <input

@@ -250,6 +250,7 @@ pre {
 /* Custom cyber scrollbar */
 .scrollbar-pretty::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 .scrollbar-pretty::-webkit-scrollbar-track {
@@ -263,4 +264,20 @@ pre {
 
 .scrollbar-pretty::-webkit-scrollbar-thumb:hover {
   background-color: rgba(0, 255, 136, 0.7);
+}
+
+/* 60fps/120fps Hardware Acceleration & Smooth Rendering Utilities */
+.gpu-layer {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.contain-render {
+  contain: layout style paint;
+}
+
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }

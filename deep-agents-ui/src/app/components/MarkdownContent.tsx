@@ -1,17 +1,63 @@
-"use client";
-
 import React, { useMemo, useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { CyberpunkChartRenderer } from "@/app/components/CyberpunkChartRenderer";
-import { SuggestedQuestionsRenderer } from "@/app/components/SuggestedQuestionsRenderer";
-import {
-  ProfitCalculatorWidget,
-  SeoTagsWidget,
-  PrintwaySkuCardWidget,
-} from "@/app/components/InteractiveWidgets";
 import { Sparkles, ZoomIn, Copy, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+// Lazily load heavy interactive widgets with cyberpunk neon skeleton fallbacks
+const CyberpunkChartRenderer = dynamic(
+  () => import("@/app/components/CyberpunkChartRenderer").then((m) => m.CyberpunkChartRenderer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-64 w-full animate-pulse rounded-2xl border border-[#00FF88]/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-[#00FF88] font-mono">Đang tải biểu đồ 5D Radar...</span>
+      </div>
+    ),
+  }
+);
+
+const ProfitCalculatorWidget = dynamic(
+  () => import("@/app/components/InteractiveWidgets").then((m) => m.ProfitCalculatorWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-44 w-full animate-pulse rounded-2xl border border-[#00FF88]/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-[#00FF88] font-mono">Đang tải bảng tính ROI & Lợi nhuận...</span>
+      </div>
+    ),
+  }
+);
+
+const SeoTagsWidget = dynamic(
+  () => import("@/app/components/InteractiveWidgets").then((m) => m.SeoTagsWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-28 w-full animate-pulse rounded-2xl border border-cyan-500/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-cyan-400 font-mono">Đang tải 13 SEO Tags...</span>
+      </div>
+    ),
+  }
+);
+
+const PrintwaySkuCardWidget = dynamic(
+  () => import("@/app/components/InteractiveWidgets").then((m) => m.PrintwaySkuCardWidget),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="my-4 h-36 w-full animate-pulse rounded-2xl border border-[#00FF88]/20 bg-[#0E1538]/60 flex items-center justify-center">
+        <span className="text-xs text-[#00FF88] font-mono">Đang tải thông số xưởng Printway...</span>
+      </div>
+    ),
+  }
+);
+
+const SuggestedQuestionsRenderer = dynamic(
+  () => import("@/app/components/SuggestedQuestionsRenderer").then((m) => m.SuggestedQuestionsRenderer),
+  { ssr: false }
+);
 
 interface MarkdownContentProps {
   content: string;
@@ -267,6 +313,8 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
                   <img
                     src={src}
                     alt={alt}
+                    loading="lazy"
+                    decoding="async"
                     className="h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#080B21]/90 via-[#080B21]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3 sm:p-4 justify-between">

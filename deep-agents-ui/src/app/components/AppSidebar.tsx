@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useThreads, ThreadItem } from "@/app/hooks/useThreads";
 import { useClient } from "@/providers/ClientProvider";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface AppSidebarProps {
   currentThreadId: string | null;
@@ -62,6 +63,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
   onMobileClose,
 }) => {
   const client = useClient();
+  const { user, profile, signOut } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const threads = useThreads({ limit: 35 });
@@ -332,28 +334,45 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* BOTTOM SECTION: USER PROFILE */}
+        {/* BOTTOM SECTION: DYNAMIC USER PROFILE & SIGNOUT */}
         <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 flex flex-col gap-2">
-          {/* User Profile Card */}
           {(!collapsed || mobileOpen) ? (
-            <div className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 bg-[#080B21]/70 border border-slate-800/80">
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/30 text-[11px] font-bold text-[#00FF88]">
-                PN
+            <div className="flex items-center justify-between rounded-xl px-2.5 py-2 bg-[#080B21]/70 border border-slate-800/80">
+              <div className="flex items-center gap-2.5 truncate">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 text-[11px] font-bold text-[#00FF88]">
+                  {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || "US")}
+                </div>
+                <div className="flex flex-col truncate">
+                  <span className="text-xs font-bold text-slate-200 truncate">
+                    {profile?.full_name || user?.email?.split("@")[0] || "Printway User"}
+                  </span>
+                  <span className="text-[9px] text-[#00FF88] font-medium truncate uppercase tracking-wider">
+                    {profile?.role === "lead_rd" ? "🚀 Lead R&D" : profile?.role === "seller" ? "🛍️ VIP Seller" : "🎨 POD Designer"}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col truncate">
-                <span className="text-xs font-bold text-slate-200 truncate">Phương Nguyễn</span>
-                <span className="text-[9px] text-[#94A3B8] truncate">Printway R&D In-house</span>
-              </div>
+              <button
+                type="button"
+                onClick={() => signOut()}
+                className="p-1 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                title="Đăng xuất khỏi hệ thống"
+              >
+                <Trash2 className="hidden" />
+                <PanelLeftClose className="h-4 w-4" />
+              </button>
             </div>
           ) : (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/30 text-[11px] font-bold text-[#00FF88] cursor-pointer">
-                  PN
+                <div 
+                  onClick={() => signOut()}
+                  className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 text-[11px] font-bold text-[#00FF88] cursor-pointer hover:border-red-400/50"
+                >
+                  {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : "US"}
                 </div>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-[#0E1538] border-[#00FF88]/30 text-white text-xs">
-                Phương Nguyễn (Printway R&D)
+                {profile?.full_name || user?.email || "User"} (Click để Đăng Xuất)
               </TooltipContent>
             </Tooltip>
           )}
