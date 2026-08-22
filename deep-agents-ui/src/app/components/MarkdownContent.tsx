@@ -430,6 +430,13 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
         >
           {displayContent}
         </ReactMarkdown>
+
+        {isStreaming && (
+          <div className="inline-flex items-center gap-2 mt-2 px-2.5 py-1 rounded-full bg-[#00FF88]/10 border border-[#00FF88]/30 text-xs font-mono text-[#00FF88] animate-pulse">
+            <span className="inline-block h-3.5 w-1.5 rounded-sm bg-[#00FF88] shadow-[0_0_10px_#00FF88]" />
+            <span className="text-[11px] font-bold text-white">Đang truyền trực tiếp token R&D...</span>
+          </div>
+        )}
       </div>
     );
   }
