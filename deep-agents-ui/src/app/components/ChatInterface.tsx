@@ -184,7 +184,51 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
       });
     }
 
-    return Array.from(messageMap.values());
+    const rawList = Array.from(messageMap.values());
+    const deduplicated: { message: Message; toolCalls: ToolCall[] }[] = [];
+
+    for (let i = 0; i < rawList.length; i++) {
+      const current = rawList[i];
+      const currentContent = typeof current.message.content === "string"
+        ? current.message.content
+        : extractStringFromMessageContent(current.message);
+
+      // Check if this is a duplicate of the immediately preceding message (e.g. optimistic vs server message)
+      if (deduplicated.length > 0) {
+        const lastIdx = deduplicated.length - 1;
+        const prev = deduplicated[lastIdx];
+        const prevContent = typeof prev.message.content === "string"
+          ? prev.message.content
+          : extractStringFromMessageContent(prev.message);
+
+        // Deduplicate consecutive identical messages with same role and content
+        if (
+          prev.message.type === current.message.type &&
+          currentContent.trim() !== "" &&
+          prevContent.trim() === currentContent.trim()
+        ) {
+          // If current has tool calls or longer content, upgrade the existing one
+          if (current.toolCalls.length >= prev.toolCalls.length) {
+            deduplicated[lastIdx] = current;
+          }
+          continue;
+        }
+
+        // Deduplicate empty human or AI messages if followed by populated one
+        if (
+          prev.message.type === current.message.type &&
+          prevContent.trim() === "" &&
+          currentContent.trim() !== ""
+        ) {
+          deduplicated[lastIdx] = current;
+          continue;
+        }
+      }
+
+      deduplicated.push(current);
+    }
+
+    return deduplicated;
   }, [messages, isLoading]);
 
   const hasAiResponseText = useMemo(() => {
