@@ -314,16 +314,7 @@ const ARCH_LAYERS: ArchLayer[] = [
 ];
 
 export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
-  const { user, signIn, signUp, signInWithGoogle } = useAuth();
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authTab, setAuthTab] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState("lead_rd");
-  const [orgId, setOrgId] = useState("printway_internal");
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { user, signInWithClerk, signUpWithClerk } = useAuth();
 
   // Interactive Architecture Blueprint State
   const [selectedLayerId, setSelectedLayerId] = useState<number>(3);
@@ -341,37 +332,12 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
     setSelectedNodeId(nodeId);
   };
 
-  const handleGoogleSignIn = async () => {
-    setErrorMsg(null);
-    setLoading(true);
-    const res = await signInWithGoogle();
-    if (res?.error) setErrorMsg(res.error);
-    setLoading(false);
-  };
-
-  const handleAuthSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-    setLoading(true);
-
-    if (authTab === "signin") {
-      const res = await signIn(email, password);
-      if (res.error) {
-        setErrorMsg(res.error);
-      } else {
-        setAuthModalOpen(false);
-        onEnterApp?.();
-      }
+  const handlePrimaryAction = () => {
+    if (user) {
+      onEnterApp?.();
     } else {
-      const res = await signUp(email, password, fullName, role, orgId);
-      if (res.error) {
-        setErrorMsg(res.error);
-      } else {
-        setAuthModalOpen(false);
-        onEnterApp?.();
-      }
+      signUpWithClerk();
     }
-    setLoading(false);
   };
 
   return (
@@ -421,20 +387,14 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    setAuthTab("signin");
-                    setAuthModalOpen(true);
-                  }}
+                  onClick={() => signInWithClerk()}
                   className="rounded-xl border border-white/10 bg-[#0E1538] px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:border-[#00FF88]/40 hover:text-white transition-all cursor-pointer"
                 >
                   Đăng Nhập
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    setAuthTab("signup");
-                    setAuthModalOpen(true);
-                  }}
+                  onClick={() => signUpWithClerk()}
                   className="flex items-center gap-1.5 rounded-xl bg-[#00FF88] px-3.5 py-1.5 text-xs font-bold text-[#080B21] shadow-[0_0_15px_rgba(0,255,136,0.4)] hover:bg-[#00FF88]/90 transition-all cursor-pointer"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
@@ -475,13 +435,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <button
               type="button"
-              onClick={() => {
-                if (user) onEnterApp?.();
-                else {
-                  setAuthTab("signin");
-                  setAuthModalOpen(true);
-                }
-              }}
+              onClick={handlePrimaryAction}
               className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] px-6 py-3.5 text-xs sm:text-sm font-extrabold text-[#080B21] shadow-[0_0_25px_rgba(0,255,136,0.4)] hover:scale-105 transition-all cursor-pointer"
             >
               <Zap className="h-4 w-4 fill-current" />
@@ -825,13 +779,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
               <div className="mt-5 border-t border-white/10 pt-4">
                 <button
                   type="button"
-                  onClick={() => {
-                    if (user) onEnterApp?.();
-                    else {
-                      setAuthTab("signin");
-                      setAuthModalOpen(true);
-                    }
-                  }}
+                  onClick={handlePrimaryAction}
                   className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] py-2.5 text-xs font-bold text-[#080B21] shadow-lg hover:opacity-90 transition-all cursor-pointer"
                 >
                   <Zap className="h-3.5 w-3.5 fill-current" />
@@ -928,13 +876,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
             <div className="shrink-0 w-full md:w-auto">
               <button
                 type="button"
-                onClick={() => {
-                  if (user) onEnterApp?.();
-                  else {
-                    setAuthTab("signin");
-                    setAuthModalOpen(true);
-                  }
-                }}
+                onClick={handlePrimaryAction}
                 className="w-full md:w-auto flex items-center justify-center gap-2 rounded-2xl bg-[#FF8A00] hover:bg-[#FF7A00] px-8 py-4 text-xs sm:text-sm font-extrabold text-[#080B21] shadow-[0_0_30px_rgba(255,138,0,0.35)] transition-all cursor-pointer"
               >
                 <span>Bắt Đầu Thẩm Định Ngay</span>
@@ -969,171 +911,6 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
           </div>
         </div>
       </footer>
-
-      {/* Quick Auth Modal */}
-      {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[#00FF88]/30 bg-[#0E1538]/95 p-6 sm:p-8 shadow-[0_0_60px_rgba(0,255,136,0.2)] backdrop-blur-2xl">
-            <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 pointer-events-none scale-105"
-              style={{ backgroundImage: "url('/banner_crossborder.png')" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0E1538] via-[#0E1538]/90 to-[#0E1538]/75 pointer-events-none" />
-
-            <div className="relative z-10">
-              <button
-                type="button"
-                onClick={() => setAuthModalOpen(false)}
-                className="absolute top-0 right-0 text-slate-400 hover:text-white text-xs font-mono"
-              >
-                ✕ Đóng
-              </button>
-
-              <div className="text-center mb-6">
-                <div className="flex justify-center mb-3">
-                  <img
-                    src="/logo_header.png"
-                    alt="Printway Nexus"
-                    className="h-9 w-auto object-contain"
-                  />
-                </div>
-                <h3 className="text-xl font-black text-white">
-                  {authTab === "signin" ? "Đăng Nhập Printway Nexus" : "Tạo Tài Khoản Mới"}
-                </h3>
-                <p className="text-xs text-slate-300 mt-1 font-medium">
-                  Hệ thống AI R&D phát hiện cơ hội sản phẩm Print-on-Demand
-                </p>
-              </div>
-
-              <div className="flex rounded-xl bg-[#080B21] p-1 mb-5 border border-white/5 text-xs font-bold">
-                <button
-                  type="button"
-                  onClick={() => { setAuthTab("signin"); setErrorMsg(null); }}
-                  className={`flex-1 py-2 rounded-lg transition-all ${
-                    authTab === "signin"
-                      ? "bg-[#00FF88] text-[#080B21] shadow-md shadow-[#00FF88]/20"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Đăng Nhập
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setAuthTab("signup"); setErrorMsg(null); }}
-                  className={`flex-1 py-2 rounded-lg transition-all ${
-                    authTab === "signup"
-                      ? "bg-[#00FF88] text-[#080B21] shadow-md shadow-[#00FF88]/20"
-                      : "text-slate-400 hover:text-white"
-                  }`}
-                >
-                  Đăng Ký
-                </button>
-              </div>
-
-              {errorMsg && (
-                <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400 text-center font-medium">
-                  {errorMsg}
-                </div>
-              )}
-
-              <form onSubmit={handleAuthSubmit} className="space-y-4">
-                {authTab === "signup" && (
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Họ và Tên
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Nguyễn Văn A"
-                      className="w-full rounded-xl border border-white/10 bg-[#080B21] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#00FF88] focus:outline-none transition-colors"
-                    />
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Email công việc
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@printway.io"
-                    className="w-full rounded-xl border border-white/10 bg-[#080B21] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#00FF88] focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Mật khẩu
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••••••"
-                    className="w-full rounded-xl border border-white/10 bg-[#080B21] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-[#00FF88] focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full rounded-xl bg-[#00FF88] py-3 text-xs font-bold text-[#080B21] shadow-lg shadow-[#00FF88]/20 hover:bg-[#00FF88]/90 transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  {loading
-                    ? "Đang xác thực..."
-                    : authTab === "signin"
-                    ? "Đăng Nhập Vào Hệ Thống"
-                    : "Tạo Tài Khoản Mới"}
-                </button>
-
-                {/* Google OAuth Divider & Button */}
-                <div className="relative my-3">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-white/10" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] uppercase">
-                    <span className="bg-[#0E1538] px-2 text-slate-400 font-mono">hoặc tiếp tục với</span>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleGoogleSignIn}
-                  disabled={loading}
-                  className="w-full py-2.5 px-4 rounded-xl border border-white/15 bg-[#080B21] hover:bg-[#121A45] hover:border-[#00FF88]/40 text-white font-bold text-xs transition-all flex items-center justify-center gap-2.5 cursor-pointer shadow-md"
-                >
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                    <path
-                      fill="#EA4335"
-                      d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                    />
-                    <path
-                      fill="#4285F4"
-                      d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                    />
-                    <path
-                      fill="#FBBC05"
-                      d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"
-                    />
-                    <path
-                      fill="#34A853"
-                      d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"
-                    />
-                  </svg>
-                  <span>Đăng nhập nhanh với Google</span>
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
