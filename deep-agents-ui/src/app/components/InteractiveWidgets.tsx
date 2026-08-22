@@ -123,10 +123,10 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
             <Calculator className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
               Bảng Tính Lợi Nhuận (Profit Engine)
             </h4>
-            <span className="text-[10px] text-[#94A3B8]">
+            <span className="text-xs text-[#94A3B8]">
               Tùy chỉnh giá bán, giá xưởng & Ads tính ROI tức thì
             </span>
           </div>
@@ -210,7 +210,7 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
       {/* Results Matrix Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5">
         <div className="flex flex-col rounded-xl bg-[#080B21] border border-slate-800 p-2.5 sm:p-3 text-center">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
             Tổng chi phí (COGS)
           </span>
           <span className="mt-1 font-mono text-sm sm:text-base font-bold text-slate-200">
@@ -220,7 +220,7 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
         </div>
 
         <div className="flex flex-col rounded-xl bg-[#080B21] border border-[#00FF88]/30 p-2.5 sm:p-3 text-center shadow-[0_0_12px_rgba(0,255,136,0.1)]">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#00FF88]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#00FF88]">
             LN ròng / Item
           </span>
           <span
@@ -234,7 +234,7 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
         </div>
 
         <div className="flex flex-col rounded-xl bg-[#080B21] border border-[#00D2FF]/30 p-2.5 sm:p-3 text-center shadow-[0_0_12px_rgba(0,210,255,0.1)]">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#00D2FF]">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#00D2FF]">
             Tỷ suất Margin
           </span>
           <span
@@ -252,7 +252,7 @@ export const ProfitCalculatorWidget = React.memo<{ code: string }>(({ code }) =>
         </div>
 
         <div className="flex flex-col rounded-xl bg-[#080B21] border border-purple-500/30 p-2.5 sm:p-3 text-center shadow-[0_0_12px_rgba(168,85,247,0.1)]">
-          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-purple-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-purple-400">
             Số đơn cho $10k
           </span>
           <span className="mt-1 font-mono text-base sm:text-lg font-extrabold text-purple-300">
@@ -310,14 +310,14 @@ export const SeoTagsWidget = React.memo<{ code: string }>(({ code }) => {
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00D2FF]/20 pb-3 mb-3">
         <div className="flex items-center gap-2">
           <Tag className="h-4 w-4 text-[#00D2FF] shrink-0" />
-          <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+          <h4 className="text-sm font-bold uppercase tracking-wider text-white">
             13 SEO Keywords (Etsy & Amazon Ready)
           </h4>
         </div>
         <button
           type="button"
           onClick={handleCopyAll}
-          className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-2.5 sm:px-3 py-1 text-[10px] sm:text-[11px] font-bold text-[#00FF88] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer shadow-[0_0_10px_rgba(0,255,136,0.2)] shrink-0"
+          className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/40 bg-[#00FF88]/15 px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-bold text-[#00FF88] hover:bg-[#00FF88] hover:text-[#080B21] transition-all cursor-pointer shadow-[0_0_10px_rgba(0,255,136,0.2)] shrink-0"
         >
           {copiedAll ? (
             <>
@@ -341,7 +341,7 @@ export const SeoTagsWidget = React.memo<{ code: string }>(({ code }) => {
               key={idx}
               type="button"
               onClick={() => handleCopyTag(tag, idx)}
-              className={`group flex items-center gap-1.5 rounded-xl border px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium transition-all duration-200 cursor-pointer ${
+              className={`group flex items-center gap-1.5 rounded-xl border px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium transition-all duration-200 cursor-pointer ${
                 isCopied
                   ? "border-[#00FF88] bg-[#00FF88]/20 text-[#00FF88]"
                   : "border-slate-800 bg-[#080B21] text-slate-300 hover:border-[#00D2FF]/50 hover:bg-[#121A45] hover:text-white"
@@ -397,17 +397,17 @@ export const PrintwaySkuCardWidget = React.memo<{ code: string }>(({ code }) => 
             <img src="/printway-emblem.png" alt="Printway Nexus" className="h-6 w-6 object-contain" />
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
               Thông Số Xưởng Printway
             </h4>
-            <span className="text-[10px] text-[#94A3B8]">In-house POD Factory Specs</span>
+            <span className="text-xs text-[#94A3B8]">In-house POD Factory Specs</span>
           </div>
         </div>
         <a
           href={catalog_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[#00FF88] hover:underline shrink-0"
+          className="flex items-center gap-1 text-xs sm:text-sm font-bold text-[#00FF88] hover:underline shrink-0"
         >
           <span>500+ SKUs</span>
           <ExternalLink className="h-3 w-3" />
@@ -418,32 +418,32 @@ export const PrintwaySkuCardWidget = React.memo<{ code: string }>(({ code }) => 
         <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Layers className="h-4 w-4 text-[#00FF88] shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Chất liệu & Vật liệu</span>
-            <span className="font-semibold text-white text-xs">{material}</span>
+            <span className="text-slate-400 text-xs font-bold uppercase block">Chất liệu & Vật liệu</span>
+            <span className="font-semibold text-white text-xs sm:text-sm">{material}</span>
           </div>
         </div>
 
         <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Sparkles className="h-4 w-4 text-[#00D2FF] shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Công nghệ in ấn</span>
-            <span className="font-semibold text-white text-xs">{print_tech}</span>
+            <span className="text-slate-400 text-xs font-bold uppercase block">Công nghệ in ấn</span>
+            <span className="font-semibold text-white text-xs sm:text-sm">{print_tech}</span>
           </div>
         </div>
 
         <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Clock className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Thời gian sản xuất</span>
-            <span className="font-semibold text-white text-xs">{turnaround}</span>
+            <span className="text-slate-400 text-xs font-bold uppercase block">Thời gian sản xuất</span>
+            <span className="font-semibold text-white text-xs sm:text-sm">{turnaround}</span>
           </div>
         </div>
 
         <div className="flex items-start gap-2.5 rounded-xl bg-[#080B21] p-2.5 sm:p-3 border border-slate-800">
           <Truck className="h-4 w-4 text-purple-400 shrink-0 mt-0.5" />
           <div>
-            <span className="text-slate-400 text-[9px] sm:text-[10px] font-bold uppercase block">Vận chuyển US</span>
-            <span className="font-semibold text-white text-xs">{shipping_us}</span>
+            <span className="text-slate-400 text-xs font-bold uppercase block">Vận chuyển US</span>
+            <span className="font-semibold text-white text-xs sm:text-sm">{shipping_us}</span>
           </div>
         </div>
       </div>
@@ -484,17 +484,17 @@ export const ExecutiveScorecardWidget = React.memo<{ code: string }>(({ code }) 
             <Award className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
               Bảng Tổng Quan Chỉ Số Cơ Hội (Executive Scorecard)
             </h4>
-            <span className="text-[10px] text-[#94A3B8]">Tóm tắt 4 trụ cột R&D quyết định mở bán</span>
+            <span className="text-xs text-[#94A3B8]">Tóm tắt 4 trụ cột R&D quyết định mở bán</span>
           </div>
         </div>
 
         <div className="flex items-center gap-1.5">
           <span
             className={cn(
-              "px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-wider border",
+              "px-2.5 py-1 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider border",
               !isPositive
                 ? "bg-rose-500/20 text-rose-400 border-rose-500/40"
                 : isCaution
@@ -602,10 +602,10 @@ export const MarketplaceComparisonWidget = React.memo<{ code: string }>(({ code 
             <Globe className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
               Đánh Giá Độ Phù Hợp Kênh Bán Hàng (Marketplace Matrix)
             </h4>
-            <span className="text-[10px] text-[#94A3B8]">Etsy • Amazon • TikTok Shop • Pinterest</span>
+            <span className="text-xs text-[#94A3B8]">Etsy • Amazon • TikTok Shop • Pinterest</span>
           </div>
         </div>
       </div>
@@ -717,10 +717,10 @@ export const TimelineActionPlanWidget = React.memo<{ code: string }>(({ code }) 
             <Calendar className="h-4 w-4" />
           </div>
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white">
+            <h4 className="text-sm font-bold uppercase tracking-wider text-white">
               Lộ Trình Mở Bán 30 Ngày (Action Roadmap)
             </h4>
-            <span className="text-[10px] text-[#94A3B8]">Tích chọn các đầu việc đã hoàn thành để theo dõi tiến độ</span>
+            <span className="text-xs text-[#94A3B8]">Tích chọn các đầu việc đã hoàn thành để theo dõi tiến độ</span>
           </div>
         </div>
       </div>

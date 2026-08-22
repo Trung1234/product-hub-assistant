@@ -657,7 +657,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
               {/* Ghost Text Overlay */}
               {ghostSuffix && (
                 <div
-                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden px-3.5 sm:px-[18px] pb-3 sm:pb-[13px] pt-3 sm:pt-[14px] text-base sm:text-sm leading-relaxed whitespace-pre-wrap break-words font-inherit select-none"
+                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden px-4 sm:px-5 pb-3.5 sm:pb-4 pt-3.5 sm:pt-4 text-base sm:text-[15.5px] leading-relaxed whitespace-pre-wrap break-words font-inherit select-none"
                   aria-hidden="true"
                 >
                   <span className="opacity-0">{input}</span>
@@ -667,7 +667,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 </div>
               )}
 
-              {/* Real Input Textarea: 16px on iOS to avoid auto-zoom */}
+              {/* Real Input Textarea */}
               <textarea
                 ref={textareaRef}
                 value={input}
@@ -678,7 +678,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
                 placeholder={isLoading ? "AI đang cào dữ liệu Etsy, Amazon & tự suy luận chiến lược..." : "Nhập ý tưởng sản phẩm, từ khóa POD hoặc đính kèm ảnh..."}
-                className="font-inherit field-sizing-content relative z-10 w-full resize-none border-0 bg-transparent px-3.5 sm:px-[18px] pb-3 sm:pb-[13px] pt-3 sm:pt-[14px] text-base sm:text-sm leading-relaxed text-white outline-none placeholder:text-[#64748B]"
+                className="font-inherit field-sizing-content relative z-10 w-full resize-none border-0 bg-transparent px-4 sm:px-5 pb-3.5 sm:pb-4 pt-3.5 sm:pt-4 text-base sm:text-[15.5px] leading-relaxed text-white outline-none placeholder:text-[#64748B]"
                 rows={1}
               />
             </div>
@@ -686,15 +686,15 @@ export const ChatInput = React.memo<ChatInputProps>(({
             {/* Bottom Bar: Action Tools & Suggestion Pill */}
             <div className="flex justify-between items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-[#0A0E2A]/50 border-t border-[#00FF88]/10 relative z-20">
               {/* Left Side: Attachment & Voice Input Button & File Count */}
-              <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:text-[#00FF88] hover:bg-[#121A45] border border-transparent hover:border-[#00FF88]/30 transition-all cursor-pointer"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 hover:text-[#00FF88] hover:bg-[#121A45] border border-transparent hover:border-[#00FF88]/30 transition-all cursor-pointer"
                   title="Đính kèm ảnh hoặc tài liệu (PDF, CSV, TXT, JSON, DOCX)"
                   aria-label="Đính kèm ảnh hoặc tài liệu"
                 >
-                  <Paperclip className="h-4 w-4" />
+                  <Paperclip className="h-4.5 w-4.5" />
                 </button>
 
                 {/* Speech to text Voice Button */}
@@ -702,7 +702,7 @@ export const ChatInput = React.memo<ChatInputProps>(({
                   type="button"
                   onClick={toggleListening}
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-lg border transition-all cursor-pointer",
+                    "flex h-9 w-9 items-center justify-center rounded-xl border transition-all cursor-pointer",
                     isListening
                       ? "border-rose-500/60 bg-rose-500/20 text-rose-400 animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.4)]"
                       : "border-transparent text-slate-400 hover:text-[#00D2FF] hover:bg-[#121A45] hover:border-[#00D2FF]/30"
@@ -711,15 +711,15 @@ export const ChatInput = React.memo<ChatInputProps>(({
                   aria-label="Nhập bằng giọng nói"
                 >
                   {isListening ? (
-                    <MicOff className="h-4 w-4 text-rose-400" />
+                    <MicOff className="h-4.5 w-4.5 text-rose-400" />
                   ) : (
-                    <Mic className="h-4 w-4" />
+                    <Mic className="h-4.5 w-4.5" />
                   )}
                 </button>
 
                 {attachments.length > 0 && (
-                  <span className="text-[10px] sm:text-[11px] text-[#00FF88] font-semibold flex items-center gap-1 ml-1">
-                    <CheckCircle className="h-3 w-3" />
+                  <span className="text-xs text-[#00FF88] font-bold flex items-center gap-1 ml-1.5">
+                    <CheckCircle className="h-3.5 w-3.5" />
                     {attachments.length} tệp
                   </span>
                 )}
@@ -732,16 +732,16 @@ export const ChatInput = React.memo<ChatInputProps>(({
                 size="sm"
                 onClick={isLoading ? onStopStream : undefined}
                 disabled={submitDisabled && !isLoading}
-                className="rounded-lg border border-[#00FF88] bg-[#00FF88] px-3.5 sm:px-4 py-1.5 text-xs font-bold text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all cursor-pointer shrink-0"
+                className="rounded-xl border border-[#00FF88] bg-[#00FF88] px-4 sm:px-5 py-2 text-xs sm:text-sm font-black text-[#080B21] hover:bg-[#00FF88]/85 hover:shadow-[0_0_15px_rgba(0,255,136,0.6)] transition-all cursor-pointer shrink-0"
               >
                 {isLoading ? (
                   <>
-                    <Square className="mr-1.5 h-3.5 w-3.5 fill-current" />
+                    <Square className="mr-1.5 h-4 w-4 fill-current" />
                     Dừng
                   </>
                 ) : (
                   <>
-                    <ArrowUp className="mr-1.5 h-3.5 w-3.5" />
+                    <ArrowUp className="mr-1.5 h-4 w-4" />
                     Gửi
                   </>
                 )}

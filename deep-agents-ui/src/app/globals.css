@@ -111,8 +111,8 @@ body {
   overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 1.03125rem; /* ~16.5px base font for ultra-clear legibility */
+  line-height: 1.6;
   color: #FFFFFF;
   background-color: #080B21;
   background-image: 
@@ -174,28 +174,28 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 700;
+  line-height: 1.3;
   color: #FFFFFF;
 }
 
 h1 {
-  font-size: 1.875rem;
+  font-size: 2.25rem;
 }
 h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
 }
 h3 {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
 }
 h4 {
-  font-size: 1.125rem;
+  font-size: 1.2rem;
 }
 h5 {
-  font-size: 1rem;
+  font-size: 1.05rem;
 }
 h6 {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
 }
 
 p {

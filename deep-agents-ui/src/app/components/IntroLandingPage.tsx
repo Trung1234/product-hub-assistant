@@ -343,61 +343,61 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
   return (
     <div className="min-h-screen bg-[#080B21] text-slate-100 font-sans selection:bg-[#00FF88]/30 selection:text-[#00FF88]">
       {/* Navigation Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-[#00FF88]/15 bg-[#080B21]/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-40 w-full border-b border-[#00FF88]/15 bg-[#080B21]/90 backdrop-blur-xl">
+        <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3.5">
             <div className="flex items-center">
               <img
                 src="/logo_header.png"
                 alt="Printway Nexus"
-                className="h-8 sm:h-9 w-auto object-contain"
+                className="h-9 sm:h-10 w-auto object-contain"
               />
             </div>
-            <span className="hidden sm:inline-block rounded-full bg-[#00FF88]/15 px-2 py-0.5 text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
+            <span className="hidden sm:inline-block rounded-full bg-[#00FF88]/15 px-2.5 py-1 text-xs font-bold text-[#00FF88] border border-[#00FF88]/30">
               v2.0 PROD
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
-            <a href="#blueprint" className="hover:text-[#00FF88] transition-colors flex items-center gap-1.5">
-              <Workflow className="h-3.5 w-3.5 text-[#00FF88]" />
+          <nav className="hidden md:flex items-center gap-7 text-sm font-bold text-slate-200">
+            <a href="#blueprint" className="hover:text-[#00FF88] transition-colors flex items-center gap-2">
+              <Workflow className="h-4 w-4 text-[#00FF88]" />
               <span>Sơ Đồ Kiến Trúc</span>
             </a>
-            <a href="#scoring5d" className="hover:text-[#00D2FF] transition-colors flex items-center gap-1.5">
-              <BarChart3 className="h-3.5 w-3.5 text-[#00D2FF]" />
+            <a href="#scoring5d" className="hover:text-[#00D2FF] transition-colors flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 text-[#00D2FF]" />
               <span>Ma Trận Điểm 5D</span>
             </a>
-            <a href="#factory" className="hover:text-[#FF8A00] transition-colors flex items-center gap-1.5">
-              <Factory className="h-3.5 w-3.5 text-[#FF8A00]" />
+            <a href="#factory" className="hover:text-[#FF8A00] transition-colors flex items-center gap-2">
+              <Factory className="h-4 w-4 text-[#FF8A00]" />
               <span>Khớp Xưởng Printway VN</span>
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             {user ? (
               <button
                 type="button"
                 onClick={() => onEnterApp?.()}
-                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] px-4 py-2 text-xs font-bold text-[#080B21] shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:opacity-90 transition-all cursor-pointer"
+                className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] px-5 py-2.5 text-sm font-black text-[#080B21] shadow-[0_0_20px_rgba(0,255,136,0.3)] hover:opacity-95 transition-all cursor-pointer"
               >
                 <span>Vào Workspace</span>
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className="h-4 w-4" />
               </button>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => signInWithClerk()}
-                  className="rounded-xl border border-white/10 bg-[#0E1538] px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:border-[#00FF88]/40 hover:text-white transition-all cursor-pointer"
+                  className="rounded-xl border border-white/15 bg-[#0E1538] px-4 py-2 text-sm font-bold text-slate-200 hover:border-[#00FF88]/40 hover:text-white transition-all cursor-pointer"
                 >
                   Đăng Nhập
                 </button>
                 <button
                   type="button"
                   onClick={() => signUpWithClerk()}
-                  className="flex items-center gap-1.5 rounded-xl bg-[#00FF88] px-3.5 py-1.5 text-xs font-bold text-[#080B21] shadow-[0_0_15px_rgba(0,255,136,0.4)] hover:bg-[#00FF88]/90 transition-all cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-[#00FF88] px-4.5 py-2 text-sm font-black text-[#080B21] shadow-[0_0_15px_rgba(0,255,136,0.4)] hover:bg-[#00FF88]/90 transition-all cursor-pointer"
                 >
-                  <Sparkles className="h-3.5 w-3.5" />
+                  <Sparkles className="h-4 w-4" />
                   <span>Trải Nghiệm Ngay</span>
                 </button>
               </div>
@@ -407,7 +407,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
       </header>
 
       {/* 1. Minimalist Hero Section with Competition Banner */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-16 sm:pb-24 border-b border-white/10">
+      <section className="relative overflow-hidden pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-white/10">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 filter brightness-[0.30] contrast-125 pointer-events-none"
           style={{ backgroundImage: "url('/banner_crossborder.png')" }}
@@ -416,8 +416,8 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-[#080B21]/60 to-[#080B21] pointer-events-none" />
 
         <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF88]/40 bg-[#080B21]/90 px-4 py-1.5 text-xs font-semibold text-[#00FF88] backdrop-blur-md shadow-[0_0_20px_rgba(0,255,136,0.25)] mb-6 animate-pulse">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF88]/40 bg-[#080B21]/90 px-4 py-2 text-xs sm:text-sm font-bold text-[#00FF88] backdrop-blur-md shadow-[0_0_20px_rgba(0,255,136,0.25)] mb-7 animate-pulse">
+            <Sparkles className="h-4 w-4" />
             <span>Cross Border AI Innovation Summit 2026 &bull; Track: E-Commerce AI</span>
           </div>
 
@@ -428,75 +428,75 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
             </span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-2xl text-xs sm:text-sm text-slate-200 leading-relaxed">
-            <strong className="text-white">Printway Nexus</strong> tự động cào tín hiệu thời gian thực từ <strong>Etsy, Amazon, Pinterest & Google Trends</strong>, chấm điểm theo <strong>Ma trận 5D</strong> và đối soát phôi xưởng <strong>Printway Việt Nam (sản xuất 1-3 ngày)</strong>.
+          <p className="mx-auto mt-6 max-w-3xl text-base sm:text-lg text-slate-200 leading-relaxed font-normal">
+            <strong className="text-white font-bold">Printway Nexus</strong> tự động cào tín hiệu thời gian thực từ <strong>Etsy, Amazon, Pinterest & Google Trends</strong>, chấm điểm theo <strong>Ma trận 5D</strong> và đối soát phôi xưởng <strong>Printway Việt Nam (sản xuất 1-3 ngày)</strong>.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <button
               type="button"
               onClick={handlePrimaryAction}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] px-6 py-3.5 text-xs sm:text-sm font-extrabold text-[#080B21] shadow-[0_0_25px_rgba(0,255,136,0.4)] hover:scale-105 transition-all cursor-pointer"
+              className="flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] px-7 py-4 text-sm sm:text-base font-black text-[#080B21] shadow-[0_0_25px_rgba(0,255,136,0.4)] hover:scale-105 transition-all cursor-pointer"
             >
-              <Zap className="h-4 w-4 fill-current" />
+              <Zap className="h-4.5 w-4.5 fill-current" />
               <span>{user ? "Vào Bàn Làm Việc R&D" : "Bắt Đầu Nghiên Cứu Miễn Phí"}</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4.5 w-4.5" />
             </button>
 
             <a
               href="#blueprint"
-              className="flex items-center gap-2 rounded-xl border border-white/20 bg-[#0E1538]/90 backdrop-blur-md px-6 py-3.5 text-xs sm:text-sm font-bold text-white hover:border-[#00D2FF]/50 hover:bg-[#121A45] transition-all shadow-lg"
+              className="flex items-center gap-2.5 rounded-xl border border-white/20 bg-[#0E1538]/90 backdrop-blur-md px-7 py-4 text-sm sm:text-base font-bold text-white hover:border-[#00D2FF]/50 hover:bg-[#121A45] transition-all shadow-lg"
             >
-              <Workflow className="h-4 w-4 text-[#00D2FF]" />
+              <Workflow className="h-4.5 w-4.5 text-[#00D2FF]" />
               <span>Khám Phá Sơ Đồ Kiến Trúc Tương Tác</span>
             </a>
           </div>
 
-          {/* 4 Minimal Metric Badges */}
-          <div className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto text-left">
-            <div className="rounded-xl border border-[#00FF88]/30 bg-[#0E1538]/85 p-3.5 backdrop-blur-xl">
-              <div className="text-[10px] font-mono text-slate-400">NGUỒN CÀO DỮ LIỆU THẬT</div>
-              <div className="text-lg sm:text-xl font-black text-[#00FF88] mt-0.5">5+ Nền Tảng</div>
-              <p className="text-[10px] text-slate-300 mt-0.5">Etsy, Amazon, Pinterest, Trends</p>
+          {/* 4 Metric Badges */}
+          <div className="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-3.5 max-w-4xl mx-auto text-left">
+            <div className="rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
+              <div className="text-xs font-mono text-slate-300 font-bold">NGUỒN CÀO DỮ LIỆU THẬT</div>
+              <div className="text-xl sm:text-2xl font-black text-[#00FF88] mt-1">5+ Nền Tảng</div>
+              <p className="text-xs text-slate-300 mt-1">Etsy, Amazon, Pinterest, Trends</p>
             </div>
-            <div className="rounded-xl border border-[#00D2FF]/30 bg-[#0E1538]/85 p-3.5 backdrop-blur-xl">
-              <div className="text-[10px] font-mono text-slate-400">CHẤM ĐIỂM CƠ HỘI</div>
-              <div className="text-lg sm:text-xl font-black text-[#00D2FF] mt-0.5">Ma Trận 5D</div>
-              <p className="text-[10px] text-slate-300 mt-0.5">Demand, Margin, Comp, Velocity</p>
+            <div className="rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
+              <div className="text-xs font-mono text-slate-300 font-bold">CHẤM ĐIỂM CƠ HỘI</div>
+              <div className="text-xl sm:text-2xl font-black text-[#00D2FF] mt-1">Ma Trận 5D</div>
+              <p className="text-xs text-slate-300 mt-1">Demand, Margin, Comp, Velocity</p>
             </div>
-            <div className="rounded-xl border border-[#FF8A00]/30 bg-[#0E1538]/85 p-3.5 backdrop-blur-xl">
-              <div className="text-[10px] font-mono text-slate-400">XƯỞNG PRINTWAY VN</div>
-              <div className="text-lg sm:text-xl font-black text-[#FF8A00] mt-0.5">1 - 3 Ngày SX</div>
-              <p className="text-[10px] text-slate-300 mt-0.5">Phôi chuẩn xưởng + 5-8 ngày giao US</p>
+            <div className="rounded-2xl border border-[#FF8A00]/30 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
+              <div className="text-xs font-mono text-slate-300 font-bold">XƯỞNG PRINTWAY VN</div>
+              <div className="text-xl sm:text-2xl font-black text-[#FF8A00] mt-1">1 - 3 Ngày SX</div>
+              <p className="text-xs text-slate-300 mt-1">Phôi chuẩn xưởng + 5-8 ngày giao US</p>
             </div>
-            <div className="rounded-xl border border-white/20 bg-[#0E1538]/85 p-3.5 backdrop-blur-xl">
-              <div className="text-[10px] font-mono text-slate-400">ĐỘ CHÍNH XÁC SỐ LIỆU</div>
-              <div className="text-lg sm:text-xl font-black text-white mt-0.5">100% Grounded</div>
-              <p className="text-[10px] text-slate-300 mt-0.5">Triệt tiêu ảo giác, trích dẫn URL</p>
+            <div className="rounded-2xl border border-white/20 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
+              <div className="text-xs font-mono text-slate-300 font-bold">ĐỘ CHÍNH XÁC SỐ LIỆU</div>
+              <div className="text-xl sm:text-2xl font-black text-white mt-1">100% Grounded</div>
+              <p className="text-xs text-slate-300 mt-1">Triệt tiêu ảo giác, trích dẫn URL</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. THE STAR: Interactive Architecture Blueprint (Bản Vẽ Kiến Trúc Tương Tác) */}
-      <section id="blueprint" className="py-16 sm:py-20 bg-[#080B21] relative overflow-hidden">
+      {/* 2. THE STAR: Interactive Architecture Blueprint */}
+      <section id="blueprint" className="py-18 sm:py-24 bg-[#080B21] relative overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#00D2FF]/30 bg-[#00D2FF]/10 px-3.5 py-1 text-[11px] font-bold text-[#00D2FF] uppercase tracking-wider mb-2">
-              <Workflow className="h-3.5 w-3.5" />
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#00D2FF]/30 bg-[#00D2FF]/10 px-4 py-1.5 text-xs font-bold text-[#00D2FF] uppercase tracking-wider mb-3">
+              <Workflow className="h-4 w-4" />
               <span>BẢN VẼ HỆ THỐNG TƯƠNG TÁC (INTERACTIVE SYSTEM BLUEPRINT)</span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight">
               Kiến Trúc Kỹ Thuật Thực Sự Của Printway Nexus
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-slate-400">
+            <p className="mt-3 text-sm sm:text-base text-slate-300">
               Nhấp vào bất kỳ <strong>Tầng Kiến Trúc</strong> hoặc <strong>Module Nút</strong> bên dưới để xem luồng dữ liệu, schema thực tế và mã nguồn lõi.
             </p>
           </div>
 
           {/* Layer Selection Navigation Tabs */}
-          <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 mb-6 scrollbar-none">
+          <div className="flex items-center justify-start sm:justify-center gap-2.5 overflow-x-auto pb-4 mb-8 scrollbar-none">
             {ARCH_LAYERS.map((layer) => {
               const isSelected = selectedLayerId === layer.id;
               return (
@@ -507,10 +507,10 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                     setSelectedLayerId(layer.id);
                     setSelectedNodeId(layer.nodes[0].id);
                   }}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border ${
+                  className={`flex items-center gap-2.5 px-4.5 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all cursor-pointer border ${
                     isSelected
                       ? `bg-[#0E1538] text-white shadow-lg`
-                      : "bg-[#080B21] text-slate-400 border-white/10 hover:text-slate-200 hover:border-white/20"
+                      : "bg-[#080B21] text-slate-300 border-white/10 hover:text-white hover:border-white/20"
                   }`}
                   style={{
                     borderColor: isSelected ? layer.color : undefined,
@@ -518,7 +518,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                   }}
                 >
                   <span
-                    className="flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-black"
+                    className="flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black"
                     style={{ backgroundColor: `${layer.color}25`, color: layer.color }}
                   >
                     {layer.number}
@@ -532,16 +532,16 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
           {/* Main Blueprint Interactive Grid: Left Visual Flow + Right Live Inspector */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* Left 7 Columns: Visual Interactive Pipeline Nodes */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
+            <div className="lg:col-span-7 flex flex-col gap-4.5">
               {ARCH_LAYERS.map((layer) => {
                 const isLayerActive = selectedLayerId === layer.id;
                 return (
                   <div
                     key={layer.id}
-                    className={`rounded-2xl border transition-all p-4 ${
+                    className={`rounded-2xl border transition-all p-5 ${
                       isLayerActive
                         ? "bg-[#0E1538] border-opacity-100 shadow-2xl"
-                        : "bg-[#0A0E2A]/70 border-white/5 opacity-80 hover:opacity-100 hover:border-white/15"
+                        : "bg-[#0A0E2A]/70 border-white/5 opacity-85 hover:opacity-100 hover:border-white/20"
                     }`}
                     style={{
                       borderColor: isLayerActive ? layer.color : undefined,
@@ -549,26 +549,26 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                     }}
                   >
                     {/* Layer Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-between mb-3.5">
+                      <div className="flex items-center gap-3">
                         <span
-                          className="flex h-6 w-6 items-center justify-center rounded-lg text-xs font-black"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg text-sm font-black"
                           style={{ backgroundColor: `${layer.color}25`, color: layer.color }}
                         >
                           {layer.number}
                         </span>
                         <div>
-                          <h4 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                          <h4 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                             <span>{layer.title}</span>
                             {isLayerActive && (
-                              <span className="flex h-2 w-2 rounded-full animate-ping" style={{ backgroundColor: layer.color }} />
+                              <span className="flex h-2.5 w-2.5 rounded-full animate-ping" style={{ backgroundColor: layer.color }} />
                             )}
                           </h4>
-                          <span className="text-[10px] text-slate-400">{layer.subtitle}</span>
+                          <span className="text-xs text-slate-300 font-medium">{layer.subtitle}</span>
                         </div>
                       </div>
                       <span
-                        className="text-[10px] font-mono px-2 py-0.5 rounded border"
+                        className="text-xs font-mono font-bold px-2.5 py-1 rounded border"
                         style={{
                           backgroundColor: `${layer.color}15`,
                           borderColor: `${layer.color}40`,
@@ -580,7 +580,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                     </div>
 
                     {/* Nodes in this Layer */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {layer.nodes.map((node) => {
                         const isNodeSelected = selectedNodeId === node.id;
                         return (
@@ -588,7 +588,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                             key={node.id}
                             type="button"
                             onClick={() => handleSelectNode(layer.id, node.id)}
-                            className={`flex flex-col justify-between text-left p-3 rounded-xl border transition-all cursor-pointer ${
+                            className={`flex flex-col justify-between text-left p-3.5 rounded-xl border transition-all cursor-pointer ${
                               isNodeSelected
                                 ? "bg-[#121A45] border-opacity-100 shadow-md"
                                 : "bg-[#080B21]/90 border-white/10 hover:border-white/20 hover:bg-[#0E1538]"
@@ -598,21 +598,21 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                               boxShadow: isNodeSelected ? `0 0 12px ${layer.color}35` : undefined
                             }}
                           >
-                            <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-sm font-bold text-white flex items-center gap-1.5">
                                 {isNodeSelected && (
-                                  <ChevronRight className="h-3.5 w-3.5 shrink-0" style={{ color: layer.color }} />
+                                  <ChevronRight className="h-4 w-4 shrink-0" style={{ color: layer.color }} />
                                 )}
                                 <span>{node.title}</span>
                               </span>
                             </div>
 
-                            <p className="text-[10px] text-slate-300 line-clamp-2 leading-relaxed mb-2">
+                            <p className="text-xs sm:text-[13px] text-slate-200 line-clamp-2 leading-relaxed mb-2.5">
                               {node.summary}
                             </p>
 
-                            <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 border-t border-white/5 pt-1.5 mt-auto">
-                              <span className="text-slate-400 truncate max-w-[140px]">{node.sourceFile}</span>
+                            <div className="flex items-center justify-between text-xs font-mono text-slate-300 border-t border-white/5 pt-2 mt-auto">
+                              <span className="text-slate-400 truncate max-w-[150px]">{node.sourceFile}</span>
                               <span style={{ color: layer.color }} className="font-bold shrink-0">{node.latency}</span>
                             </div>
                           </button>
@@ -625,28 +625,28 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
             </div>
 
             {/* Right 5 Columns: Interactive Live Module Inspector Drawer */}
-            <div className="lg:col-span-5 sticky top-20 rounded-2xl border border-white/15 bg-[#0E1538] p-5 shadow-2xl backdrop-blur-xl">
+            <div className="lg:col-span-5 sticky top-20 rounded-2xl border border-white/15 bg-[#0E1538] p-5 sm:p-6 shadow-2xl backdrop-blur-xl">
               {/* Header Inspector */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
-                <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5 mb-4.5">
+                <div className="flex items-center gap-2.5">
                   <div
-                    className="flex h-8 w-8 items-center justify-center rounded-xl font-black text-xs"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl font-black text-sm"
                     style={{ backgroundColor: `${currentLayer.color}25`, color: currentLayer.color }}
                   >
-                    <Code2 className="h-4 w-4" />
+                    <Code2 className="h-5 w-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-black uppercase tracking-wider text-white">
+                    <h4 className="text-sm font-black uppercase tracking-wider text-white">
                       Live Component Inspector
                     </h4>
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className="text-xs font-mono text-slate-300">
                       {currentNode.sourceFile}
                     </span>
                   </div>
                 </div>
 
                 <span
-                  className="text-[10px] font-bold px-2 py-0.5 rounded border"
+                  className="text-xs font-bold px-2.5 py-1 rounded border"
                   style={{
                     backgroundColor: `${currentLayer.color}15`,
                     borderColor: `${currentLayer.color}40`,
@@ -658,11 +658,11 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
               </div>
 
               {/* Inspector Navigation Tabs */}
-              <div className="flex rounded-xl bg-[#080B21] p-1 mb-4 border border-white/5 text-[11px] font-bold">
+              <div className="flex rounded-xl bg-[#080B21] p-1.5 mb-4.5 border border-white/5 text-xs sm:text-sm font-bold">
                 <button
                   type="button"
                   onClick={() => setInspectorTab("overview")}
-                  className={`flex-1 py-1.5 rounded-lg transition-all ${
+                  className={`flex-1 py-2 rounded-lg transition-all ${
                     inspectorTab === "overview"
                       ? "bg-[#121A45] text-white shadow-sm"
                       : "text-slate-400 hover:text-white"
@@ -673,7 +673,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                 <button
                   type="button"
                   onClick={() => setInspectorTab("schema")}
-                  className={`flex-1 py-1.5 rounded-lg transition-all ${
+                  className={`flex-1 py-2 rounded-lg transition-all ${
                     inspectorTab === "schema"
                       ? "bg-[#121A45] text-[#00D2FF] shadow-sm"
                       : "text-slate-400 hover:text-white"
@@ -684,7 +684,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                 <button
                   type="button"
                   onClick={() => setInspectorTab("code")}
-                  className={`flex-1 py-1.5 rounded-lg transition-all ${
+                  className={`flex-1 py-2 rounded-lg transition-all ${
                     inspectorTab === "code"
                       ? "bg-[#121A45] text-[#00FF88] shadow-sm"
                       : "text-slate-400 hover:text-white"
@@ -696,25 +696,25 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
 
               {/* Tab 1: Overview */}
               {inspectorTab === "overview" && (
-                <div className="space-y-4 animate-in fade-in duration-150 text-xs">
+                <div className="space-y-4 animate-in fade-in duration-150 text-sm">
                   <div>
-                    <h5 className="font-bold text-white mb-1.5 text-sm">{currentNode.title}</h5>
-                    <p className="text-slate-300 leading-relaxed text-xs">
+                    <h5 className="font-bold text-white mb-2 text-base">{currentNode.title}</h5>
+                    <p className="text-slate-200 leading-relaxed text-sm">
                       {currentNode.summary}
                     </p>
                   </div>
 
                   {/* Tech Specs Table */}
-                  <div className="rounded-xl border border-white/5 bg-[#080B21] p-3 space-y-2">
-                    <div className="flex justify-between text-[11px]">
+                  <div className="rounded-xl border border-white/10 bg-[#080B21] p-3.5 space-y-2.5">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-slate-400">File triển khai:</span>
-                      <span className="font-mono text-[#00FF88]">{currentNode.sourceFile}</span>
+                      <span className="font-mono text-[#00FF88] font-bold">{currentNode.sourceFile}</span>
                     </div>
-                    <div className="flex justify-between text-[11px]">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-slate-400">Tốc độ phản hồi (Latency):</span>
                       <span className="font-mono text-white font-bold">{currentNode.latency}</span>
                     </div>
-                    <div className="flex justify-between text-[11px]">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span className="text-slate-400">Độ tin cậy (Anti-Ban SLA):</span>
                       <span className="font-mono text-[#00D2FF] font-bold">99.8% Grounded</span>
                     </div>
@@ -722,14 +722,14 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
 
                   {/* Tech Stack Pills */}
                   <div>
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-1.5">
+                    <span className="text-xs font-mono text-slate-300 font-bold uppercase tracking-wider block mb-2">
                       Công nghệ & Kỹ thuật lõi
                     </span>
-                    <div className="flex flex-wrap gap-1.5">
+                    <div className="flex flex-wrap gap-2">
                       {currentNode.techStack.map((tech, i) => (
                         <span
                           key={i}
-                          className="px-2 py-0.5 rounded-md bg-[#080B21] border border-white/10 text-[10px] font-mono text-slate-200"
+                          className="px-2.5 py-1 rounded-md bg-[#080B21] border border-white/10 text-xs font-mono text-slate-200"
                         >
                           {tech}
                         </span>
@@ -741,21 +741,21 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
 
               {/* Tab 2: Schema I/O */}
               {inspectorTab === "schema" && (
-                <div className="space-y-3 animate-in fade-in duration-150 text-xs">
+                <div className="space-y-3.5 animate-in fade-in duration-150 text-sm">
                   <div>
-                    <span className="text-[10px] font-mono text-[#00D2FF] uppercase tracking-wider block mb-1">
+                    <span className="text-xs font-mono font-bold text-[#00D2FF] uppercase tracking-wider block mb-1.5">
                       &bull; Input Payload (Tham Số Đầu Vào)
                     </span>
-                    <pre className="rounded-xl bg-[#080B21] p-3 font-mono text-[10px] text-slate-200 overflow-x-auto border border-white/5">
+                    <pre className="rounded-xl bg-[#080B21] p-3.5 font-mono text-xs sm:text-[12.5px] text-slate-200 overflow-x-auto border border-white/10 leading-relaxed">
                       {currentNode.inputData}
                     </pre>
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono text-[#00FF88] uppercase tracking-wider block mb-1">
+                    <span className="text-xs font-mono font-bold text-[#00FF88] uppercase tracking-wider block mb-1.5">
                       &bull; Output Payload (Dữ Liệu Trả Về)
                     </span>
-                    <pre className="rounded-xl bg-[#080B21] p-3 font-mono text-[10px] text-[#00FF88] overflow-x-auto border border-white/5">
+                    <pre className="rounded-xl bg-[#080B21] p-3.5 font-mono text-xs sm:text-[12.5px] text-[#00FF88] overflow-x-auto border border-white/10 leading-relaxed">
                       {currentNode.outputData}
                     </pre>
                   </div>
@@ -764,25 +764,25 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
 
               {/* Tab 3: Code Snippet */}
               {inspectorTab === "code" && (
-                <div className="space-y-2 animate-in fade-in duration-150">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                <div className="space-y-2.5 animate-in fade-in duration-150">
+                  <div className="flex items-center justify-between text-xs font-mono text-slate-300 font-bold">
                     <span>Python Production Snippet</span>
                     <span className="text-[#00FF88]">Verified</span>
                   </div>
-                  <pre className="rounded-xl bg-[#080B21] p-3.5 font-mono text-[10.5px] text-slate-200 overflow-x-auto border border-white/5 leading-relaxed">
+                  <pre className="rounded-xl bg-[#080B21] p-4 font-mono text-xs sm:text-[13px] text-slate-200 overflow-x-auto border border-white/10 leading-relaxed">
                     <code>{currentNode.codeSnippet}</code>
                   </pre>
                 </div>
               )}
 
               {/* Quick Action Button */}
-              <div className="mt-5 border-t border-white/10 pt-4">
+              <div className="mt-6 border-t border-white/10 pt-4.5">
                 <button
                   type="button"
                   onClick={handlePrimaryAction}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] py-2.5 text-xs font-bold text-[#080B21] shadow-lg hover:opacity-90 transition-all cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D2FF] py-3 text-sm font-black text-[#080B21] shadow-lg hover:opacity-90 transition-all cursor-pointer"
                 >
-                  <Zap className="h-3.5 w-3.5 fill-current" />
+                  <Zap className="h-4 w-4 fill-current" />
                   <span>Trải Nghiệm Trực Tiếp Module Này</span>
                 </button>
               </div>
@@ -791,59 +791,59 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
         </div>
       </section>
 
-      {/* 3. Minimal 5D Scoring Matrix Breakdown */}
-      <section id="scoring5d" className="py-16 bg-[#0A0E2B] border-t border-white/10">
+      {/* 3. 5D Scoring Matrix Breakdown */}
+      <section id="scoring5d" className="py-18 sm:py-24 bg-[#0A0E2B] border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF88]/30 bg-[#00FF88]/10 px-3.5 py-1 text-[11px] font-bold text-[#00FF88] uppercase tracking-wider mb-2">
-              <BarChart3 className="h-3.5 w-3.5" />
+          <div className="text-center max-w-3xl mx-auto mb-14">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF88]/30 bg-[#00FF88]/10 px-4 py-1.5 text-xs font-bold text-[#00FF88] uppercase tracking-wider mb-3">
+              <BarChart3 className="h-4 w-4" />
               <span>CƠ CHẾ ĐỊNH LƯỢNG KHOA HỌC</span>
             </div>
-            <h3 className="text-2xl sm:text-4xl font-black text-white">
+            <h3 className="text-3xl sm:text-4xl font-black text-white">
               Ma Trận 5D Thẩm Định Cơ Hội Sản Phẩm
             </h3>
-            <p className="mt-2 text-xs sm:text-sm text-slate-400">
+            <p className="mt-3 text-sm sm:text-base text-slate-300">
               Công thức 5 chiều trọng số độc quyền giúp nhà bán loại bỏ cảm tính và chọn đúng sản phẩm thắng ngay từ ngày đầu.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="rounded-2xl border border-[#00FF88]/20 bg-[#0E1538] p-4 text-left">
-              <div className="text-xl font-black text-[#00FF88]">25%</div>
-              <h5 className="font-bold text-white text-xs mt-1">1. Demand Score</h5>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4.5">
+            <div className="rounded-2xl border border-[#00FF88]/20 bg-[#0E1538] p-5 text-left shadow-lg">
+              <div className="text-2xl sm:text-3xl font-black text-[#00FF88]">25%</div>
+              <h5 className="font-bold text-white text-sm sm:text-base mt-1.5">1. Demand Score</h5>
+              <p className="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
                 Đo lường dung lượng tìm kiếm hàng tháng và doanh số bán thực tế từ Etsy & Amazon.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#00D2FF]/20 bg-[#0E1538] p-4 text-left">
-              <div className="text-xl font-black text-[#00D2FF]">25%</div>
-              <h5 className="font-bold text-white text-xs mt-1">2. Margin & Fit</h5>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+            <div className="rounded-2xl border border-[#00D2FF]/20 bg-[#0E1538] p-5 text-left shadow-lg">
+              <div className="text-2xl sm:text-3xl font-black text-[#00D2FF]">25%</div>
+              <h5 className="font-bold text-white text-sm sm:text-base mt-1.5">2. Margin & Fit</h5>
+              <p className="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
                 Biên lợi nhuận ròng sau khi đối soát giá phôi xưởng Printway VN và phí sàn thương mại.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#A78BFA]/20 bg-[#0E1538] p-4 text-left">
-              <div className="text-xl font-black text-[#A78BFA]">20%</div>
-              <h5 className="font-bold text-white text-xs mt-1">3. Competition</h5>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+            <div className="rounded-2xl border border-[#A78BFA]/20 bg-[#0E1538] p-5 text-left shadow-lg">
+              <div className="text-2xl sm:text-3xl font-black text-[#A78BFA]">20%</div>
+              <h5 className="font-bold text-white text-sm sm:text-base mt-1.5">3. Competition</h5>
+              <p className="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
                 Mật độ đối thủ cạnh tranh trên trang nhất. Càng ít đối thủ Bestseller điểm càng cao.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-[#FF8A00]/20 bg-[#0E1538] p-4 text-left">
-              <div className="text-xl font-black text-[#FF8A00]">15%</div>
-              <h5 className="font-bold text-white text-xs mt-1">4. Growth Velocity</h5>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+            <div className="rounded-2xl border border-[#FF8A00]/20 bg-[#0E1538] p-5 text-left shadow-lg">
+              <div className="text-2xl sm:text-3xl font-black text-[#FF8A00]">15%</div>
+              <h5 className="font-bold text-white text-sm sm:text-base mt-1.5">4. Growth Velocity</h5>
+              <p className="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
                 Tốc độ tăng trưởng tìm kiếm 12 tháng từ Google Trends và Pinterest viral pins.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/20 bg-[#0E1538] p-4 text-left">
-              <div className="text-xl font-black text-white">15%</div>
-              <h5 className="font-bold text-white text-xs mt-1">5. Seasonality Timing</h5>
-              <p className="text-[11px] text-slate-300 mt-1 leading-relaxed">
+            <div className="rounded-2xl border border-white/20 bg-[#0E1538] p-5 text-left shadow-lg">
+              <div className="text-2xl sm:text-3xl font-black text-white">15%</div>
+              <h5 className="font-bold text-white text-sm sm:text-base mt-1.5">5. Seasonality Timing</h5>
+              <p className="text-xs sm:text-sm text-slate-200 mt-1.5 leading-relaxed">
                 Đánh giá thời điểm vàng ra mắt (Evergreen quanh năm hoặc đón đầu sóng Q4/Father's Day).
               </p>
             </div>
@@ -852,24 +852,24 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
       </section>
 
       {/* 4. Printway Factory Direct Connection */}
-      <section id="factory" className="py-16 bg-[#080B21] border-t border-white/10">
+      <section id="factory" className="py-18 sm:py-24 bg-[#080B21] border-t border-white/10">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-3xl border border-[#FF8A00]/30 bg-[#0E1538] p-6 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="text-left space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#FF8A00]/40 bg-[#FF8A00]/10 px-3 py-0.5 text-[10px] font-bold text-[#FF8A00]">
-                <Factory className="h-3.5 w-3.5" />
+          <div className="rounded-3xl border border-[#FF8A00]/30 bg-[#0E1538] p-7 sm:p-12 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="text-left space-y-3.5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#FF8A00]/40 bg-[#FF8A00]/10 px-3.5 py-1 text-xs font-bold text-[#FF8A00]">
+                <Factory className="h-4 w-4" />
                 <span>IN-HOUSE MANUFACTURING SYNC</span>
               </div>
-              <h3 className="text-xl sm:text-3xl font-black text-white">
+              <h3 className="text-2xl sm:text-3xl font-black text-white">
                 Khớp Trực Tiếp Phôi Xưởng Printway Việt Nam
               </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
+              <p className="text-sm sm:text-base text-slate-200 leading-relaxed max-w-xl font-normal">
                 Không chỉ gợi ý ý tưởng, Printway Nexus ánh xạ thẳng cơ hội sản phẩm với kho phôi xưởng in ấn Printway (Acrylic, Gỗ, Kim Loại, Gốm Sứ), kiểm tra giá xuất xưởng và thời gian hoàn thành 1-3 ngày làm việc.
               </p>
-              <div className="flex flex-wrap gap-2 text-[10px] font-mono text-[#FF8A00] pt-1">
-                <span className="px-2.5 py-1 rounded bg-[#080B21] border border-[#FF8A00]/30">Sản xuất 1-3 ngày</span>
-                <span className="px-2.5 py-1 rounded bg-[#080B21] border border-[#FF8A00]/30">Vận chuyển US 5-8 ngày</span>
-                <span className="px-2.5 py-1 rounded bg-[#080B21] border border-[#FF8A00]/30">100+ Loại Phôi In-house</span>
+              <div className="flex flex-wrap gap-2.5 text-xs font-mono text-[#FF8A00] pt-1.5">
+                <span className="px-3 py-1.5 rounded-lg bg-[#080B21] border border-[#FF8A00]/30 font-bold">Sản xuất 1-3 ngày</span>
+                <span className="px-3 py-1.5 rounded-lg bg-[#080B21] border border-[#FF8A00]/30 font-bold">Vận chuyển US 5-8 ngày</span>
+                <span className="px-3 py-1.5 rounded-lg bg-[#080B21] border border-[#FF8A00]/30 font-bold">100+ Loại Phôi In-house</span>
               </div>
             </div>
 
@@ -877,31 +877,31 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
               <button
                 type="button"
                 onClick={handlePrimaryAction}
-                className="w-full md:w-auto flex items-center justify-center gap-2 rounded-2xl bg-[#FF8A00] hover:bg-[#FF7A00] px-8 py-4 text-xs sm:text-sm font-extrabold text-[#080B21] shadow-[0_0_30px_rgba(255,138,0,0.35)] transition-all cursor-pointer"
+                className="w-full md:w-auto flex items-center justify-center gap-2.5 rounded-2xl bg-[#FF8A00] hover:bg-[#FF7A00] px-9 py-4.5 text-sm sm:text-base font-black text-[#080B21] shadow-[0_0_30px_rgba(255,138,0,0.35)] transition-all cursor-pointer"
               >
                 <span>Bắt Đầu Thẩm Định Ngay</span>
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4.5 w-4.5" />
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 5. Minimal Footer */}
-      <footer className="border-t border-white/10 bg-[#060818] py-8 text-xs text-slate-500">
+      {/* 5. Footer */}
+      <footer className="border-t border-white/10 bg-[#060818] py-9 text-sm text-slate-400">
         <div className="mx-auto flex max-w-7xl flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <div className="flex items-center">
               <img
                 src="/logo_header.png"
                 alt="Printway Nexus"
-                className="h-6 w-auto object-contain"
+                className="h-7 w-auto object-contain"
               />
             </div>
             <span>&copy; 2026 Printway Nexus. All rights reserved.</span>
           </div>
 
-          <div className="flex items-center gap-6 text-[11px]">
+          <div className="flex items-center gap-6 text-xs sm:text-sm font-medium">
             <a href="https://printway.io/en" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
               Printway Official Catalog
             </a>

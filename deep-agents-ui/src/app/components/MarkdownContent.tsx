@@ -205,20 +205,20 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
     return (
       <div
         className={cn(
-          "prose prose-invert max-w-none break-words text-sm leading-relaxed",
+          "prose prose-invert max-w-none break-words text-[15.5px] leading-relaxed text-slate-100",
           "prose-headings:font-bold prose-headings:tracking-tight",
-          "prose-h1:text-xl prose-h1:text-[#00FF88] prose-h1:border-b prose-h1:border-[#00FF88]/30 prose-h1:pb-2",
-          "prose-h2:text-lg prose-h2:text-[#00D2FF] prose-h2:mt-4",
-          "prose-h3:text-base prose-h3:text-white prose-h3:mt-3",
-          "prose-p:text-slate-200 prose-p:my-2",
+          "prose-h1:text-2xl sm:text-3xl prose-h1:text-[#00FF88] prose-h1:border-b prose-h1:border-[#00FF88]/30 prose-h1:pb-2.5 prose-h1:mt-6",
+          "prose-h2:text-xl sm:text-2xl prose-h2:text-[#00D2FF] prose-h2:mt-5 prose-h2:mb-2.5",
+          "prose-h3:text-lg sm:text-xl prose-h3:text-white prose-h3:mt-4 prose-h3:mb-2",
+          "prose-p:text-[15.5px] prose-p:leading-7 prose-p:text-slate-100 prose-p:my-3",
           "prose-strong:text-white prose-strong:font-bold",
-          "prose-ul:my-2 prose-ul:list-disc prose-ul:pl-5",
-          "prose-li:my-0.5 prose-li:text-slate-300",
+          "prose-ul:my-2.5 prose-ul:list-disc prose-ul:pl-5",
+          "prose-li:my-1 prose-li:text-[15px] prose-li:leading-relaxed prose-li:text-slate-200",
           "prose-table:w-full prose-table:my-4 prose-table:border-collapse prose-table:rounded-xl prose-table:overflow-hidden",
-          "prose-th:bg-[#0E1538] prose-th:text-[#00FF88] prose-th:p-2.5 prose-th:text-xs prose-th:font-bold prose-th:border prose-th:border-slate-800",
-          "prose-td:p-2.5 prose-td:text-xs prose-td:text-slate-300 prose-td:border prose-td:border-slate-800/80",
+          "prose-th:bg-[#0E1538] prose-th:text-[#00FF88] prose-th:p-3.5 prose-th:text-sm prose-th:font-bold prose-th:border prose-th:border-slate-800",
+          "prose-td:p-3 prose-td:text-[14px] prose-td:text-slate-200 prose-td:leading-relaxed prose-td:border prose-td:border-slate-800/80",
           "prose-tr:even:bg-[#080B21]/50 prose-tr:hover:bg-[#0E1538]/60 prose-tr:transition-colors",
-          "prose-blockquote:border-l-4 prose-blockquote:border-[#00FF88] prose-blockquote:bg-[#0E1538]/60 prose-blockquote:px-4 prose-blockquote:py-2 prose-blockquote:rounded-r-xl prose-blockquote:text-slate-300",
+          "prose-blockquote:border-l-4 prose-blockquote:border-[#00FF88] prose-blockquote:bg-[#0E1538]/75 prose-blockquote:px-4 prose-blockquote:py-3 prose-blockquote:rounded-r-xl prose-blockquote:text-slate-200 prose-blockquote:text-[14.5px]",
           "prose-a:text-[#00D2FF] prose-a:underline hover:prose-a:text-[#00FF88] prose-a:transition-colors",
           className
         )}

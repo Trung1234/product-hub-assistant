@@ -242,17 +242,17 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         </div>
 
         {/* NAVIGATION TABS: SCHEDULE MANAGEMENT, PROJECT INTRO & WORKSPACE */}
-        <div className="px-3 pt-2 pb-1 shrink-0 flex flex-col gap-1">
+        <div className="px-3 pt-2.5 pb-1 shrink-0 flex flex-col gap-1.5">
           {(!collapsed || mobileOpen) ? (
             <>
               <button
                 type="button"
                 onClick={() => onChangeView?.(currentView === "schedules" ? "chat" : "schedules")}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
+                  "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-bold transition-all cursor-pointer",
                   currentView === "schedules"
                     ? "bg-[#00D4FF]/15 text-[#00D4FF] border border-[#00D4FF]/30 shadow-[0_0_12px_rgba(0,212,255,0.15)]"
-                    : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
+                    : "text-slate-300 hover:bg-[#121A45] hover:text-white border border-transparent"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -260,7 +260,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                   <span>Lịch Quét & Email</span>
                 </div>
                 {activeScheduleCount !== undefined && activeScheduleCount > 0 && (
-                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#00D4FF] px-1 text-[10px] font-black text-[#080B21]">
+                  <span className="flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-[#00D4FF] px-1.5 text-xs font-black text-[#080B21]">
                     {activeScheduleCount}
                   </span>
                 )}
@@ -270,17 +270,17 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 type="button"
                 onClick={() => onChangeView?.(currentView === "intro" ? "chat" : "intro")}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
+                  "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-bold transition-all cursor-pointer",
                   currentView === "intro"
                     ? "bg-[#A78BFA]/15 text-[#A78BFA] border border-[#A78BFA]/30 shadow-[0_0_12px_rgba(167,139,250,0.15)]"
-                    : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
+                    : "text-slate-300 hover:bg-[#121A45] hover:text-white border border-transparent"
                 )}
               >
                 <div className="flex items-center gap-2.5">
                   <Layers className="h-4 w-4" />
                   <span>Giới Thiệu Dự Án</span>
                 </div>
-                <span className="rounded-full bg-[#A78BFA]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#A78BFA]">
+                <span className="rounded-full bg-[#A78BFA]/20 px-2 py-0.5 text-[10px] font-bold text-[#A78BFA]">
                   Architecture
                 </span>
               </button>
@@ -341,9 +341,9 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
             <button
               type="button"
               onClick={handleNewResearchClick}
-              className="flex w-full items-center gap-2.5 rounded-xl border border-[#00FF88]/30 bg-gradient-to-r from-[#00FF88]/15 via-[#00D2FF]/10 to-transparent px-3 py-2.5 text-xs font-bold text-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.15)] hover:border-[#00FF88] hover:bg-[#00FF88]/25 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] transition-all duration-200 cursor-pointer"
+              className="flex w-full items-center gap-2.5 rounded-xl border border-[#00FF88]/30 bg-gradient-to-r from-[#00FF88]/15 via-[#00D2FF]/10 to-transparent px-3.5 py-2.5 text-sm font-bold text-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.15)] hover:border-[#00FF88] hover:bg-[#00FF88]/25 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] transition-all duration-200 cursor-pointer"
             >
-              <SquarePen className="h-4 w-4" />
+              <SquarePen className="h-4.5 w-4.5" />
               <span>Nghiên cứu mới</span>
             </button>
           ) : (
@@ -368,32 +368,32 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         {(!collapsed || mobileOpen) && (
           <div className="px-3 pb-2 shrink-0 space-y-2">
             <div className="relative flex items-center">
-              <Search className="absolute left-2.5 h-3.5 w-3.5 text-slate-500" />
+              <Search className="absolute left-2.5 h-4 w-4 text-slate-500" />
               <input
                 type="text"
                 placeholder="Tìm kiếm phiên nghiên cứu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-slate-800 bg-[#080B21] py-1.5 pl-8 pr-2.5 text-xs text-slate-200 placeholder-slate-500 focus:border-[#00FF88]/50 focus:outline-none transition-colors"
+                className="w-full rounded-xl border border-slate-800 bg-[#080B21] py-2 pl-9 pr-3 text-sm text-slate-200 placeholder-slate-500 focus:border-[#00FF88]/50 focus:outline-none transition-colors"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2 text-slate-500 hover:text-white"
+                  className="absolute right-2.5 text-slate-500 hover:text-white"
                 >
-                  <X className="h-3 w-3" />
+                  <X className="h-3.5 w-3.5" />
                 </button>
               )}
             </div>
 
             {/* QUICK FILTER PILLS (All, Mine, Shared) */}
-            <div className="grid grid-cols-3 gap-1 bg-[#080B21] p-1 rounded-xl border border-slate-800/80 text-[10px] font-semibold">
+            <div className="grid grid-cols-3 gap-1 bg-[#080B21] p-1 rounded-xl border border-slate-800/80 text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setThreadFilter("all")}
                 className={cn(
-                  "py-1 rounded-lg transition-all text-center cursor-pointer",
+                  "py-1.5 rounded-lg transition-all text-center cursor-pointer",
                   threadFilter === "all"
                     ? "bg-[#00FF88]/20 text-[#00FF88] font-bold border border-[#00FF88]/40 shadow-sm"
                     : "text-slate-400 hover:text-white"
@@ -405,26 +405,26 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 type="button"
                 onClick={() => setThreadFilter("mine")}
                 className={cn(
-                  "py-1 rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
+                  "py-1.5 rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
                   threadFilter === "mine"
                     ? "bg-[#00D2FF]/20 text-[#00D2FF] font-bold border border-[#00D2FF]/40 shadow-sm"
                     : "text-slate-400 hover:text-white"
                 )}
               >
-                <User className="h-2.5 w-2.5" />
+                <User className="h-3 w-3" />
                 <span>Của tôi</span>
               </button>
               <button
                 type="button"
                 onClick={() => setThreadFilter("shared")}
                 className={cn(
-                  "py-1 rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
+                  "py-1.5 rounded-lg transition-all text-center cursor-pointer flex items-center justify-center gap-1",
                   threadFilter === "shared"
                     ? "bg-purple-500/25 text-purple-300 font-bold border border-purple-500/40 shadow-sm"
                     : "text-slate-400 hover:text-white"
                 )}
               >
-                <Users className="h-2.5 w-2.5" />
+                <Users className="h-3 w-3" />
                 <span>Được chia sẻ</span>
               </button>
             </div>
@@ -435,7 +435,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 scrollbar-pretty">
           {(!collapsed || mobileOpen) && (
             <div className="py-2 pb-6 space-y-1">
-              <div className="px-2 mb-2 flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+              <div className="px-2 mb-2 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
                 <span>
                   {threadFilter === "mine"
                     ? "Phiên của tôi"
@@ -444,21 +444,21 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                     : "Gần đây"}
                 </span>
                 {interruptCount > 0 && (
-                  <span className="rounded-full bg-amber-500/20 px-1.5 py-0.2 text-[9px] font-bold text-amber-400 border border-amber-500/40">
+                  <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400 border border-amber-500/40">
                     {interruptCount} cần phản hồi
                   </span>
                 )}
               </div>
 
               {isLoading && (
-                <div className="flex items-center justify-center py-6 text-xs text-slate-400">
+                <div className="flex items-center justify-center py-6 text-sm text-slate-400">
                   <Loader2 className="h-4 w-4 animate-spin mr-2 text-[#00FF88]" />
                   Đang tải lịch sử nghiên cứu...
                 </div>
               )}
 
               {!isLoading && filteredThreads.length === 0 && (
-                <div className="px-2 py-4 text-center text-xs text-slate-500 italic">
+                <div className="px-2 py-4 text-center text-sm text-slate-500 italic">
                   {searchQuery
                     ? "Không tìm thấy kết quả"
                     : threadFilter === "shared"
@@ -480,69 +480,69 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                       key={thread.id}
                       onClick={() => handleThreadClick(thread.id)}
                       className={cn(
-                        "group relative flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-left transition-all duration-200 cursor-pointer",
+                        "group relative flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition-all duration-200 cursor-pointer",
                         isActive
-                          ? "border border-[#00FF88]/40 bg-[#0E1538] text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] font-semibold"
-                          : "text-slate-300 hover:bg-[#121A45]/80 hover:text-white border border-transparent"
+                          ? "border border-[#00FF88]/40 bg-[#0E1538] text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] font-bold"
+                          : "text-slate-200 hover:bg-[#121A45]/80 hover:text-white border border-transparent font-medium"
                       )}
                     >
-                      <div className="flex items-center gap-2 min-w-0 flex-1 pr-1">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-1">
                         {isShared ? (
                           <Users
                             className={cn(
-                              "h-3.5 w-3.5 shrink-0 transition-colors",
+                              "h-4 w-4 shrink-0 transition-colors",
                               isActive ? "text-purple-400" : "text-purple-400/80 group-hover:text-purple-300"
                             )}
                           />
                         ) : (
                           <MessageSquare
                             className={cn(
-                              "h-3.5 w-3.5 shrink-0 transition-colors",
+                              "h-4 w-4 shrink-0 transition-colors",
                               isActive ? "text-[#00FF88]" : "text-slate-500 group-hover:text-slate-300"
                             )}
                           />
                         )}
-                        <span className="text-xs truncate block">
+                        <span className="text-sm truncate block">
                           {displayTitle}
                         </span>
                       </div>
 
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         {/* Normal timestamp view */}
                         <span
                           className={cn(
-                            "text-[10px] tabular-nums whitespace-nowrap pl-1 transition-opacity",
+                            "text-xs tabular-nums whitespace-nowrap pl-1 transition-opacity",
                             "group-hover:hidden",
-                            isActive ? "text-[#00D2FF]" : "text-slate-500"
+                            isActive ? "text-[#00D2FF]" : "text-slate-400"
                           )}
                         >
                           {formatTime(thread.updatedAt)}
                         </span>
 
                         {/* Hover Action Buttons: Share & Delete */}
-                        <div className="hidden group-hover:flex items-center gap-0.5">
+                        <div className="hidden group-hover:flex items-center gap-1">
                           <button
                             type="button"
                             onClick={(e) => handleShareClick(e, thread)}
-                            className="h-5 w-5 flex items-center justify-center rounded text-slate-400 hover:text-[#00FF88] hover:bg-[#00FF88]/10 transition-colors cursor-pointer"
+                            className="h-6 w-6 flex items-center justify-center rounded text-slate-400 hover:text-[#00FF88] hover:bg-[#00FF88]/10 transition-colors cursor-pointer"
                             title="Chia sẻ phiên nghiên cứu này"
                             aria-label="Chia sẻ phiên nghiên cứu"
                           >
-                            <Share2 className="h-3 w-3" />
+                            <Share2 className="h-3.5 w-3.5" />
                           </button>
 
                           <button
                             type="button"
                             onClick={(e) => handleDeleteThread(e, thread.id)}
                             disabled={isDeleting}
-                            className="h-5 w-5 flex items-center justify-center rounded text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                            className="h-6 w-6 flex items-center justify-center rounded text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
                             title="Xóa phiên nghiên cứu"
                             aria-label="Xóa phiên nghiên cứu"
                           >
                             {isDeleting ? (
-                              <Loader2 className="h-3 w-3 animate-spin text-red-400" />
+                              <Loader2 className="h-3.5 w-3.5 animate-spin text-red-400" />
                             ) : (
-                              <Trash2 className="h-3 w-3" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             )}
                           </button>
                         </div>
@@ -558,18 +558,18 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         {/* BOTTOM SECTION: DYNAMIC USER PROFILE & LOGOUT ACTION */}
         <div className="p-3 shrink-0 border-t border-[#00FF88]/10 bg-[#0E1538]/80 relative">
           {profileMenuOpen && (
-            <div className="absolute bottom-full left-3 right-3 mb-2 rounded-2xl bg-[#080B21] border border-white/10 shadow-2xl p-3 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150 backdrop-blur-xl">
-              <div className="flex items-center gap-2.5 mb-2 pb-2 border-b border-white/5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/50 text-xs font-bold text-[#00FF88]">
+            <div className="absolute bottom-full left-3 right-3 mb-2 rounded-2xl bg-[#080B21] border border-white/10 shadow-2xl p-3.5 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150 backdrop-blur-xl">
+              <div className="flex items-center gap-3 mb-2 pb-2 border-b border-white/5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/50 text-sm font-bold text-[#00FF88]">
                   {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || "US")}
                 </div>
                 <div className="flex flex-col truncate">
-                  <span className="text-xs font-bold text-white truncate">{profile?.full_name || user?.email?.split("@")[0]}</span>
-                  <span className="text-[10px] text-slate-400 truncate">{user?.email}</span>
+                  <span className="text-sm font-bold text-white truncate">{profile?.full_name || user?.email?.split("@")[0]}</span>
+                  <span className="text-xs text-slate-400 truncate">{user?.email}</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between py-1 mb-2 px-1 text-[10px]">
+              <div className="flex items-center justify-between py-1.5 mb-2 px-1 text-xs">
                 <span className="text-slate-400">Workspace:</span>
                 <span className="text-[#00FF88] font-bold">{profile?.org_id === "org_vip_sellers" ? "VIP Sellers" : "Printway Internal"}</span>
               </div>
@@ -581,9 +581,9 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                   setProfileMenuOpen(false);
                   signOut();
                 }}
-                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-bold border border-red-500/20 transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs sm:text-sm font-bold border border-red-500/20 transition-all cursor-pointer"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4" />
                 <span>Đăng Xuất (Log Out)</span>
               </button>
             </div>
@@ -593,22 +593,22 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
             <div
               data-testid="sidebar-profile-trigger"
               onClick={() => setProfileMenuOpen((prev) => !prev)}
-              className="flex items-center justify-between rounded-xl px-2.5 py-2 bg-[#080B21]/70 border border-slate-800/80 hover:border-[#00FF88]/40 transition-all cursor-pointer group"
+              className="flex items-center justify-between rounded-xl px-3 py-2.5 bg-[#080B21]/70 border border-slate-800/80 hover:border-[#00FF88]/40 transition-all cursor-pointer group"
             >
-              <div className="flex items-center gap-2.5 truncate">
-                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 group-hover:border-[#00FF88] text-[11px] font-bold text-[#00FF88]">
+              <div className="flex items-center gap-3 truncate">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1E293B] border border-[#00FF88]/40 group-hover:border-[#00FF88] text-xs font-bold text-[#00FF88]">
                   {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : (user?.email?.slice(0, 2).toUpperCase() || "US")}
                 </div>
                 <div className="flex flex-col truncate">
-                  <span className="text-xs font-bold text-slate-200 group-hover:text-white truncate">
+                  <span className="text-sm font-bold text-slate-200 group-hover:text-white truncate">
                     {profile?.full_name || user?.email?.split("@")[0] || "Printway User"}
                   </span>
-                  <span className="text-[9px] text-[#00FF88] font-medium truncate uppercase tracking-wider">
+                  <span className="text-xs text-[#00FF88] font-medium truncate uppercase tracking-wider">
                     {profile?.role === "lead_rd" ? "🚀 Lead R&D" : profile?.role === "seller" ? "🛍️ VIP Seller" : "🎨 POD Designer"}
                   </span>
                 </div>
               </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-slate-500 group-hover:text-[#00FF88] transition-transform duration-200 ${profileMenuOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-4 h-4 text-slate-400 group-hover:text-[#00FF88] transition-transform duration-200 ${profileMenuOpen ? "rotate-180" : ""}`} />
             </div>
           ) : (
             <Tooltip>

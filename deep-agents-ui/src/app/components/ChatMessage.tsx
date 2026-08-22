@@ -235,8 +235,8 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     // If human message: Render User Bubble with Images & Clean Text
     if (isUser) {
       return (
-        <div className="flex w-full justify-end my-2.5 sm:my-3">
-          <div className="max-w-[92%] sm:max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/30 p-3 sm:p-3.5 text-xs sm:text-sm text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed space-y-2">
+        <div className="flex w-full justify-end my-3 sm:my-4">
+          <div className="max-w-[92%] sm:max-w-[85%] rounded-2xl rounded-tr-sm bg-gradient-to-tr from-[#0E1538] to-[#162055] border border-[#00FF88]/35 p-3.5 sm:p-4 text-sm sm:text-base text-white shadow-[0_0_15px_rgba(0,255,136,0.15)] leading-relaxed space-y-2.5">
             {/* Attached Images Gallery */}
             {userImages.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -261,7 +261,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <span className="rounded-full bg-[#00FF88] text-[#080B21] p-1 text-[10px] font-bold shadow">
+                      <span className="rounded-full bg-[#00FF88] text-[#080B21] p-1 text-xs font-bold shadow">
                         Phóng to
                       </span>
                     </div>
@@ -272,13 +272,13 @@ export const ChatMessage = React.memo<ChatMessageProps>(
 
             {/* Document Badges */}
             {userAttachmentNames.length > 0 && (
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {userAttachmentNames.map((name, i) => (
                   <div
                     key={i}
-                    className="flex items-center gap-1.5 rounded-lg bg-[#080B21]/90 px-2.5 py-1 text-xs border border-[#00FF88]/30 text-[#00FF88]"
+                    className="flex items-center gap-1.5 rounded-lg bg-[#080B21]/90 px-3 py-1 text-xs sm:text-sm border border-[#00FF88]/30 text-[#00FF88]"
                   >
-                    <span className="font-semibold text-[11px]">📎 {name}</span>
+                    <span className="font-semibold">📎 {name}</span>
                   </div>
                 ))}
               </div>
@@ -286,7 +286,7 @@ export const ChatMessage = React.memo<ChatMessageProps>(
 
             {/* Clean Prompt Text */}
             {cleanUserText && (
-              <p className="whitespace-pre-wrap font-medium text-slate-100">
+              <p className="whitespace-pre-wrap font-medium text-slate-100 text-sm sm:text-base leading-relaxed">
                 {cleanUserText}
               </p>
             )}

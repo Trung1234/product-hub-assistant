@@ -179,21 +179,21 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
 
       {/* Metric Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 my-6">
-        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-4 backdrop-blur-sm">
-          <div className="text-xs font-semibold text-[#94A3B8] mb-1">Lịch Quét Đang Chạy</div>
-          <div className="text-2xl font-black text-[#00FF88]">{activeCount} / {schedules.length}</div>
-          <div className="text-[11px] text-[#94A3B8] mt-1">Định kỳ quét & gửi mail</div>
+        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-5 backdrop-blur-sm">
+          <div className="text-sm font-bold text-[#94A3B8] mb-1">Lịch Đang Chạy Tự Động</div>
+          <div className="text-3xl font-black text-[#00FF88]">{activeCount} / {schedules.length}</div>
+          <div className="text-xs text-[#00FF88]/80 mt-1">Gửi định kỳ qua Resend</div>
         </div>
 
-        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-4 backdrop-blur-sm">
-          <div className="text-xs font-semibold text-[#94A3B8] mb-1">Hạ Tầng Giao Vận</div>
-          <div className="text-2xl font-black text-[#00D4FF]">Resend API</div>
-          <div className="text-[11px] text-[#00D4FF]/80 mt-1">Tỷ lệ chuyển phát 100%</div>
+        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-5 backdrop-blur-sm">
+          <div className="text-sm font-bold text-[#94A3B8] mb-1">Hạ Tầng Giao Vận Email</div>
+          <div className="text-2xl sm:text-3xl font-black text-[#00D4FF]">Resend API</div>
+          <div className="text-xs text-[#00D4FF]/80 mt-1">Tỷ lệ chuyển phát 100%</div>
         </div>
 
-        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-4 backdrop-blur-sm">
-          <div className="text-xs font-semibold text-[#94A3B8] mb-1">Điểm Cơ Hội TB (5D)</div>
-          <div className="text-2xl font-black text-[#B026FF]">
+        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-5 backdrop-blur-sm">
+          <div className="text-sm font-bold text-[#94A3B8] mb-1">Điểm 5D Trung Bình</div>
+          <div className="text-3xl font-black text-[#B026FF]">
             {schedules.filter((s) => s.lastScore).length > 0
               ? `${Math.round(
                   schedules
@@ -203,31 +203,31 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
                 )} / 100`
               : "-- / 100"}
           </div>
-          <div className="text-[11px] text-[#B026FF]/80 mt-1">
+          <div className="text-xs text-[#B026FF]/80 mt-1">
             {schedules.filter((s) => s.lastScore).length > 0 ? "Tính theo lịch đã chạy" : "Chưa có dữ liệu"}
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-4 backdrop-blur-sm">
-          <div className="text-xs font-semibold text-[#94A3B8] mb-1">Dữ Liệu Thời Gian Thực</div>
-          <div className="text-2xl font-black text-white">Etsy + Amazon</div>
-          <div className="text-[11px] text-[#94A3B8] mt-1">Google Trends + Xưởng VN</div>
+        <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-5 backdrop-blur-sm">
+          <div className="text-sm font-bold text-[#94A3B8] mb-1">Dữ Liệu Thời Gian Thực</div>
+          <div className="text-2xl sm:text-3xl font-black text-white">Etsy + Amazon</div>
+          <div className="text-xs text-[#94A3B8] mt-1">Google Trends + Xưởng VN</div>
         </div>
       </div>
 
       {/* Search & Table Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mb-4">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#94A3B8]" />
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Tìm theo từ khóa hoặc email..."
-            className="w-full rounded-xl border border-[#1E293B] bg-[#0D1230] pl-9 pr-4 py-2 text-xs text-white placeholder-[#94A3B8] focus:border-[#00FF88] focus:outline-none"
+            className="w-full rounded-xl border border-[#1E293B] bg-[#0D1230] pl-10 pr-4 py-2.5 text-sm text-white placeholder-[#94A3B8] focus:border-[#00FF88] focus:outline-none"
           />
         </div>
-        <div className="text-xs text-[#94A3B8]">
+        <div className="text-sm text-[#94A3B8]">
           Hiển thị <span className="font-bold text-white">{filteredSchedules.length}</span> lịch quét của bạn
         </div>
       </div>
@@ -239,28 +239,28 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#00FF88]/10 text-[#00FF88] mb-4 border border-[#00FF88]/30">
               <Calendar className="h-7 w-7" />
             </div>
-            <h3 className="text-base font-bold text-white mb-1">Chưa có lịch quét nào phù hợp</h3>
-            <p className="text-xs text-[#94A3B8] max-w-md mb-4">
+            <h3 className="text-lg font-bold text-white mb-1.5">Chưa có lịch quét nào phù hợp</h3>
+            <p className="text-sm text-[#94A3B8] max-w-md mb-5 leading-relaxed">
               Hãy tạo lịch hẹn đầu tiên để hệ thống tự động cào tín hiệu thị trường và gửi báo cáo phân tích về email của bạn định kỳ.
             </p>
             <button
               onClick={() => setModalOpen(true)}
-              className="rounded-xl bg-[#00FF88] px-4 py-2 text-xs font-bold text-[#080B21] transition-all hover:bg-[#00FF88]/90 cursor-pointer"
+              className="rounded-xl bg-[#00FF88] px-5 py-2.5 text-sm font-black text-[#080B21] transition-all hover:bg-[#00FF88]/90 cursor-pointer shadow-lg"
             >
               + Tạo Lịch Quét Ngay
             </button>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="border-b border-[#1E293B] bg-[#080B21]/80 text-[#94A3B8] font-bold uppercase tracking-wider">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-[#1E293B] bg-[#080B21]/80 text-[#94A3B8] font-bold uppercase tracking-wider text-xs">
                 <tr>
-                  <th className="px-4 py-3">Từ Khóa / Prompt POD</th>
-                  <th className="px-4 py-3">Tần Suất</th>
-                  <th className="px-4 py-3">Email Nhận Báo Cáo</th>
-                  <th className="px-4 py-3">Trạng Thái</th>
-                  <th className="px-4 py-3">Lần Chạy Cuối</th>
-                  <th className="px-4 py-3 text-right">Hành Động</th>
+                  <th className="px-5 py-3.5">Từ Khóa / Prompt POD</th>
+                  <th className="px-5 py-3.5">Tần Suất</th>
+                  <th className="px-5 py-3.5">Email Nhận Báo Cáo</th>
+                  <th className="px-5 py-3.5">Trạng Thái</th>
+                  <th className="px-5 py-3.5">Lần Chạy Cuối</th>
+                  <th className="px-5 py-3.5 text-right">Hành Động</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#1E293B]/60">

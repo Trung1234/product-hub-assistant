@@ -44,29 +44,29 @@ export const SuggestedQuestionsRenderer: React.FC<SuggestedQuestionsRendererProp
   };
 
   return (
-    <div className="mt-3 pt-3 border-t border-white/10 no-print animate-in fade-in duration-200">
-      <div className="flex items-center gap-1.5 mb-2 px-1 text-[11px] font-bold text-slate-300 uppercase tracking-wider">
-        <Sparkles className="w-3.5 h-3.5 text-[#00FF88]" />
+    <div className="mt-3.5 pt-3.5 border-t border-white/10 no-print animate-in fade-in duration-200">
+      <div className="flex items-center gap-2 mb-2.5 px-1 text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider">
+        <Sparkles className="w-4 h-4 text-[#00FF88]" />
         <span>Gợi ý câu hỏi & hành động tiếp theo:</span>
       </div>
 
-      <div className="flex flex-col space-y-1.5">
+      <div className="flex flex-col space-y-2">
         {questions.map((q, idx) => (
           <button
             key={idx}
             type="button"
             onClick={() => handleSelectQuestion(q, idx)}
-            className="group flex w-full items-center justify-between gap-3 rounded-xl border border-white/5 bg-[#0E1538]/60 hover:bg-[#121A45] hover:border-[#00FF88]/40 px-3.5 py-2 text-left text-xs sm:text-[13px] text-slate-200 hover:text-white transition-all duration-200 cursor-pointer shadow-sm"
+            className="group flex w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#0E1538]/70 hover:bg-[#121A45] hover:border-[#00FF88]/40 px-4 py-2.5 text-left text-sm sm:text-[14.5px] text-slate-200 hover:text-white transition-all duration-200 cursor-pointer shadow-sm"
           >
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="shrink-0 font-mono text-[#00FF88] opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-sm leading-none">
+              <span className="shrink-0 font-mono text-[#00FF88] opacity-80 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-base leading-none">
                 ↳
               </span>
               <span className="truncate leading-relaxed font-medium">
                 {q}
               </span>
             </div>
-            <ArrowUpRight className="w-3.5 h-3.5 shrink-0 text-slate-500 group-hover:text-[#00FF88] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+            <ArrowUpRight className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-[#00FF88] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
           </button>
         ))}
       </div>

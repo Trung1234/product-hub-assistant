@@ -89,19 +89,23 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
     }
   };
 
+  const handleVote = (vote: boolean) => {
+    setLiked(liked === vote ? null : vote);
+  };
+
   return (
     <>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-2.5 text-xs text-slate-400 no-print">
+      <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-slate-800/80 pt-3 text-xs text-slate-400 no-print">
         {/* Left Action Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={handleCopy}
             className={cn(
-              "flex items-center gap-1.5 rounded-lg border px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium transition-all cursor-pointer",
+              "flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs sm:text-[13px] font-medium transition-all cursor-pointer",
               copied
                 ? "border-[#00FF88]/50 bg-[#00FF88]/15 text-[#00FF88]"
-                : "border-slate-800 bg-[#0E1538]/60 text-slate-300 hover:border-[#00FF88]/40 hover:bg-[#121A45] hover:text-white"
+                : "border-slate-800 bg-[#0E1538]/60 text-slate-200 hover:border-[#00FF88]/40 hover:bg-[#121A45] hover:text-white"
             )}
             title="Sao chép toàn bộ báo cáo Markdown"
           >
@@ -122,7 +126,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           <button
             type="button"
             onClick={() => setIsEmailModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-[#00FF88]/30 bg-[#00FF88]/10 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold text-[#00FF88] transition-all hover:border-[#00FF88] hover:bg-[#00FF88]/20 cursor-pointer shadow-[0_0_10px_rgba(0,255,136,0.1)]"
+            className="flex items-center gap-1.5 rounded-xl border border-[#00FF88]/30 bg-[#00FF88]/10 px-3 py-1.5 text-xs sm:text-[13px] font-bold text-[#00FF88] transition-all hover:border-[#00FF88] hover:bg-[#00FF88]/20 cursor-pointer shadow-[0_0_10px_rgba(0,255,136,0.1)]"
             title="Gửi báo cáo này về email qua Resend"
           >
             <Mail className="h-3.5 w-3.5" />
@@ -132,7 +136,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           <button
             type="button"
             onClick={handleDownloadCsv}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-slate-300 transition-all hover:border-[#00D2FF]/40 hover:bg-[#121A45] hover:text-[#00D2FF] cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-[#0E1538]/60 px-3 py-1.5 text-xs sm:text-[13px] font-medium text-slate-200 transition-all hover:border-[#00D2FF]/40 hover:bg-[#121A45] hover:text-[#00D2FF] cursor-pointer"
             title="Tải bảng ma trận 23 cột file CSV"
           >
             <Download className="h-3.5 w-3.5" />
@@ -142,7 +146,7 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           <button
             type="button"
             onClick={handleDownloadPdf}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-slate-300 transition-all hover:border-[#00FF88]/40 hover:bg-[#121A45] hover:text-[#00FF88] cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-[#0E1538]/60 px-3 py-1.5 text-xs sm:text-[13px] font-medium text-slate-200 transition-all hover:border-[#00FF88]/40 hover:bg-[#121A45] hover:text-[#00FF88] cursor-pointer"
             title="Tải bản báo cáo PDF chính thức"
           >
             <Download className="h-3.5 w-3.5" />
@@ -152,54 +156,54 @@ export const MessageActionBar = React.memo<MessageActionBarProps>(({
           <button
             type="button"
             onClick={handlePrint}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-[#0E1538]/60 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-slate-300 transition-all hover:border-amber-400/40 hover:bg-[#121A45] hover:text-amber-300 cursor-pointer"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-[#0E1538]/60 px-3 py-1.5 text-xs sm:text-[13px] font-medium text-slate-200 transition-all hover:border-amber-400/40 hover:bg-[#121A45] hover:text-amber-300 cursor-pointer"
             title="In hoặc lưu file PDF từ trình duyệt"
           >
             <Printer className="h-3.5 w-3.5" />
             <span>In báo cáo</span>
           </button>
+        </div>
 
-          {/* Share Thread Modal Trigger */}
+        {/* Right Feedback Buttons & Share */}
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setIsShareModalOpen(true)}
-            className="flex items-center gap-1.5 rounded-lg border border-purple-500/30 bg-purple-500/10 px-2 sm:px-2.5 py-1 text-[10px] sm:text-[11px] font-medium text-purple-300 transition-all hover:border-purple-400 hover:bg-purple-500/20 cursor-pointer shadow-[0_0_10px_rgba(168,85,247,0.1)]"
-            title="Chia sẻ phiên nghiên cứu hoặc tạo liên kết bảo mật"
+            className="flex items-center gap-1.5 rounded-xl border border-purple-500/30 bg-purple-500/10 px-3 py-1.5 text-xs sm:text-[13px] font-bold text-purple-300 transition-all hover:border-purple-400 hover:bg-purple-500/20 cursor-pointer shadow-[0_0_10px_rgba(168,85,247,0.1)]"
+            title="Tạo link chia sẻ công khai hoặc nội bộ"
           >
-            <Share2 className="h-3.5 w-3.5 text-purple-400" />
+            <Share2 className="h-3.5 w-3.5" />
             <span>Chia sẻ</span>
           </button>
-        </div>
 
-        {/* Right Feedback & Rating */}
-        <div className="flex items-center gap-1">
-          <button
-            type="button"
-            onClick={() => setLiked(liked === true ? null : true)}
-            className={cn(
-              "rounded-lg p-1.5 transition-all cursor-pointer",
-              liked === true
-                ? "bg-[#00FF88]/20 text-[#00FF88]"
-                : "text-slate-400 hover:bg-[#0E1538] hover:text-white"
-            )}
-            title="Báo cáo hữu ích"
-          >
-            <ThumbsUp className="h-3.5 w-3.5" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setLiked(liked === false ? null : false)}
-            className={cn(
-              "rounded-lg p-1.5 transition-all cursor-pointer",
-              liked === false
-                ? "bg-rose-500/20 text-rose-400"
-                : "text-slate-400 hover:bg-[#0E1538] hover:text-white"
-            )}
-            title="Báo cáo chưa sát"
-          >
-            <ThumbsDown className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-1 rounded-xl border border-slate-800 bg-[#080B21]/80 p-1">
+            <button
+              type="button"
+              onClick={() => handleVote(true)}
+              className={cn(
+                "rounded-lg p-1.5 transition-colors cursor-pointer",
+                liked === true
+                  ? "bg-[#00FF88]/20 text-[#00FF88]"
+                  : "text-slate-400 hover:text-slate-200"
+              )}
+              title="Báo cáo hữu ích"
+            >
+              <ThumbsUp className="h-3.5 w-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => handleVote(false)}
+              className={cn(
+                "rounded-lg p-1.5 transition-colors cursor-pointer",
+                liked === false
+                  ? "bg-rose-500/20 text-rose-400"
+                  : "text-slate-400 hover:text-slate-200"
+              )}
+              title="Báo cáo chưa chuẩn"
+            >
+              <ThumbsDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
