@@ -14,6 +14,7 @@ import { useUserSchedules } from "@/app/hooks/useUserSchedules";
 import { AuthButton } from "@/app/components/AuthButton";
 import { AuthProvider, useAuth } from "@/providers/AuthProvider";
 import { AuthScreen } from "@/app/components/AuthScreen";
+import { IntroLandingPage } from "@/app/components/IntroLandingPage";
 import { PanelLeft, SquarePen, Search, Share2 } from "lucide-react";
 
 // Lazy-loaded interactive modals with zero initial bundle overhead
@@ -41,7 +42,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
   const [threadId, setThreadId] = useQueryState("threadId");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<"chat" | "schedules">("chat");
+  const [currentView, setCurrentView] = useState<"chat" | "schedules" | "intro">("chat");
 
   const { activeCount } = useUserSchedules();
   const [mutateThreads, setMutateThreads] = useState<(() => void) | null>(null);
@@ -301,7 +302,7 @@ function HomePageInner({ config }: HomePageInnerProps) {
           </header>
 
 
-          {/* Conditional View Rendering: Schedule Management vs Chat Interface */}
+          {/* Conditional View Rendering: Schedule Management vs Intro Landing vs Chat Interface */}
           {currentView === "schedules" ? (
             <ScheduleManagementView
               onOpenChatWithPrompt={(prompt) => {
@@ -314,6 +315,10 @@ function HomePageInner({ config }: HomePageInnerProps) {
                 }, 100);
               }}
             />
+          ) : currentView === "intro" ? (
+            <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-pretty bg-[#080B21]">
+              <IntroLandingPage onEnterApp={() => setCurrentView("chat")} />
+            </div>
           ) : (
             <ChatProvider
               key={threadId || "new-session"}
@@ -345,7 +350,7 @@ function HomePageContentInner() {
   }
 
   if (!user) {
-    return <AuthScreen />;
+    return <IntroLandingPage />;
   }
 
   const langsmithApiKey =

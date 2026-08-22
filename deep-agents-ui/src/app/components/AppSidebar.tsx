@@ -19,7 +19,8 @@ import {
   Share2,
   Users,
   User,
-  GitFork
+  GitFork,
+  Layers
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -40,8 +41,8 @@ interface AppSidebarProps {
   onMutateReady?: (mutate: () => void) => void;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
-  currentView?: "chat" | "schedules";
-  onChangeView?: (view: "chat" | "schedules") => void;
+  currentView?: "chat" | "schedules" | "intro";
+  onChangeView?: (view: "chat" | "schedules" | "intro") => void;
   activeScheduleCount?: number;
   onOpenShareModal?: (threadId: string, title?: string) => void;
 }
@@ -240,29 +241,50 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
           )}
         </div>
 
-        {/* NAVIGATION TABS: SCHEDULE MANAGEMENT & AUTOMATION */}
+        {/* NAVIGATION TABS: SCHEDULE MANAGEMENT, PROJECT INTRO & WORKSPACE */}
         <div className="px-3 pt-2 pb-1 shrink-0 flex flex-col gap-1">
           {(!collapsed || mobileOpen) ? (
-            <button
-              type="button"
-              onClick={() => onChangeView?.(currentView === "schedules" ? "chat" : "schedules")}
-              className={cn(
-                "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
-                currentView === "schedules"
-                  ? "bg-[#00D4FF]/15 text-[#00D4FF] border border-[#00D4FF]/30 shadow-[0_0_12px_rgba(0,212,255,0.15)]"
-                  : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
-              )}
-            >
-              <div className="flex items-center gap-2.5">
-                <Clock className="h-4 w-4" />
-                <span>Lịch Quét & Email</span>
-              </div>
-              {activeScheduleCount !== undefined && activeScheduleCount > 0 && (
-                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#00D4FF] px-1 text-[10px] font-black text-[#080B21]">
-                  {activeScheduleCount}
+            <>
+              <button
+                type="button"
+                onClick={() => onChangeView?.(currentView === "schedules" ? "chat" : "schedules")}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
+                  currentView === "schedules"
+                    ? "bg-[#00D4FF]/15 text-[#00D4FF] border border-[#00D4FF]/30 shadow-[0_0_12px_rgba(0,212,255,0.15)]"
+                    : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Clock className="h-4 w-4" />
+                  <span>Lịch Quét & Email</span>
+                </div>
+                {activeScheduleCount !== undefined && activeScheduleCount > 0 && (
+                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[#00D4FF] px-1 text-[10px] font-black text-[#080B21]">
+                    {activeScheduleCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onChangeView?.(currentView === "intro" ? "chat" : "intro")}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer",
+                  currentView === "intro"
+                    ? "bg-[#A78BFA]/15 text-[#A78BFA] border border-[#A78BFA]/30 shadow-[0_0_12px_rgba(167,139,250,0.15)]"
+                    : "text-slate-400 hover:bg-[#121A45] hover:text-white border border-transparent"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Layers className="h-4 w-4" />
+                  <span>Giới Thiệu Dự Án</span>
+                </div>
+                <span className="rounded-full bg-[#A78BFA]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#A78BFA]">
+                  Team & Tech
                 </span>
-              )}
-            </button>
+              </button>
+            </>
           ) : (
             <div className="flex flex-col gap-2 items-center">
               <Tooltip>
@@ -287,6 +309,26 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-[#0E1538] border-[#00D4FF]/30 text-white text-xs">
                   Quản Lý Lịch Quét & Email ({activeScheduleCount || 0})
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => onChangeView?.(currentView === "intro" ? "chat" : "intro")}
+                    className={cn(
+                      "relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors cursor-pointer",
+                      currentView === "intro"
+                        ? "bg-[#A78BFA]/20 text-[#A78BFA] border border-[#A78BFA]/40"
+                        : "text-slate-400 hover:bg-[#121A45] hover:text-white"
+                    )}
+                  >
+                    <Layers className="h-4 w-4" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-[#0E1538] border-[#A78BFA]/30 text-white text-xs">
+                  Giới Thiệu Dự Án & Đội Ngũ
                 </TooltipContent>
               </Tooltip>
             </div>
