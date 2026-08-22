@@ -17,6 +17,10 @@ class LLMConfig:
     model_name: str = os.getenv("MODEL_NAME", "cx/gpt-5.5")
     temperature: float = 0.0
 
+    fallback_api_base: str = os.getenv("FALLBACK_OPENAI_API_BASE", "https://api.vilao.ai/v1")
+    fallback_model_name: str = os.getenv("FALLBACK_MODEL_NAME", "occ/claude-sonnet-4-6")
+    fallback_api_key: str = os.getenv("FALLBACK_OPENAI_API_KEY", os.getenv("OPENAI_API_KEY", ""))
+
 
 @dataclass(frozen=True)
 class SupabaseConfig:
@@ -71,6 +75,10 @@ paths_config = PathsConfig()
 OPENAI_API_KEY = llm_config.api_key
 OPENAI_API_BASE = llm_config.api_base
 MODEL_NAME = llm_config.model_name
+
+FALLBACK_OPENAI_API_BASE = llm_config.fallback_api_base
+FALLBACK_MODEL_NAME = llm_config.fallback_model_name
+FALLBACK_OPENAI_API_KEY = llm_config.fallback_api_key
 
 SUPABASE_URL = supabase_config.url
 SUPABASE_KEY = supabase_config.key

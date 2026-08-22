@@ -1,7 +1,14 @@
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 
-from src.config import OPENAI_API_KEY, OPENAI_API_BASE, MODEL_NAME
+from src.config import (
+    OPENAI_API_KEY,
+    OPENAI_API_BASE,
+    MODEL_NAME,
+    FALLBACK_OPENAI_API_KEY,
+    FALLBACK_OPENAI_API_BASE,
+    FALLBACK_MODEL_NAME
+)
 from src.tools.market_tools import (
     fetch_etsy_market_data,
     fetch_amazon_market_data,
@@ -27,13 +34,24 @@ from src.tools.email_tools import (
 )
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
-# Configure LLM using Printway 9router API parameters with deterministic 0.0 temperature
-llm = ChatOpenAI(
+# Primary LLM (e.g. 9Router cx/gpt-5.5)
+primary_llm = ChatOpenAI(
     model=MODEL_NAME,
     openai_api_key=OPENAI_API_KEY,
     openai_api_base=OPENAI_API_BASE,
     temperature=0.0
 )
+
+# Resilient Fallback LLM (e.g. Vilao AI occ/claude-sonnet-4-6)
+fallback_llm = ChatOpenAI(
+    model=FALLBACK_MODEL_NAME,
+    openai_api_key=FALLBACK_OPENAI_API_KEY,
+    openai_api_base=FALLBACK_OPENAI_API_BASE,
+    temperature=0.0
+)
+
+# Active LLM with seamless automatic failover
+llm = primary_llm.with_fallbacks([fallback_llm])
 
 # Granular Specialized Tools with 5-Source Market Data, Skills, PDF & Resend Email Delivery
 orchestrator_tools = [
