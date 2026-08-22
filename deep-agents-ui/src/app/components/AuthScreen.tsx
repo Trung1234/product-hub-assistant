@@ -41,19 +41,6 @@ export function AuthScreen() {
     setLoading(false);
   };
 
-  const handleQuickDemo = async (demoEmail: string, demoRole: string) => {
-    setEmail(demoEmail);
-    setPassword("Printway@2026");
-    setLoading(true);
-    setErrorMsg(null);
-    const res = await signIn(demoEmail, "Printway@2026");
-    if (res.error) {
-      // Fallback demo
-      signInDemo(demoEmail, demoRole);
-    }
-    setLoading(false);
-  };
-
   return (
     <div className="relative min-h-screen w-screen flex items-center justify-center text-white overflow-hidden p-4">
       {/* Fullscreen Competition Background Banner */}
@@ -233,43 +220,6 @@ export function AuthScreen() {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Login Buttons */}
-          <div className="mt-6 pt-5 border-t border-white/10">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                Truy Cập Nhanh (Demo Accounts)
-              </span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => handleQuickDemo("admin@printway.io", "lead_rd")}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00FF88]/50 hover:bg-[#00FF88]/10 text-left transition-all group cursor-pointer"
-              >
-                <div className="text-[10px] font-bold text-slate-200 group-hover:text-[#00FF88]">Lead R&D</div>
-                <div className="text-[9px] text-slate-500">Toàn quyền</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDemo("designer@printway.io", "designer")}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-[#00D2FF]/50 hover:bg-[#00D2FF]/10 text-left transition-all group cursor-pointer"
-              >
-                <div className="text-[10px] font-bold text-slate-200 group-hover:text-[#00D2FF]">Designer</div>
-                <div className="text-[9px] text-slate-500">Mẫu & Trends</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => handleQuickDemo("seller@crossborder.com", "seller")}
-                className="p-2 rounded-xl bg-white/5 border border-white/10 hover:border-purple-400/50 hover:bg-purple-500/10 text-left transition-all group cursor-pointer"
-              >
-                <div className="text-[10px] font-bold text-slate-200 group-hover:text-purple-400">VIP Seller</div>
-                <div className="text-[9px] text-slate-500">Top Niche</div>
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Security & Multi-Tenant Badges */}

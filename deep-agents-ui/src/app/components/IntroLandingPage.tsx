@@ -64,18 +64,6 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
     setLoading(false);
   };
 
-  const handleQuickDemoLogin = async (demoEmail: string, demoRole: string) => {
-    setLoading(true);
-    setErrorMsg(null);
-    const res = await signIn(demoEmail, "Printway@2026");
-    if (res.error) {
-      signInDemo(demoEmail, demoRole);
-    }
-    setLoading(false);
-    setAuthModalOpen(false);
-    onEnterApp?.();
-  };
-
   return (
     <div className="min-h-screen bg-[#080B21] text-slate-100 font-sans selection:bg-[#00FF88]/30 selection:text-[#00FF88]">
       {/* Navigation Header */}
@@ -600,39 +588,6 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                   {loading ? "Đang xử lý..." : authTab === "signin" ? "Đăng Nhập Vào Hệ Thống" : "Tạo Tài Khoản Mới"}
                 </button>
               </form>
-
-              {/* Quick Demo Access */}
-              <div className="mt-5 pt-4 border-t border-white/10">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">
-                  ⚡ TRUY CẬP NHANH (DEMO ACCOUNTS)
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoLogin("nhphuong.code@gmail.com", "lead_rd")}
-                    className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#00FF88] text-center transition-all cursor-pointer"
-                  >
-                    <div className="text-[11px] font-bold text-white">Lead R&D</div>
-                    <div className="text-[9px] text-[#00FF88]">Toàn quyền</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoLogin("designer@printway.io", "designer")}
-                    className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#00D2FF] text-center transition-all cursor-pointer"
-                  >
-                    <div className="text-[11px] font-bold text-white">Designer</div>
-                    <div className="text-[9px] text-[#00D2FF]">Mẫu & Trends</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemoLogin("seller@printway.io", "seller")}
-                    className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#A78BFA] text-center transition-all cursor-pointer"
-                  >
-                    <div className="text-[11px] font-bold text-white">VIP Seller</div>
-                    <div className="text-[9px] text-[#A78BFA]">Top Niche</div>
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
