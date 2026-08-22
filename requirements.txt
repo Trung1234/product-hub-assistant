@@ -4,3 +4,14 @@ numpy>=1.24.0
 scikit-learn>=1.3.0
 pytrends>=4.9.0
 requests>=2.31.0
+beautifulsoup4>=4.12.0
+python-dotenv>=1.0.0
+
+# Pinterest R&D pipeline
+playwright>=1.40.0          # sau khi cai: python -m playwright install chromium
+openai>=1.30.0              # AI agent tong hop bao cao (OpenAI-compatible endpoint)
+
+# Agent orchestrator
+langchain-core>=0.3.0
+langchain-openai>=0.2.0
+langgraph>=0.2.0

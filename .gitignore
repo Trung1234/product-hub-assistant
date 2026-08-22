@@ -58,3 +58,15 @@ yarn-error.log*
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Pinterest R&D pipeline - san pham sinh ra khi chay
+data/pinterest_rnd.db
+data/pinterest_rnd.db-wal
+data/pinterest_rnd.db-shm
+data/pinterest_raw/
+data/reports/pinterest_rnd_report_*
+data/browser_profile/
+
+# Profile Edge sao chep cho CDP - CHUA COOKIE THAT, khong duoc commit
+data/edge_cdp_profile/
+data/pinterest_raw/*.png

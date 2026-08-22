@@ -20,6 +20,7 @@ from src.tools.skill_tools import (
     list_available_ecommerce_skills
 )
 from src.tools.human_tools import ask_user_clarification
+from src.tools.pinterest_tools import PINTEREST_TOOLS
 from src.prompts import ORCHESTRATOR_SYSTEM_PROMPT
 
 # Configure LLM using Printway 9router API parameters
@@ -44,7 +45,7 @@ orchestrator_tools = [
     extract_ai_insights_from_opportunity_matrix,
     consult_ecommerce_skill,
     list_available_ecommerce_skills
-]
+] + PINTEREST_TOOLS
 
 # Instantiate PRINTWAY NEXUS Agent with strict R&D System Prompt & Domain Tools
 graph = create_react_agent(

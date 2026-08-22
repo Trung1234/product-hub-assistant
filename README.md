@@ -97,3 +97,53 @@ crossborder/
 ├── verify_hackathon_criteria.py    # Script Kiểm Thử 100 ĐIỂM
 └── README.md
 ```
+
+---
+
+## 📌 Pinterest R&D Pipeline (mới)
+
+Đường ống độc lập: **crawl → làm sạch → SQLite → chỉ số → AI agent → báo cáo 5 mục**
+(Top Keywords · Top Products · Key Insights · 30 Days Forecast · R&D Recommendation).
+
+Tài liệu đầy đủ: [`docs/03-PINTEREST-PIPELINE.md`](docs/03-PINTEREST-PIPELINE.md)
+
+```bash
+pip install -r requirements.txt
+python -m playwright install chromium
+
+# IP bị chặn → đăng nhập Pinterest MỘT LẦN (script không nhìn thấy mật khẩu)
+PYTHONPATH=. python run_pinterest_pipeline.py --login --browser msedge
+
+# Crawl thật + phân tích (--browser: msedge mặc định | chrome | chromium)
+PYTHONPATH=. python run_pinterest_pipeline.py --engine persistent --browser msedge --queries "personalized christmas ornament"
+
+# Kiểm chứng dữ liệu trong kho là thật hay mô phỏng
+PYTHONPATH=. python verify_pinterest_source.py
+
+# Dashboard cho đội low-tech
+streamlit run app.py     # chọn trang "Pinterest RnD" ở sidebar
+
+# Kiểm thử (không gọi mạng)
+PYTHONPATH=. python test_pinterest_pipeline.py
+```
+
+| Thành phần | File |
+| :--- | :--- |
+| Crawler Playwright (3 engine: headless / persistent / CDP anti-detect) | `src/crawlers/pinterest_scraper.py` |
+| Làm sạch + nạp kho | `src/pipeline/pinterest_pipeline.py` |
+| Kho SQLite + FTS5 | `src/db/` → `data/pinterest_rnd.db` |
+| Bộ chỉ số deterministic | `src/analytics/pinterest_metrics.py` |
+| AI agent tổng hợp + chống bịa số | `src/agents/pinterest_analyst_agent.py` |
+| Tool cho orchestrator | `src/tools/pinterest_tools.py` |
+| Dashboard | `pages/1_Pinterest_RnD.py` |
+| Kiểm chứng nguồn gốc dữ liệu | `verify_pinterest_source.py` |
+
+**Hai điều phải nhớ khi đọc báo cáo:**
+
+1. **Revenue / Quantity là ƯỚC LƯỢNG.** Pinterest không công bố doanh số. Con số sinh ra từ
+   chuỗi `saves → clicks → orders` (mô hình `pinterest_commerce_estimator_v1`), mỗi dòng đều
+   kèm `method` và `confidence`. Dùng để **xếp hạng cơ hội**, không phải để báo cáo tài chính.
+2. **Pinterest chặn theo dải IP.** Với IP bị gắn cờ `is_unauth_botspam_asn`, Pinterest trả
+   `200 OK` kèm feed rỗng cho khách chưa đăng nhập. Crawler phát hiện và trả `status="blocked"`
+   kèm lý do thay vì im lặng trả 0 pin. Cách xử lý: `--engine persistent` (đăng nhập một lần),
+   `--engine cdp` (gắn vào AdsPower/GoLogin), hoặc đổi mạng / proxy dân cư.
