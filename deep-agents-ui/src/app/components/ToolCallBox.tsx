@@ -23,14 +23,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { ToolCall, ActionRequest, ReviewConfig } from "@/app/types/types";
 import { cn } from "@/lib/utils";
-import { LoadExternalComponent } from "@langchain/langgraph-sdk/react-ui";
 import { ToolApprovalInterrupt } from "@/app/components/ToolApprovalInterrupt";
 import { toast } from "@/components/ui/sonner";
 
 interface ToolCallBoxProps {
   toolCall: ToolCall;
   uiComponent?: any;
-  stream?: any;
   graphId?: string;
   actionRequest?: ActionRequest;
   reviewConfig?: ReviewConfig;
@@ -123,7 +121,6 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
   ({
     toolCall,
     uiComponent,
-    stream,
     graphId,
     actionRequest,
     reviewConfig,
@@ -264,17 +261,7 @@ export const ToolCallBox = React.memo<ToolCallBoxProps>(
                 <span className="font-mono text-[11px]">Đang thực thi công cụ & cào dữ liệu thời gian thực...</span>
               </div>
             )}
-            {uiComponent && stream && graphId ? (
-              <div className="mt-2">
-                <LoadExternalComponent
-                  key={uiComponent.id}
-                  stream={stream}
-                  message={uiComponent}
-                  namespace={graphId}
-                  meta={{ status, args, result: result ?? "Chưa có kết quả" }}
-                />
-              </div>
-            ) : actionRequest && onResume ? (
+            {actionRequest && onResume ? (
               <div className="mt-2">
                 <ToolApprovalInterrupt
                   actionRequest={actionRequest}

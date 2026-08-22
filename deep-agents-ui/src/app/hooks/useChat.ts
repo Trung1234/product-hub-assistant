@@ -80,6 +80,7 @@ export function useChat({
             messages: [...(prev.messages ?? []), newMessage],
           }),
           config: { ...(activeAssistant?.config ?? {}), recursion_limit: 100 },
+          streamMode: ["messages", "values"],
         }
       );
       onHistoryRevalidate?.();

@@ -102,53 +102,59 @@ interface MarkdownContentProps {
 }
 
 /**
- * Throttles content updates during active LLM token streaming.
- * Batches incoming tokens to ~50ms intervals so React AST Remark parser
- * doesn't block the browser's main thread on every single character.
+ * Smooth 60fps content throttler during active LLM token streaming.
+ * Batches incoming tokens to ~55ms intervals so React Remark AST parser
+ * maintains 60fps frame rate without freezing the browser's main thread.
  */
 function useThrottledContent(
   content: string,
   isStreaming?: boolean,
-  throttleMs = 45
+  throttleMs = 55
 ): string {
   const [throttled, setThrottled] = useState(content);
-  const lastUpdateRef = useRef(Date.now());
-  const rafRef = useRef<number | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const latestContentRef = useRef(content);
+  latestContentRef.current = content;
+  const lastUpdateTimeRef = useRef(0);
+  const scheduledTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const scheduledRafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!isStreaming) {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (scheduledTimerRef.current) clearTimeout(scheduledTimerRef.current);
+      if (scheduledRafRef.current) cancelAnimationFrame(scheduledRafRef.current);
       setThrottled(content);
       return;
     }
 
-    const now = Date.now();
-    const elapsed = now - lastUpdateRef.current;
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    const timeSinceLastUpdate = now - lastUpdateTimeRef.current;
 
-    const scheduleUpdate = () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(() => {
-        lastUpdateRef.current = Date.now();
-        setThrottled(content);
+    const commitUpdate = () => {
+      if (scheduledRafRef.current) cancelAnimationFrame(scheduledRafRef.current);
+      scheduledRafRef.current = requestAnimationFrame(() => {
+        lastUpdateTimeRef.current = typeof performance !== "undefined" ? performance.now() : Date.now();
+        setThrottled(latestContentRef.current);
       });
     };
 
-    if (elapsed >= throttleMs) {
-      scheduleUpdate();
-    } else {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(scheduleUpdate, throttleMs - elapsed);
+    if (timeSinceLastUpdate >= throttleMs) {
+      commitUpdate();
+    } else if (!scheduledTimerRef.current) {
+      scheduledTimerRef.current = setTimeout(() => {
+        scheduledTimerRef.current = null;
+        commitUpdate();
+      }, throttleMs - timeSinceLastUpdate);
     }
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
   }, [content, isStreaming, throttleMs]);
 
-  return throttled;
+  useEffect(() => {
+    return () => {
+      if (scheduledTimerRef.current) clearTimeout(scheduledTimerRef.current);
+      if (scheduledRafRef.current) cancelAnimationFrame(scheduledRafRef.current);
+    };
+  }, []);
+
+  return isStreaming ? throttled : content;
 }
 
 // Lightweight, ultra-fast code renderer that avoids heavy Prism thread blocking during streaming
@@ -199,8 +205,8 @@ FastCodeBlock.displayName = "FastCodeBlock";
 
 export const MarkdownContent = React.memo<MarkdownContentProps>(
   ({ content, className, isStreaming }) => {
-    // Throttle content parsing during streaming
-    const displayContent = useThrottledContent(content, isStreaming, 50);
+    // Smooth 60fps throttler during streaming
+    const displayContent = useThrottledContent(content, isStreaming, 55);
 
     return (
       <div
@@ -239,6 +245,25 @@ export const MarkdownContent = React.memo<MarkdownContentProps>(
               const match = /language-([\w:-]+)/.exec(className || "");
               const lang = match ? match[1].toLowerCase() : "";
               const codeStr = String(children).replace(/\n$/, "");
+
+              // If streaming and block is not yet closed/complete, render non-blocking skeleton to avoid JSON parsing lockups
+              const isWidgetLang = [
+                "chart", "radar", "gauge", "profit_calc", "calculator", "calc", "profit",
+                "seo_tags", "tags", "keywords", "seo", "printway_sku", "sku_specs", "factory_specs",
+                "specs", "executive_kpi", "scorecard", "kpi_grid", "metrics_summary", "kpi_cards",
+                "channel_comparison", "channels", "marketplace_matrix", "marketplaces",
+                "action_plan", "timeline", "launch_plan", "roadmap", "action_roadmap",
+                "suggestions", "followup", "questions"
+              ].some((w) => lang === w || lang.startsWith(`${w}:`));
+
+              if (!inline && isStreaming && isWidgetLang && !codeStr.trim().endsWith("}") && !codeStr.trim().endsWith("]")) {
+                return (
+                  <div className="my-3 flex items-center gap-2.5 rounded-xl border border-[#00FF88]/30 bg-[#0E1538]/80 px-4 py-3 text-xs font-mono text-[#00FF88] shadow-sm animate-pulse">
+                    <Sparkles className="h-3.5 w-3.5 text-[#00FF88]" />
+                    <span>Đang tổng hợp trực quan hóa dữ liệu R&D...</span>
+                  </div>
+                );
+              }
 
               // 1. Chart Widgets (Radar, Gauge, Horizontal Bars)
               if (

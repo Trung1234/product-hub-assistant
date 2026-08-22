@@ -27,7 +27,6 @@ interface ChatMessageProps {
   actionRequestsMap?: Map<string, ActionRequest>;
   reviewConfigsMap?: Map<string, ReviewConfig>;
   ui?: any[];
-  stream?: any;
   onResumeInterrupt?: (value: any) => void;
   graphId?: string;
 }
@@ -100,7 +99,6 @@ export const ChatMessage = React.memo<ChatMessageProps>(
     actionRequestsMap,
     reviewConfigsMap,
     ui,
-    stream,
     onResumeInterrupt,
     graphId,
   }) => {
@@ -362,7 +360,6 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                     key={toolCall.id}
                     toolCall={toolCall}
                     uiComponent={toolCallGenUiComponent}
-                    stream={stream}
                     graphId={graphId}
                     actionRequest={actionRequest}
                     reviewConfig={reviewConfig}
@@ -397,6 +394,26 @@ export const ChatMessage = React.memo<ChatMessageProps>(
           )}
         </div>
       </div>
+    );
+  },
+  (prev, next) => {
+    // Highly efficient memoization: freeze historical messages completely during streaming
+    if (!prev.isLastMessage && !next.isLastMessage) {
+      return (
+        prev.message.id === next.message.id &&
+        prev.message.content === next.message.content &&
+        prev.toolCalls === next.toolCalls &&
+        prev.isLoading === next.isLoading
+      );
+    }
+    // For active/last message: re-render on content or tool call status changes
+    return (
+      prev.message.id === next.message.id &&
+      prev.message.content === next.message.content &&
+      prev.isLoading === next.isLoading &&
+      prev.isLastMessage === next.isLastMessage &&
+      prev.toolCalls === next.toolCalls &&
+      prev.ui === next.ui
     );
   }
 );

@@ -325,7 +325,6 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                     actionRequestsMap={isLastMessage ? actionRequestsMap : undefined}
                     reviewConfigsMap={isLastMessage ? reviewConfigsMap : undefined}
                     ui={messageUi}
-                    stream={stream}
                     onResumeInterrupt={resumeInterrupt}
                     graphId={assistant?.graph_id}
                   />
