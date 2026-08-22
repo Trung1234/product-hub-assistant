@@ -2,30 +2,33 @@ services:
   - type: web
     name: printway-product-hub-backend
     env: docker
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./Dockerfile
     plan: free
     region: oregon
     healthCheckPath: /ok
+    autoDeploy: true
     envVars:
-      - key: PORT
-        value: 2024
-      - key: HOST
-        value: 0.0.0.0
+      - key: OPENAI_API_BASE
+        value: https://9router.printway.io/v1
+      - key: MODEL_NAME
+        value: cx/gpt-5.5
+      - key: FALLBACK_OPENAI_API_BASE
+        value: https://api.vilao.ai/v1
+      - key: FALLBACK_MODEL_NAME
+        value: occ/claude-sonnet-4-6
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FALLBACK_OPENAI_API_KEY
+        sync: false
       - key: SUPABASE_URL
-        value: https://cvhjqjttdupchyjwfgyq.supabase.co
-      - key: SUPABASE_SECRET_KEY
         sync: false
       - key: SUPABASE_KEY
         sync: false
-      - key: BROWSERLESS_API_KEY
-        value: 2V79nSeq6bAJaW734125a67e5967f2e18acc38f01bc8c00b4
-      - key: BROWSERLESS_USE_RESIDENTIAL
-        value: "true"
-      - key: BROWSERLESS_WS_ENDPOINT
-        value: wss://chrome.browserless.io?token=2V79nSeq6bAJaW734125a67e5967f2e18acc38f01bc8c00b4&proxy=residential&proxyCountry=us&stealth=true&blockAds=true
-      - key: OPENAI_API_KEY
+      - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
-      - key: GOOGLE_API_KEY
+      - key: SUPABASE_PUBLISHABLE_KEY
         sync: false
-      - key: TAVILY_API_KEY
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: RESEND_API_KEY
         sync: false
