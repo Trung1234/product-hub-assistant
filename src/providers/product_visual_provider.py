@@ -5,14 +5,14 @@ PRODUCT_VISUAL_REGISTRY = {
     "ornament": [
         {
             "title": "2D Custom Shape Clear Acrylic Christmas Ornament",
-            "image_url": "https://images.unsplash.com/photo-1543257580-7269da773bf5?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666bc61b7ecd3a7dbd7c4624_800x800.jpeg",
             "style": "Clear Optical Acrylic (3mm) + UV Direct Print + Gold Hanging Ribbon",
             "suggested_price": "$16.99 - $21.99",
             "niche_advice": "Bo tròn 4 góc an toàn, in kèm ảnh chân dung siêu âm bé hoặc tên gia đình năm 2026."
         },
         {
             "title": "Stained Glass Effect Floral Acrylic Keepsake",
-            "image_url": "https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666bf7e8e9f8ecbc0656be49_800x800.jpeg",
             "style": "Giả kính màu nghệ thuật (Stained Glass Translucent Finish) với viền vàng ánh kim",
             "suggested_price": "$18.50 - $24.00",
             "niche_advice": "Hiệu ứng bắt sáng khi treo đèn cây thông noel hoặc cửa sổ (Sun-catcher)."
@@ -21,14 +21,14 @@ PRODUCT_VISUAL_REGISTRY = {
     "plaque": [
         {
             "title": "Custom Acrylic Desk Plaque with Solid Wood LED Light Base",
-            "image_url": "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666c1b083dea86065a84db98_800x800.jpeg",
             "style": "Tấm Acrylic dày 5mm + Đế gỗ dẻ gai tự nhiên tích hợp đèn LED vàng ấm 3000K",
             "suggested_price": "$24.99 - $34.99",
             "niche_advice": "Quà tặng sếp, bác sĩ, giáo viên hoặc quà lưu niệm kỷ niệm ngày cưới/tốt nghiệp."
         },
         {
             "title": "Minimalist Typography Acrylic Table Stand with Wooden Block",
-            "image_url": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666c00e33dea86065a84db26_800x800.jpeg",
             "style": "Acrylic trong suốt khắc chữ tối giản phong cách Bắc Âu + Đế gỗ sồi",
             "suggested_price": "$21.99 - $28.50",
             "niche_advice": "Decor bàn làm việc văn phòng, bàn trang điểm, quà tặng đồng nghiệp thăng chức."
@@ -37,14 +37,14 @@ PRODUCT_VISUAL_REGISTRY = {
     "tumbler": [
         {
             "title": "Stainless Steel Tumbler 20oz with Lid and Metal Straw",
-            "image_url": "https://images.unsplash.com/photo-1570857502809-08184874388e?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666c0e896f96e33ccef7c815_800x800.jpeg",
             "style": "Inox 304 2 lớp chân không giữ nhiệt 12h + Khắc Laser 360 độ hoặc in UV mờ",
             "suggested_price": "$22.99 - $29.99",
             "niche_advice": "Quà tặng thầy cô giáo, y tá, người tập gym, in kèm tên riêng và hoa văn đường nét."
         },
         {
             "title": "Pastel Gradient Insulated Drinkware Cup with Handle",
-            "image_url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/68ccdedc5b1f5719079149ff_800x800.jpg",
             "style": "Lớp phủ sơn tĩnh điện màu Pastel loang + Quai cầm công thái học",
             "suggested_price": "$26.50 - $34.00",
             "niche_advice": "Bắt trend thẩm mỹ Stanley/Owala cho học sinh, sinh viên và nữ văn phòng."
@@ -53,7 +53,7 @@ PRODUCT_VISUAL_REGISTRY = {
     "sweatshirt": [
         {
             "title": "Custom Embroidered Mama Sweatshirt with Sleeve Names",
-            "image_url": "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666bc61b7ecd3a7dbd7c4624_800x800.jpeg",
             "style": "Nỉ bông Cotton 80/20 dày dặn 320 GSM + Thêu Satin mật độ cao trước ngực và cổ tay áo",
             "suggested_price": "$34.99 - $44.99",
             "niche_advice": "Thêu chữ 'MAMA / GRANDMA' và thêu trái tim nhỏ kèm tên con ở cổ tay trái."
@@ -62,7 +62,7 @@ PRODUCT_VISUAL_REGISTRY = {
     "mug": [
         {
             "title": "Personalized Pet Portrait Ceramic Coffee Mug 11oz/15oz",
-            "image_url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80",
+            "image_url": "https://cdn.printway.io/lzi/666c00e33dea86065a84db26_800x800.jpeg",
             "style": "Gốm sứ cao cấp tráng men bóng + In chuyển nhiệt Sublimation tràn viền",
             "suggested_price": "$14.99 - $18.99",
             "niche_advice": "Vẽ tay chân dung chó/mèo cưng theo phong cách màu nước kèm câu quote hài hước."
