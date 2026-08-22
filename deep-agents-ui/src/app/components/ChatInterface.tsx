@@ -193,7 +193,6 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
         ? current.message.content
         : extractStringFromMessageContent(current.message);
 
-      // Check if this is a duplicate of the immediately preceding message (e.g. optimistic vs server message)
       if (deduplicated.length > 0) {
         const lastIdx = deduplicated.length - 1;
         const prev = deduplicated[lastIdx];
@@ -201,24 +200,26 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
           ? prev.message.content
           : extractStringFromMessageContent(prev.message);
 
-        // Deduplicate consecutive identical messages with same role and content
+        // 1. Deduplicate consecutive identical HUMAN messages (e.g. client optimistic vs server human message)
         if (
-          prev.message.type === current.message.type &&
-          currentContent.trim() !== "" &&
-          prevContent.trim() === currentContent.trim()
+          prev.message.type === "human" &&
+          current.message.type === "human" &&
+          (prevContent.trim() === currentContent.trim() || prevContent.trim() === "")
         ) {
-          // If current has tool calls or longer content, upgrade the existing one
-          if (current.toolCalls.length >= prev.toolCalls.length) {
+          if (currentContent.trim() !== "") {
             deduplicated[lastIdx] = current;
           }
           continue;
         }
 
-        // Deduplicate empty human or AI messages if followed by populated one
+        // 2. Deduplicate consecutive identical AI messages with EXACT SAME non-empty content
         if (
-          prev.message.type === current.message.type &&
-          prevContent.trim() === "" &&
-          currentContent.trim() !== ""
+          prev.message.type === "ai" &&
+          current.message.type === "ai" &&
+          currentContent.trim() !== "" &&
+          prevContent.trim() === currentContent.trim() &&
+          prev.toolCalls.length === 0 &&
+          current.toolCalls.length === 0
         ) {
           deduplicated[lastIdx] = current;
           continue;
