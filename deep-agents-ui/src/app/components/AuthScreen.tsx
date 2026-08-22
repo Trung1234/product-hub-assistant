@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export function AuthScreen() {
-  const { signIn, signUp, signInDemo } = useAuth();
+  const { signIn, signUp, signInWithGoogle, signInDemo } = useAuth();
   const [tab, setTab] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,6 +38,14 @@ export function AuthScreen() {
       const res = await signUp(email, password, fullName, role, orgId);
       if (res.error) setErrorMsg(res.error);
     }
+    setLoading(false);
+  };
+
+  const handleGoogleSignIn = async () => {
+    setErrorMsg(null);
+    setLoading(true);
+    const res = await signInWithGoogle();
+    if (res?.error) setErrorMsg(res.error);
     setLoading(false);
   };
 
@@ -216,6 +224,43 @@ export function AuthScreen() {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
+            </button>
+
+            {/* Google OAuth Divider & Button */}
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/10" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase">
+                <span className="bg-[#0E1538] px-2 text-slate-400 font-mono">hoặc tiếp tục với</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGoogleSignIn}
+              disabled={loading}
+              className="w-full py-2.5 px-4 rounded-xl border border-white/15 bg-[#080B21] hover:bg-[#121A45] hover:border-[#00FF88]/40 text-white font-bold text-xs transition-all flex items-center justify-center gap-2.5 cursor-pointer shadow-md"
+            >
+              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                <path
+                  fill="#EA4335"
+                  d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
+                />
+                <path
+                  fill="#4285F4"
+                  d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"
+                />
+              </svg>
+              <span>Đăng nhập nhanh với Google</span>
             </button>
           </form>
         </div>

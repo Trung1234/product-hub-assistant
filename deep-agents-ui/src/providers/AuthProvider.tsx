@@ -9,6 +9,7 @@ interface AuthContextType {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string, fullName: string, role: string, orgId: string) => Promise<{ error?: string }>;
+  signInWithGoogle: () => Promise<{ error?: string }>;
   signOut: () => Promise<void>;
   signInDemo: (email: string, role: string) => void;
 }
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signIn: async () => ({}),
   signUp: async () => ({}),
+  signInWithGoogle: async () => ({}),
   signOut: async () => {},
   signInDemo: () => {},
 });
@@ -147,6 +149,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return {};
   };
 
+  const signInWithGoogle = async () => {
+    if (!supabase) {
+      signInDemo("google_user@printway.io", "designer");
+      return {};
+    }
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/`,
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent",
+        },
+      },
+    });
+    if (error) return { error: error.message };
+    return {};
+  };
+
   const signOut = async () => {
     localStorage.removeItem("printway_demo_user");
     if (supabase) {
@@ -175,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, signInDemo }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signInWithGoogle, signOut, signInDemo }}>
       {children}
     </AuthContext.Provider>
   );
