@@ -53,9 +53,8 @@ class GoogleTrendsProvider:
         self._pytrend = None
         if PYTRENDS_AVAILABLE:
             try:
-                self._pytrend = TrendReq(hl="en-US", tz=360, timeout=(5, 10))
+                self._pytrend = TrendReq(hl="en-US", tz=360, timeout=(2, 4))
             except Exception as e:
-                print(f"[GoogleTrends Init Warning]: {e}")
                 self._pytrend = None
 
     @lru_cache(maxsize=128)

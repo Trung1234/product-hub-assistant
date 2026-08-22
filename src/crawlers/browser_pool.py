@@ -73,7 +73,7 @@ async def create_browser_session(
     # 1. Try Browserless Remote Cloud Cluster via CDP with Built-in Residential Proxy
     if browserless_cdp:
         try:
-            browser = await p.chromium.connect_over_cdp(browserless_cdp, timeout=15000)
+            browser = await p.chromium.connect_over_cdp(browserless_cdp, timeout=2500)
             return browser, "REMOTE_BROWSERLESS_RESIDENTIAL_CLOUD"
         except Exception as e:
             logger.warning(f"[BrowserPool] Failed to connect to Browserless Cloud: {e}. Falling back to local Chromium.")

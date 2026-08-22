@@ -404,13 +404,13 @@ class CrawleeAmazonScraper:
                             min_rating, min_reviews, max_reviews, min_bought_past_month,
                             bestseller_only, include_keywords, exclude_keywords
                         )))
-                        products = future.result(timeout=14.0)
+                        products = future.result(timeout=3.0)
                 else:
-                    products = loop.run_until_complete(self._crawl_playwright_async(
+                    products = loop.run_until_complete(asyncio.wait_for(self._crawl_playwright_async(
                         query, limit, pages, sort_by, min_price, max_price,
                         min_rating, min_reviews, max_reviews, min_bought_past_month,
                         bestseller_only, include_keywords, exclude_keywords
-                    ))
+                    ), timeout=3.0))
             except Exception:
                 products = []
         except Exception:
