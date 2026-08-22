@@ -65,4 +65,4 @@ graph = create_react_agent(
 )
 
 if __name__ == "__main__":
-    print(f"PRINTWAY NEXUS — Chief R&D & Market Opportunity Strategist Graph ({len(orchestrator_tools)} Tools, Checkpointer: {type(checkpointer).__name__}) initialized!")
+    print(f"PRINTWAY NEXUS — Chief R&D & Market Opportunity Strategist Graph ({len(orchestrator_tools)} Tools) initialized!")

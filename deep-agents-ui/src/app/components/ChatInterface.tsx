@@ -31,61 +31,33 @@ interface ChatInterfaceProps {
 const QUICK_PROMPTS = [
   {
     id: 1,
-    category: "christmas",
-    title: "Giáng Sinh: Baby First Ornament",
+    title: "🎄 Giáng Sinh: Baby First Ornament",
     query: "Nghiên cứu xu hướng và cơ hội sản phẩm 'Baby First Christmas Ornament 2026 Custom Acrylic Keepsake' trên Etsy, Amazon, Google Trends và Pinterest.",
-    badge: "Giáng Sinh / Mica 3mm",
+    badge: "Mica Trong Suốt 3mm",
   },
   {
     id: 2,
-    category: "family",
-    title: "Ngày của Cha: Kỷ niệm chương Mica đế gỗ LED",
+    title: "👨‍👩‍👧 Ngày Của Cha: Kỷ Niệm Chương LED",
     query: "Phân tích tiềm năng ngách 'Personalized Grandpa Gift For Father Day Custom Shape Acrylic Desk Plaque With Wood Base Light' cho thị trường US.",
-    badge: "Quà tặng Cha / Gỗ & LED",
+    badge: "Mica Đèn LED Đế Gỗ",
   },
   {
     id: 3,
-    category: "apparel",
-    title: "Ngày của Mẹ: Áo nỉ thêu tên con",
+    title: "👕 Thời Trang: Áo Nỉ Thêu Tên Con",
     query: "Đánh giá cơ hội thị trường cho 'Custom Embroidered Mama Sweatshirt With Kids Names On Sleeve'. Phân tích nhu cầu tìm kiếm, cạnh tranh và gu thẩm mỹ Pinterest.",
-    badge: "Thời trang / Áo nỉ thêu",
+    badge: "Nỉ Bông Cotton 80/20",
   },
   {
     id: 4,
-    category: "drinkware",
-    title: "Đồ uống: Ly giữ nhiệt 40oz quai cầm",
+    title: "🥤 Đồ Uống: Ly Giữ Nhiệt 40oz Quai Cầm",
     query: "Kiểm tra tiềm năng sản phẩm 'Custom Stainless Steel Tumbler 40oz with handle Teacher Appreciation Gift'. Đánh giá vận tốc bán hàng Amazon và biên lợi nhuận xưởng Printway.",
-    badge: "Ly giữ nhiệt / Inox 304",
+    badge: "Inox 304 2 Lớp",
   },
-  {
-    id: 5,
-    category: "pets",
-    title: "Thú cưng: Mặt dây chuyền Mica treo xe ô tô",
-    query: "Phân tích cơ hội ngách 'Personalized Dog Photo Acrylic Car Rearview Mirror Hanging Ornament' trên Etsy, Amazon và TikTok Shop US.",
-    badge: "Pet Decor / Mica Cắt CNC",
-  },
-  {
-    id: 6,
-    category: "christmas",
-    title: "Giáng Sinh: Acrylic Suncatcher 2 Lớp",
-    query: "Phân tích xu hướng sản phẩm 'Custom Family Stained Glass Effect Acrylic Suncatcher Ornament' cho mùa Q4 tại thị trường Mỹ.",
-    badge: "Mica In UV Xuyên Sáng",
-  },
-];
-
-const CATEGORIES = [
-  { key: "all", label: "Tất cả gợi ý" },
-  { key: "christmas", label: "🎄 Giáng Sinh Q4" },
-  { key: "family", label: "👨‍👩‍👧 Quà Tặng Gia Đình" },
-  { key: "apparel", label: "👕 Áo Nỉ & Thêu" },
-  { key: "drinkware", label: "🥤 Ly Giữ Nhiệt 40oz" },
-  { key: "pets", label: "🐾 Thú Cưng / Pet" },
 ];
 
 export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   const { scrollRef, contentRef, scrollToBottom } = useStickToBottom();
   const [showScrollBottom, setShowScrollBottom] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("all");
 
   const {
     stream,
@@ -103,11 +75,6 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
   } = useChatContext();
 
   const submitDisabled = isLoading;
-
-  const filteredPrompts = useMemo(() => {
-    if (activeCategory === "all") return QUICK_PROMPTS;
-    return QUICK_PROMPTS.filter((p) => p.category === activeCategory);
-  }, [activeCategory]);
 
   const handleScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -281,64 +248,49 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               <p className="text-[#00FF88] font-mono animate-pulse text-xs sm:text-sm">Đang tải cuộc trò chuyện...</p>
             </div>
           ) : processedMessages.length === 0 ? (
-            <div className="my-3 sm:my-6 flex flex-col items-center justify-center text-center">
-              <div className="relative mb-3 sm:mb-5 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_30px_rgba(0,255,136,0.2)]">
+            <div className="my-2 sm:my-4 flex flex-col items-center justify-center text-center">
+              {/* Competition Banner */}
+              <div className="relative mb-3 sm:mb-4 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_25px_rgba(0,255,136,0.15)]">
                 <img
                   src="/banner_crossborder.png"
                   alt="Cross Border AI Innovation Summit 2026"
                   loading="lazy"
                   decoding="async"
-                  className="h-auto w-full max-h-[150px] sm:max-h-[200px] object-cover object-center"
+                  className="h-auto w-full max-h-[130px] sm:max-h-[160px] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-transparent to-transparent"></div>
               </div>
 
-              <div className="flex items-center justify-center gap-3 mb-2.5 sm:mb-3">
-                <div className="flex items-center justify-center px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-white shadow-[0_0_25px_rgba(255,255,255,0.2)]">
+              {/* Logo & Header */}
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="flex items-center justify-center px-3 py-1 rounded-xl bg-white shadow-[0_0_20px_rgba(255,255,255,0.15)]">
                   <img
                     src="/logo_header.png"
                     alt="Printway.io"
                     loading="lazy"
                     decoding="async"
-                    className="h-5 sm:h-6 w-auto object-contain"
+                    className="h-4 sm:h-5 w-auto object-contain"
                   />
                 </div>
               </div>
 
-              <h2 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl md:text-3xl">
+              <h2 className="text-lg font-black tracking-tight text-white sm:text-2xl">
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF]">
                   PRINTWAY PRODUCT OPPORTUNITY HUB
                 </span>
               </h2>
-              <p className="mt-1.5 sm:mt-2 max-w-xl text-xs sm:text-sm text-[#94A3B8] px-2 leading-relaxed">
-                AI Copilot tự động cào tín hiệu thị trường Etsy, Amazon & Pinterest, tính toán Opportunity Score và tự suy luận chiến lược R&D sản phẩm POD xưởng Printway.
+              <p className="mt-1 max-w-lg text-xs text-[#94A3B8] px-2 leading-relaxed">
+                AI Copilot tự động cào tín hiệu thị trường Etsy, Amazon & Pinterest, chấm điểm Opportunity Score 5D và gợi ý chiến lược R&D xưởng Printway.
               </p>
 
-              <div className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 max-w-2xl px-2">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    onClick={() => setActiveCategory(cat.key)}
-                    className={cn(
-                      "px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border",
-                      activeCategory === cat.key
-                        ? "bg-[#00FF88] text-[#080B21] border-[#00FF88] shadow-[0_0_15px_rgba(0,255,136,0.4)]"
-                        : "bg-[#0E1538] text-slate-400 border-slate-800 hover:border-[#00FF88]/40 hover:text-white"
-                    )}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-3.5 sm:mt-5 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2 text-left">
-                {filteredPrompts.map((p) => (
+              {/* 4 Quick Prompts 2x2 Grid */}
+              <div className="mt-4 grid w-full grid-cols-1 gap-2.5 sm:grid-cols-2 text-left">
+                {QUICK_PROMPTS.map((p) => (
                   <button
                     key={p.id}
                     type="button"
                     onClick={() => handleQuickPromptClick(p.query)}
-                    className="group relative flex flex-col justify-between rounded-xl border border-[#00FF88]/20 bg-[#0E1538]/80 p-3 sm:p-4 transition-all duration-300 hover:border-[#00FF88] hover:bg-[#121A45] hover:shadow-[0_0_20px_rgba(0,255,136,0.2)] text-left cursor-pointer"
+                    className="group relative flex flex-col justify-between rounded-xl border border-[#00FF88]/20 bg-[#0E1538]/80 p-3 sm:p-3.5 transition-all duration-200 hover:border-[#00FF88] hover:bg-[#121A45] hover:shadow-[0_0_15px_rgba(0,255,136,0.15)] text-left cursor-pointer"
                   >
                     <div>
                       <div className="flex items-center justify-between">
@@ -347,11 +299,11 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                         </span>
                         <Zap className="h-3.5 w-3.5 text-[#00D2FF] opacity-70 group-hover:opacity-100 group-hover:text-[#00FF88] transition-colors" />
                       </div>
-                      <h4 className="mt-2 text-xs sm:text-sm font-semibold text-white group-hover:text-[#00FF88] transition-colors">
+                      <h4 className="mt-1.5 text-xs sm:text-sm font-semibold text-white group-hover:text-[#00FF88] transition-colors">
                         {p.title}
                       </h4>
                     </div>
-                    <p className="mt-1.5 sm:mt-2 line-clamp-2 text-[11px] sm:text-xs text-[#94A3B8]">
+                    <p className="mt-1 line-clamp-2 text-[11px] text-[#94A3B8] leading-relaxed">
                       {p.query}
                     </p>
                   </button>

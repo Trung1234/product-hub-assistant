@@ -61,30 +61,40 @@ export function AuthScreen() {
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#00D2FF]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#00FF88]/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-md">
+      <div className="relative z-10 w-full max-w-lg">
+        {/* Competition Summit Banner */}
+        <div className="relative mb-4 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_25px_rgba(0,255,136,0.2)]">
+          <img
+            src="/banner_crossborder.png"
+            alt="Cross Border AI Innovation Summit 2026"
+            className="h-auto w-full max-h-[120px] sm:max-h-[145px] object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080B21]/90 via-transparent to-transparent"></div>
+        </div>
+
         {/* Logo & Header */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-3 shadow-lg">
+        <div className="text-center mb-5">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-2.5 shadow-lg">
             <Sparkles className="w-4 h-4 text-[#00FF88]" />
             <span className="text-xs font-semibold text-slate-300">
               Printway Nexus 2.0 • AI R&D Platform
             </span>
           </div>
 
-          <div className="flex justify-center mb-3">
-            <div className="flex h-11 px-4 items-center justify-center rounded-xl bg-white shadow-xl">
+          <div className="flex justify-center mb-2.5">
+            <div className="flex h-10 px-3.5 items-center justify-center rounded-xl bg-white shadow-xl">
               <img
                 src="/logo_header.png"
                 alt="Printway"
-                className="h-6 w-auto object-contain"
+                className="h-5 w-auto object-contain"
               />
             </div>
           </div>
 
-          <h1 className="text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400">
             Printway Nexus
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 mt-0.5">
             Hệ thống AI Copilot phát hiện cơ hội sản phẩm POD đa sàn thời gian thực
           </p>
         </div>
