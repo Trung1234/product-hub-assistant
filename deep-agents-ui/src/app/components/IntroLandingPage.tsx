@@ -14,17 +14,12 @@ import {
   CheckCircle2,
   ArrowRight,
   Github,
-  Linkedin,
   ExternalLink,
   Layers,
   Bot,
-  Users,
   Compass,
-  FileSpreadsheet,
   Workflow,
-  Server,
-  Lock,
-  ChevronRight
+  Server
 } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -81,45 +76,6 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
     onEnterApp?.();
   };
 
-  const teamMembers = [
-    {
-      name: "Nguyễn Hoàng Phương",
-      role: "Team Lead & Fullstack AI Architect",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80",
-      description: "Chịu trách nhiệm kiến trúc tổng thể hệ thống Agentic AI, tích hợp LangGraph ReAct Orchestrator, Zero-Hallucination Grounding và nền tảng Next.js 16.",
-      tags: ["LangGraph", "Python 3.13", "Next.js 16", "Supabase RLS", "System Design"],
-      highlight: "AI Architecture & Core Engine",
-      color: "#00FF88"
-    },
-    {
-      name: "Trần Minh Đức",
-      role: "Senior AI & Data Crawler Engineer",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80",
-      description: "Xây dựng hạ tầng Anti-Blocking Web Scraping đa sàn (Etsy, Amazon, Pinterest), kết nối Browserless Cloud CDP, Crawlee Stealth và thuật toán chấm điểm 5D.",
-      tags: ["Browserless CDP", "Crawlee", "Playwright", "5D Scoring Algorithm", "Pytrends"],
-      highlight: "Multi-Source Crawler Pool",
-      color: "#00D2FF"
-    },
-    {
-      name: "Lê Thanh Tùng",
-      role: "Product Strategist & POD Domain Specialist",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=400&q=80",
-      description: "Định hình mô hình phân tích biên lợi nhuận xưởng Printway, thiết kế Knowledge Base chuyên sâu POD và hệ thống tự động hóa gửi email định kỳ qua Resend.",
-      tags: ["POD Manufacturing", "Resend API", "Profit Margin Engine", "Knowledge Base"],
-      highlight: "Supply Chain & Profit Optimization",
-      color: "#A78BFA"
-    },
-    {
-      name: "Phạm Mai Anh",
-      role: "Lead UI/UX Designer & Frontend Engineer",
-      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
-      description: "Thiết kế hệ thống Cyberpunk Design System, tương tác Radar Chart 6 chiều, Responsive Sidebar đa cấp độ và Dynamic OpenGraph Social Preview.",
-      tags: ["Cyberpunk UI", "Tailwind CSS", "Recharts", "Interactive Widgets", "SEO OG Engine"],
-      highlight: "Design System & Interactive UX",
-      color: "#F59E0B"
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-[#080B21] text-slate-100 font-sans selection:bg-[#00FF88]/30 selection:text-[#00FF88]">
       {/* Navigation Header */}
@@ -147,8 +103,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
             <a href="#features" className="hover:text-[#00FF88] transition-colors">Tính Năng Cốt Lõi</a>
             <a href="#architecture" className="hover:text-[#00D2FF] transition-colors">Kiến Trúc Kỹ Thuật</a>
-            <a href="#team" className="hover:text-[#A78BFA] transition-colors">Đội Ngũ Phát Triển</a>
-            <a href="#stats" className="hover:text-white transition-colors">Ma Trận 5D</a>
+            <a href="#stats" className="hover:text-[#A78BFA] transition-colors">Ma Trận Điểm 5D</a>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -190,43 +145,33 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 pb-16 sm:pt-12 sm:pb-24">
-        {/* Background Cyberpunk Glows */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#00FF88]/15 via-[#00D2FF]/10 to-transparent pointer-events-none" />
-        <div className="absolute top-40 -left-20 w-80 h-80 bg-[#00FF88]/10 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute top-60 -right-20 w-80 h-80 bg-[#00D2FF]/10 rounded-full blur-[100px] pointer-events-none" />
+      {/* Hero Section with Competition Background */}
+      <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28 border-b border-white/10">
+        {/* Fullwidth Competition Background with Cyberpunk Dark Overlay */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105 filter brightness-[0.32] contrast-125"
+          style={{ backgroundImage: "url('/banner_crossborder.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-[#080B21]/80 to-[#080B21]/55 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-[#080B21]/60 to-[#080B21] pointer-events-none" />
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#00D2FF]/20 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#00FF88]/20 rounded-full blur-[140px] pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          {/* Competition Summit Banner */}
-          <div className="mx-auto mb-8 max-w-4xl overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_35px_rgba(0,255,136,0.2)]">
-            <img
-              src="/banner_crossborder.png"
-              alt="Cross Border AI Innovation Summit 2026"
-              className="h-auto w-full max-h-[160px] sm:max-h-[220px] object-cover object-center"
-            />
-            <div className="bg-gradient-to-r from-[#0E1538] via-[#121A45] to-[#0E1538] px-4 py-2 border-t border-[#00FF88]/20 flex items-center justify-between text-xs">
-              <span className="font-mono text-[#00FF88] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                Cross Border AI Innovation Summit 2026
-              </span>
-              <span className="text-slate-400 font-mono text-[11px]">Track: E-Commerce AI Innovation</span>
-            </div>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center z-10">
+          {/* Competition Summit Badge */}
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF88]/40 bg-[#0E1538]/90 px-4 py-1.5 text-xs font-semibold text-[#00FF88] shadow-[0_0_25px_rgba(0,255,136,0.25)] mb-6 backdrop-blur-md">
+            <Sparkles className="h-4 w-4 text-[#00D2FF]" />
+            <span>Cross Border AI Innovation Summit 2026 • Track: E-Commerce AI</span>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-full border border-[#00FF88]/30 bg-[#0E1538] px-4 py-1.5 text-xs font-semibold text-[#00FF88] shadow-[0_0_20px_rgba(0,255,136,0.15)] mb-6">
-            <Bot className="h-4 w-4 text-[#00D2FF]" />
-            <span>Thế Hệ AI Copilot R&D Sản Phẩm Print-on-Demand Đa Sàn</span>
-          </div>
-
-          <h1 className="mx-auto max-w-4xl text-3xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="mx-auto max-w-4xl text-3xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl drop-shadow-[0_4px_30px_rgba(0,0,0,0.9)]">
             Phát Hiện & Thẩm Định Cơ Hội Sản Phẩm POD Bằng{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00FF88] via-[#00D2FF] to-[#FFFFFF]">
               Agentic AI Đa Tín Hiệu
             </span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p className="mx-auto mt-6 max-w-2xl text-sm sm:text-base text-slate-200 leading-relaxed drop-shadow-md">
             <strong className="text-white">Printway Nexus</strong> tự động cào tín hiệu thị trường thời gian thực từ <strong>Etsy, Amazon, Pinterest & Google Trends</strong>, chấm điểm cơ hội theo <strong>Ma trận 5D</strong> và đối soát trực tiếp với danh mục phôi xưởng <strong>Printway Việt Nam</strong>.
           </p>
 
@@ -250,7 +195,7 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
 
             <a
               href="#architecture"
-              className="flex items-center gap-2 rounded-xl border border-white/10 bg-[#0E1538] px-6 py-3.5 text-sm font-bold text-white hover:border-[#00D2FF]/50 hover:bg-[#121A45] transition-all"
+              className="flex items-center gap-2 rounded-xl border border-white/20 bg-[#0E1538]/90 backdrop-blur-md px-6 py-3.5 text-sm font-bold text-white hover:border-[#00D2FF]/50 hover:bg-[#121A45] transition-all shadow-lg"
             >
               <Workflow className="h-4 w-4 text-[#00D2FF]" />
               <span>Xem Sơ Đồ Kiến Trúc</span>
@@ -258,26 +203,26 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
           </div>
 
           {/* Key Metrics Strip */}
-          <div id="stats" className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-4 max-w-4xl mx-auto text-left">
-            <div className="rounded-2xl border border-[#00FF88]/20 bg-[#0E1538]/70 p-4 backdrop-blur-md">
+          <div id="stats" className="mt-14 grid grid-cols-2 gap-3 sm:grid-cols-4 max-w-4xl mx-auto text-left">
+            <div className="rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
               <div className="text-[11px] font-mono text-slate-400">NGUỒN DỮ LIỆU CÀO THẬT</div>
               <div className="text-xl sm:text-2xl font-black text-[#00FF88] mt-1">5+ Nền Tảng</div>
-              <p className="text-[11px] text-slate-400 mt-0.5">Etsy, Amazon, Trends, Pinterest, Shopee</p>
+              <p className="text-[11px] text-slate-300 mt-0.5">Etsy, Amazon, Trends, Pinterest, Shopee</p>
             </div>
-            <div className="rounded-2xl border border-[#00D2FF]/20 bg-[#0E1538]/70 p-4 backdrop-blur-md">
+            <div className="rounded-2xl border border-[#00D2FF]/30 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
               <div className="text-[11px] font-mono text-slate-400">CHẤM ĐIỂM CƠ HỘI</div>
               <div className="text-xl sm:text-2xl font-black text-[#00D2FF] mt-1">Ma Trận 5D</div>
-              <p className="text-[11px] text-slate-400 mt-0.5">Demand, Comp, Velocity, Margin, Trend</p>
+              <p className="text-[11px] text-slate-300 mt-0.5">Demand, Comp, Velocity, Margin, Trend</p>
             </div>
-            <div className="rounded-2xl border border-[#A78BFA]/20 bg-[#0E1538]/70 p-4 backdrop-blur-md">
+            <div className="rounded-2xl border border-[#A78BFA]/30 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
               <div className="text-[11px] font-mono text-slate-400">TỐC ĐỘ SẢN XUẤT</div>
               <div className="text-xl sm:text-2xl font-black text-[#A78BFA] mt-1">1 - 3 Ngày</div>
-              <p className="text-[11px] text-slate-400 mt-0.5">Xưởng Printway VN + 5-9 ngày giao US</p>
+              <p className="text-[11px] text-slate-300 mt-0.5">Xưởng Printway VN + 5-9 ngày giao US</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-[#0E1538]/70 p-4 backdrop-blur-md">
+            <div className="rounded-2xl border border-white/20 bg-[#0E1538]/85 p-4 backdrop-blur-xl shadow-lg">
               <div className="text-[11px] font-mono text-slate-400">ĐỘ CHÍNH XÁC SỐ LIỆU</div>
               <div className="text-xl sm:text-2xl font-black text-white mt-1">100% Grounded</div>
-              <p className="text-[11px] text-slate-400 mt-0.5">Triệt tiêu ảo giác, trích dẫn URL kiểm chứng</p>
+              <p className="text-[11px] text-slate-300 mt-0.5">Triệt tiêu ảo giác, trích dẫn URL kiểm chứng</p>
             </div>
           </div>
         </div>
@@ -480,99 +425,6 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
         </div>
       </section>
 
-      {/* Team Members Section (4 Thành Viên) */}
-      <section id="team" className="py-16 bg-[#0A0E2B] border-t border-white/5">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-xs font-bold text-[#A78BFA] uppercase tracking-widest">ĐỘI NGŨ PHÁT TRIỂN</h2>
-            <h3 className="mt-2 text-2xl sm:text-4xl font-black text-white">
-              Gặp Gỡ Đội Ngũ Sáng Lập Printway Nexus
-            </h3>
-            <p className="mt-3 text-xs sm:text-sm text-slate-400">
-              Các kỹ sư AI, chuyên gia dữ liệu và nhà chiến lược thương mại điện tử xuyên biên giới.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {teamMembers.map((member, index) => (
-              <div
-                key={index}
-                className="rounded-3xl border border-white/10 bg-[#0E1538] p-5 flex flex-col justify-between hover:border-[#00FF88]/50 hover:shadow-[0_0_30px_rgba(0,255,136,0.15)] transition-all group"
-              >
-                <div>
-                  {/* Member Photo */}
-                  <div className="relative mb-4 overflow-hidden rounded-2xl border border-white/10 aspect-square bg-[#080B21]">
-                    <img
-                      src={member.avatar}
-                      alt={member.name}
-                      className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0E1538] via-transparent to-transparent opacity-80" />
-                    <span
-                      className="absolute bottom-2.5 left-2.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold border"
-                      style={{
-                        backgroundColor: `${member.color}15`,
-                        borderColor: `${member.color}40`,
-                        color: member.color
-                      }}
-                    >
-                      {member.highlight}
-                    </span>
-                  </div>
-
-                  {/* Name & Role */}
-                  <h4 className="text-base font-black text-white group-hover:text-[#00FF88] transition-colors">
-                    {member.name}
-                  </h4>
-                  <p className="text-xs font-semibold text-slate-400 mt-0.5 mb-3">
-                    {member.role}
-                  </p>
-
-                  <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                    {member.description}
-                  </p>
-                </div>
-
-                {/* Tech Tags */}
-                <div>
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {member.tags.map((tag, tIdx) => (
-                      <span
-                        key={tIdx}
-                        className="rounded bg-[#080B21] px-1.5 py-0.5 text-[10px] font-mono text-slate-400 border border-white/5"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-3 border-t border-white/5 text-slate-400 text-xs">
-                    <a
-                      href="https://github.com/Trung1234/product-hub-assistant"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[#00FF88] transition-colors"
-                      title="GitHub"
-                    >
-                      <Github className="h-4 w-4" />
-                    </a>
-                    <a
-                      href="https://printway.io"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[#00D2FF] transition-colors"
-                      title="Printway.io"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Bottom CTA Banner */}
       <section className="py-16 bg-[#080B21] border-t border-white/5 text-center relative overflow-hidden">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -669,122 +521,122 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
                 </p>
               </div>
 
-            {/* Tabs */}
-            <div className="flex rounded-xl bg-[#080B21] p-1 mb-5 border border-white/5 text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => { setAuthTab("signin"); setErrorMsg(null); }}
-                className={`flex-1 py-2 rounded-lg transition-all ${
-                  authTab === "signin"
-                    ? "bg-[#00FF88] text-[#080B21] shadow-md shadow-[#00FF88]/20"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Đăng Nhập
-              </button>
-              <button
-                type="button"
-                onClick={() => { setAuthTab("signup"); setErrorMsg(null); }}
-                className={`flex-1 py-2 rounded-lg transition-all ${
-                  authTab === "signup"
-                    ? "bg-[#00FF88] text-[#080B21] shadow-md shadow-[#00FF88]/20"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                Tạo Tài Khoản
-              </button>
-            </div>
-
-            {errorMsg && (
-              <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
-                {errorMsg}
+              {/* Tabs */}
+              <div className="flex rounded-xl bg-[#080B21] p-1 mb-5 border border-white/5 text-xs font-bold">
+                <button
+                  type="button"
+                  onClick={() => { setAuthTab("signin"); setErrorMsg(null); }}
+                  className={`flex-1 py-2 rounded-lg transition-all ${
+                    authTab === "signin"
+                      ? "bg-[#00FF88] text-[#080B21] shadow-md shadow-[#00FF88]/20"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Đăng Nhập
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setAuthTab("signup"); setErrorMsg(null); }}
+                  className={`flex-1 py-2 rounded-lg transition-all ${
+                    authTab === "signup"
+                      ? "bg-[#00FF88] text-[#080B21] shadow-md shadow-[#00FF88]/20"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Tạo Tài Khoản
+                </button>
               </div>
-            )}
 
-            <form onSubmit={handleAuthSubmit} className="space-y-3">
-              {authTab === "signup" && (
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-400">Họ và tên</label>
-                  <input
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Nguyễn Văn A"
-                    className="w-full mt-1 px-3 py-2 rounded-xl bg-[#080B21] border border-white/10 text-white text-xs focus:border-[#00FF88] outline-none"
-                  />
+              {errorMsg && (
+                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
+                  {errorMsg}
                 </div>
               )}
 
-              <div>
-                <label className="text-[11px] font-semibold text-slate-400">Email công việc</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@printway.io"
-                  className="w-full mt-1 px-3 py-2 rounded-xl bg-[#080B21] border border-white/10 text-white text-xs focus:border-[#00FF88] outline-none"
-                />
-              </div>
+              <form onSubmit={handleAuthSubmit} className="space-y-3">
+                {authTab === "signup" && (
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-400">Họ và tên</label>
+                    <input
+                      type="text"
+                      required
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Nguyễn Văn A"
+                      className="w-full mt-1 px-3 py-2 rounded-xl bg-[#080B21] border border-white/10 text-white text-xs focus:border-[#00FF88] outline-none"
+                    />
+                  </div>
+                )}
 
-              <div>
-                <label className="text-[11px] font-semibold text-slate-400">Mật khẩu</label>
-                <input
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full mt-1 px-3 py-2 rounded-xl bg-[#080B21] border border-white/10 text-white text-xs focus:border-[#00FF88] outline-none"
-                />
-              </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-400">Email công việc</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@printway.io"
+                    className="w-full mt-1 px-3 py-2 rounded-xl bg-[#080B21] border border-white/10 text-white text-xs focus:border-[#00FF88] outline-none"
+                  />
+                </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full mt-2 py-2.5 rounded-xl bg-[#00FF88] text-[#080B21] text-xs font-black hover:bg-[#00FF88]/90 transition-all shadow-[0_0_20px_rgba(0,255,136,0.3)] disabled:opacity-50 cursor-pointer"
-              >
-                {loading ? "Đang xử lý..." : authTab === "signin" ? "Đăng Nhập Vào Hệ Thống" : "Tạo Tài Khoản Mới"}
-              </button>
-            </form>
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-400">Mật khẩu</label>
+                  <input
+                    type="password"
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full mt-1 px-3 py-2 rounded-xl bg-[#080B21] border border-white/10 text-white text-xs focus:border-[#00FF88] outline-none"
+                  />
+                </div>
 
-            {/* Quick Demo Access */}
-            <div className="mt-5 pt-4 border-t border-white/10">
-              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">
-                ⚡ TRUY CẬP NHANH (DEMO ACCOUNTS)
-              </div>
-              <div className="grid grid-cols-3 gap-2">
                 <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin("nhphuong.code@gmail.com", "lead_rd")}
-                  className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#00FF88] text-center transition-all cursor-pointer"
+                  type="submit"
+                  disabled={loading}
+                  className="w-full mt-2 py-2.5 rounded-xl bg-[#00FF88] text-[#080B21] text-xs font-black hover:bg-[#00FF88]/90 transition-all shadow-[0_0_20px_rgba(0,255,136,0.3)] disabled:opacity-50 cursor-pointer"
                 >
-                  <div className="text-[11px] font-bold text-white">Lead R&D</div>
-                  <div className="text-[9px] text-[#00FF88]">Toàn quyền</div>
+                  {loading ? "Đang xử lý..." : authTab === "signin" ? "Đăng Nhập Vào Hệ Thống" : "Tạo Tài Khoản Mới"}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin("designer@printway.io", "designer")}
-                  className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#00D2FF] text-center transition-all cursor-pointer"
-                >
-                  <div className="text-[11px] font-bold text-white">Designer</div>
-                  <div className="text-[9px] text-[#00D2FF]">Mẫu & Trends</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin("seller@printway.io", "seller")}
-                  className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#A78BFA] text-center transition-all cursor-pointer"
-                >
-                  <div className="text-[11px] font-bold text-white">VIP Seller</div>
-                  <div className="text-[9px] text-[#A78BFA]">Top Niche</div>
-                </button>
+              </form>
+
+              {/* Quick Demo Access */}
+              <div className="mt-5 pt-4 border-t border-white/10">
+                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 text-center">
+                  ⚡ TRUY CẬP NHANH (DEMO ACCOUNTS)
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemoLogin("nhphuong.code@gmail.com", "lead_rd")}
+                    className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#00FF88] text-center transition-all cursor-pointer"
+                  >
+                    <div className="text-[11px] font-bold text-white">Lead R&D</div>
+                    <div className="text-[9px] text-[#00FF88]">Toàn quyền</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemoLogin("designer@printway.io", "designer")}
+                    className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#00D2FF] text-center transition-all cursor-pointer"
+                  >
+                    <div className="text-[11px] font-bold text-white">Designer</div>
+                    <div className="text-[9px] text-[#00D2FF]">Mẫu & Trends</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleQuickDemoLogin("seller@printway.io", "seller")}
+                    className="p-2 rounded-xl bg-[#080B21] border border-white/10 hover:border-[#A78BFA] text-center transition-all cursor-pointer"
+                  >
+                    <div className="text-[11px] font-bold text-white">VIP Seller</div>
+                    <div className="text-[9px] text-[#A78BFA]">Top Niche</div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    )}
-  </div>
+      )}
+    </div>
   );
 }

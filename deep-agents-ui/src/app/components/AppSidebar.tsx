@@ -281,7 +281,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                   <span>Giới Thiệu Dự Án</span>
                 </div>
                 <span className="rounded-full bg-[#A78BFA]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#A78BFA]">
-                  Team & Tech
+                  Architecture
                 </span>
               </button>
             </>
@@ -328,7 +328,7 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-[#0E1538] border-[#A78BFA]/30 text-white text-xs">
-                  Giới Thiệu Dự Án & Đội Ngũ
+                  Giới Thiệu & Kiến Trúc Dự Án
                 </TooltipContent>
               </Tooltip>
             </div>
