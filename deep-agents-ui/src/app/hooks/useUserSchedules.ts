@@ -40,40 +40,12 @@ export function useUserSchedules() {
       if (stored) {
         setSchedules(JSON.parse(stored));
       } else {
-        // Starter sample schedule tailored to user
-        const initialSchedules: ScheduledPromptItem[] = [
-          {
-            id: `sch_${Date.now()}_1`,
-            userId,
-            keyword: "Baby First Christmas Ornament 2026 Custom Acrylic",
-            frequency: "daily",
-            recipientEmail: userEmail,
-            status: "active",
-            productType: "Mica Trong Suốt 3mm",
-            lastRunAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-            lastScore: 92,
-            lastRecommendation: "RECOMMEND",
-            createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-          },
-          {
-            id: `sch_${Date.now()}_2`,
-            userId,
-            keyword: "Personalized Grandpa Gift Acrylic Desk Plaque Wood Base LED",
-            frequency: "weekly",
-            recipientEmail: userEmail,
-            status: "active",
-            productType: "Mica Đèn LED Đế Gỗ",
-            lastRunAt: new Date(Date.now() - 3600000 * 18).toISOString(),
-            lastScore: 86,
-            lastRecommendation: "RECOMMEND",
-            createdAt: new Date(Date.now() - 86400000 * 5).toISOString(),
-          },
-        ];
-        setSchedules(initialSchedules);
-        localStorage.setItem(storageKey, JSON.stringify(initialSchedules));
+        setSchedules([]);
+        localStorage.setItem(storageKey, JSON.stringify([]));
       }
     } catch (e) {
       console.error("Failed to load user schedules:", e);
+      setSchedules([]);
     } finally {
       setIsLoaded(true);
     }

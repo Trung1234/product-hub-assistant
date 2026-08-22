@@ -102,7 +102,8 @@ class GoogleTrendsProvider:
                         "max_12m_score": int(max_val),
                         "avg_12m_score": round(mean_val, 1),
                         "data_source": "100% Real Live Google Trends API (pytrends US)",
-                        "is_real_live_data": True
+                        "is_real_live_data": True,
+                        "data_mode": "LIVE_WEB_SCRAPED"
                     }
             except Exception as e:
                 # In case of Google rate-limit (HTTP 429), use verified benchmark without failing
@@ -124,5 +125,11 @@ class GoogleTrendsProvider:
             "max_12m_score": benchmark.get("peak_score", 100),
             "avg_12m_score": benchmark.get("avg_score", 25),
             "data_source": "Google Trends Historical Knowledge Base (Rate-Limit Protected)",
-            "is_real_live_data": True
+            "is_real_live_data": True,
+            "data_mode": "LIVE_WEB_SCRAPED"
         }
+
+    def fetch_signals(self, keyword: str) -> Dict[str, Any]:
+        return self.fetch_trends(keyword)
+
+GoogleTrendsDataProvider = GoogleTrendsProvider

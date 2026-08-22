@@ -2,16 +2,19 @@ import json
 import requests
 from typing import Dict, Any
 
+from src.crawlers.amazon_scraper import AmazonWebScraper
+
 class AWSAmazonDataProvider:
     """
-    Amazon / AWS Product Advertising API (PA-API v5) & Scraper Data Provider.
-    Real Mode: Connects to AWS PA-API / Amazon Product Search API.
-    Mock Mode: Automatically triggers if AWS credentials are empty or API fails.
+    Amazon / AWS Product Advertising API (PA-API v5) & Real Live Web Scraper Provider.
+    Primary: Connects to AWS PA-API if credentials configured.
+    Secondary: Executes Anti-Blocking Live Web Scraper.
     """
     def __init__(self, access_key: str = "", secret_key: str = "", associate_tag: str = ""):
         self.access_key = access_key
         self.secret_key = secret_key
         self.associate_tag = associate_tag
+        self.scraper = AmazonWebScraper()
 
     def fetch_signals(self, query: str) -> Dict[str, Any]:
         """Crawls Amazon / AWS PA-API for product search, BSR rating, pricing, and monthly demand."""
@@ -44,19 +47,5 @@ class AWSAmazonDataProvider:
             except Exception:
                 pass
 
-        # Mock Engine Fallback
-        return self._mock_fetch_signals(query)
-
-    def _mock_fetch_signals(self, query: str) -> Dict[str, Any]:
-        return {
-            "source": "AWS Amazon Data Crawler (MOCK)",
-            "marketplace": "Amazon (AWS PA-API)",
-            "search_query": query,
-            "estimated_monthly_searches": 24500,
-            "active_listings": 420,
-            "monthly_sales_units": 1850,
-            "price_range_usd": "$16.99 - $28.99",
-            "bsr_category": "Home & Kitchen / Wall Art",
-            "avg_customer_rating": 4.75,
-            "data_mode": "MOCK_DATA"
-        }
+        # Live Web Scraper Execution
+        return self.scraper.scrape(query)

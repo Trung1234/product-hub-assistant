@@ -167,7 +167,7 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
 
         <button
           onClick={() => {
-            setFormEmail(user?.email || "phuong.nguyen@printway.io");
+            setFormEmail(user?.email || "nhphuong.code@gmail.com");
             setModalOpen(true);
           }}
           className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#00FF88] to-[#00D4FF] px-4 py-2.5 text-xs md:text-sm font-bold text-[#080B21] transition-all hover:opacity-90 shadow-lg shadow-[#00FF88]/20 cursor-pointer"
@@ -193,8 +193,19 @@ export const ScheduleManagementView: React.FC<ScheduleManagementViewProps> = ({
 
         <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-4 backdrop-blur-sm">
           <div className="text-xs font-semibold text-[#94A3B8] mb-1">Điểm Cơ Hội TB (5D)</div>
-          <div className="text-2xl font-black text-[#B026FF]">89 / 100</div>
-          <div className="text-[11px] text-[#B026FF]/80 mt-1">Ngách tiềm năng cao</div>
+          <div className="text-2xl font-black text-[#B026FF]">
+            {schedules.filter((s) => s.lastScore).length > 0
+              ? `${Math.round(
+                  schedules
+                    .filter((s) => s.lastScore)
+                    .reduce((acc, s) => acc + (s.lastScore || 0), 0) /
+                    schedules.filter((s) => s.lastScore).length
+                )} / 100`
+              : "-- / 100"}
+          </div>
+          <div className="text-[11px] text-[#B026FF]/80 mt-1">
+            {schedules.filter((s) => s.lastScore).length > 0 ? "Tính theo lịch đã chạy" : "Chưa có dữ liệu"}
+          </div>
         </div>
 
         <div className="rounded-2xl border border-[#1E293B] bg-[#0D1230]/80 p-4 backdrop-blur-sm">

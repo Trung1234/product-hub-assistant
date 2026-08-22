@@ -42,6 +42,9 @@ def get_browserless_cdp_url() -> Optional[str]:
     return None
 
 
+get_browserless_endpoint = get_browserless_cdp_url
+
+
 def get_proxy_config() -> Optional[Dict[str, str]]:
     """Retrieves random residential proxy from CRAWLEE_PROXIES if available."""
     raw = os.getenv("CRAWLEE_PROXIES", "").strip()
