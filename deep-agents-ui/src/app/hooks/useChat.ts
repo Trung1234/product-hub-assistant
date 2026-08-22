@@ -53,7 +53,7 @@ export function useChat({
     reconnectOnMount: true,
     threadId: threadId ?? null,
     onThreadId: (id) => {
-      setThreadId(id);
+      setThreadId(id, { shallow: true, scroll: false });
       if (id && user?.id) {
         recordUserThread(id, "Phiên nghiên cứu mới", user.id, profile?.org_id);
       }
