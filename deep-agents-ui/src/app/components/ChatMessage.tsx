@@ -383,14 +383,14 @@ export const ChatMessage = React.memo<ChatMessageProps>(
                   isStreaming={isLoading && isLastMessage}
                 />
                 
-                {/* 4. Follow-Up Questions rendered in clean ↳ UI (Last response only) */}
-                {isLastMessage && !isLoading && finalQuestions.length > 0 && (
-                  <SuggestedQuestionsRenderer questions={finalQuestions} />
-                )}
-
-                {/* 5. Message Quick Action Bar (Copy Report, Download CSV, Feedback) */}
+                {/* 4. Message Quick Action Bar (Copy Report, Download CSV, Send Email, Feedback) */}
                 {!isLoading && (
                   <MessageActionBar content={trimmedContent} />
+                )}
+
+                {/* 5. Follow-Up Questions rendered BELOW actions (Last response only) */}
+                {isLastMessage && !isLoading && finalQuestions.length > 0 && (
+                  <SuggestedQuestionsRenderer questions={finalQuestions} />
                 )}
               </div>
             </div>
