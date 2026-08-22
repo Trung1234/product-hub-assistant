@@ -42,16 +42,28 @@ primary_llm = ChatOpenAI(
     temperature=0.0
 )
 
-# Resilient Fallback LLM (e.g. Vilao AI occ/claude-sonnet-4-6)
-fallback_llm = ChatOpenAI(
-    model=FALLBACK_MODEL_NAME,
-    openai_api_key=FALLBACK_OPENAI_API_KEY,
-    openai_api_base=FALLBACK_OPENAI_API_BASE,
+# Secondary Ultra-Fast Fallback (9Router cx/gpt-5.4-mini - uses same verified credentials)
+secondary_llm = ChatOpenAI(
+    model="cx/gpt-5.4-mini",
+    openai_api_key=OPENAI_API_KEY,
+    openai_api_base=OPENAI_API_BASE,
     temperature=0.0
 )
 
-# Active LLM with seamless automatic failover
-llm = primary_llm.with_fallbacks([fallback_llm])
+fallbacks = [secondary_llm]
+
+# Tertiary Fallback LLM (Vilao AI occ/claude-sonnet-4-6 if distinct API key configured)
+if FALLBACK_OPENAI_API_KEY and FALLBACK_OPENAI_API_KEY != OPENAI_API_KEY:
+    vilao_llm = ChatOpenAI(
+        model=FALLBACK_MODEL_NAME,
+        openai_api_key=FALLBACK_OPENAI_API_KEY,
+        openai_api_base=FALLBACK_OPENAI_API_BASE,
+        temperature=0.0
+    )
+    fallbacks.append(vilao_llm)
+
+# Active LLM with multi-tier automatic failover
+llm = primary_llm.with_fallbacks(fallbacks)
 
 # Granular Specialized Tools with 5-Source Market Data, Skills, PDF & Resend Email Delivery
 orchestrator_tools = [

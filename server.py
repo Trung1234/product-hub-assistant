@@ -31,6 +31,7 @@ if __name__ == "__main__":
         port,
         False,  # no reload to prevent ulimit issues
         graphs,
+        n_jobs_per_worker=10,
         open_browser=False,
         allow_blocking=True,
         server_level="INFO"
