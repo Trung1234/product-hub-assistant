@@ -250,15 +250,15 @@ function HomePageInner({ config }: HomePageInnerProps) {
 
               {/* Logo & Brand Badge */}
               <div className="flex items-center gap-1.5">
-                <div className="flex h-7 px-2 items-center justify-center rounded-md bg-white shadow-sm">
+                <div className="flex items-center">
                   <img
                     src="/logo_header.png"
-                    alt="Printway"
-                    className="h-3.5 w-auto object-contain"
+                    alt="Printway Nexus"
+                    className="h-6 w-auto object-contain"
                   />
                 </div>
                 <span className="text-[9px] font-extrabold uppercase tracking-wider text-[#00FF88] bg-[#00FF88]/15 px-1.5 py-0.5 rounded border border-[#00FF88]/30">
-                  Nexus 2.0
+                  v2.0 PROD
                 </span>
               </div>
             </div>

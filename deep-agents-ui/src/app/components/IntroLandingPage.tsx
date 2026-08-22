@@ -70,22 +70,16 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
       <header className="sticky top-0 z-40 w-full border-b border-[#00FF88]/15 bg-[#080B21]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 px-3 items-center justify-center rounded-xl bg-white shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+            <div className="flex items-center">
               <img
                 src="/logo_header.png"
                 alt="Printway Nexus"
-                className="h-5 w-auto object-contain"
+                className="h-8 sm:h-9 w-auto object-contain"
               />
             </div>
-            <div className="hidden sm:block">
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-sm tracking-wider text-white">PRINTWAY NEXUS</span>
-                <span className="rounded-full bg-[#00FF88]/15 px-2 py-0.5 text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
-                  v2.0 PROD
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400 font-mono">AI R&D & MARKET INTELLIGENCE</p>
-            </div>
+            <span className="hidden sm:inline-block rounded-full bg-[#00FF88]/15 px-2 py-0.5 text-[10px] font-bold text-[#00FF88] border border-[#00FF88]/30">
+              v2.0 PROD
+            </span>
           </div>
 
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-300">
@@ -449,11 +443,11 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
       <footer className="border-t border-white/10 bg-[#060818] py-8 text-xs text-slate-500">
         <div className="mx-auto flex max-w-7xl flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-7 px-2.5 items-center justify-center rounded-lg bg-white">
+            <div className="flex items-center">
               <img
                 src="/logo_header.png"
-                alt="Printway"
-                className="h-3.5 w-auto object-contain"
+                alt="Printway Nexus"
+                className="h-6 w-auto object-contain"
               />
             </div>
             <span>© 2026 Printway Nexus. All rights reserved.</span>
@@ -493,13 +487,11 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
               {/* Header */}
               <div className="text-center mb-6">
                 <div className="flex justify-center mb-3">
-                  <div className="flex h-10 px-3.5 items-center justify-center rounded-xl bg-white shadow-xl">
-                    <img
-                      src="/logo_header.png"
-                      alt="Printway Nexus"
-                      className="h-5 w-auto object-contain"
-                    />
-                  </div>
+                  <img
+                    src="/logo_header.png"
+                    alt="Printway Nexus"
+                    className="h-10 w-auto object-contain"
+                  />
                 </div>
                 <h3 className="text-xl font-black text-white">
                   {authTab === "signin" ? "Đăng Nhập Printway Nexus" : "Tạo Tài Khoản Mới"}

@@ -65,13 +65,11 @@ export function AuthScreen() {
           </div>
 
           <div className="flex justify-center mb-2.5">
-            <div className="flex h-10 px-3.5 items-center justify-center rounded-xl bg-white shadow-xl">
-              <img
-                src="/logo_header.png"
-                alt="Printway Nexus"
-                className="h-5 w-auto object-contain"
-              />
-            </div>
+            <img
+              src="/logo_header.png"
+              alt="Printway Nexus"
+              className="h-10 w-auto object-contain"
+            />
           </div>
 
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-[0_0_20px_rgba(0,255,136,0.3)]">

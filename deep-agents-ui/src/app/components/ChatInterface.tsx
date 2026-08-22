@@ -262,16 +262,14 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
               </div>
 
               {/* Logo & Header */}
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <div className="flex items-center justify-center px-3 py-1 rounded-xl bg-white shadow-[0_0_20px_rgba(255,255,255,0.15)]">
-                  <img
-                    src="/logo_header.png"
-                    alt="Printway Nexus"
-                    loading="lazy"
-                    decoding="async"
-                    className="h-4 sm:h-5 w-auto object-contain"
-                  />
-                </div>
+              <div className="flex items-center justify-center mb-2">
+                <img
+                  src="/logo_header.png"
+                  alt="Printway Nexus"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-8 sm:h-9 w-auto object-contain"
+                />
               </div>
 
               <h2 className="text-lg font-black tracking-tight text-white sm:text-2xl">
