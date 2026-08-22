@@ -178,6 +178,7 @@ def record_product_opportunity_matrix(
 
     return json.dumps({
         "status": "RECORDED_SUCCESSFULLY",
+        "context_offloaded": True,
         "opportunity_row": row_dict,
         "offloaded_context_file": offloaded_file_path,
         "csv_download_url": csv_cdn_url,
