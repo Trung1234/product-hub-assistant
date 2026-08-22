@@ -172,7 +172,7 @@ function SharedViewContent({ token }: SharedViewContentProps) {
 
           <div className="flex items-center gap-2">
             <div className="flex h-7 px-2 items-center justify-center rounded bg-white shadow-sm">
-              <img src="/logo_header.png" alt="Printway" className="h-3.5 w-auto object-contain" />
+              <img src="/logo_header.png" alt="Printway Nexus" className="h-3.5 w-auto object-contain" />
             </div>
             <span className="text-[9px] font-black uppercase tracking-wider text-[#00FF88] bg-[#00FF88]/15 px-1.5 py-0.5 rounded border border-[#00FF88]/30">
               Shared Snapshot

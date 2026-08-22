@@ -394,7 +394,7 @@ export const PrintwaySkuCardWidget = React.memo<{ code: string }>(({ code }) => 
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#00FF88]/20 pb-3 mb-4">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white shadow-sm p-1 shrink-0">
-            <img src="/logo_header.png" alt="Printway" className="h-3 w-auto object-contain" />
+            <img src="/logo_header.png" alt="Printway Nexus" className="h-3 w-auto object-contain" />
           </div>
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-white">

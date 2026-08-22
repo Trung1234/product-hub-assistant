@@ -68,7 +68,7 @@ export function AuthScreen() {
             <div className="flex h-10 px-3.5 items-center justify-center rounded-xl bg-white shadow-xl">
               <img
                 src="/logo_header.png"
-                alt="Printway"
+                alt="Printway Nexus"
                 className="h-5 w-auto object-contain"
               />
             </div>

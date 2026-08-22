@@ -266,7 +266,7 @@ export const ChatInterface = React.memo<ChatInterfaceProps>(({ assistant }) => {
                 <div className="flex items-center justify-center px-3 py-1 rounded-xl bg-white shadow-[0_0_20px_rgba(255,255,255,0.15)]">
                   <img
                     src="/logo_header.png"
-                    alt="Printway.io"
+                    alt="Printway Nexus"
                     loading="lazy"
                     decoding="async"
                     className="h-4 sm:h-5 w-auto object-contain"

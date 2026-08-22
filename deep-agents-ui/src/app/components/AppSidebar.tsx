@@ -192,22 +192,22 @@ export const AppSidebar = React.memo<AppSidebarProps>(({
         <div className="flex h-14 items-center justify-between px-3 border-b border-[#00FF88]/10 shrink-0">
           {(!collapsed || mobileOpen) ? (
             <div className="flex items-center gap-2 overflow-hidden">
-              <div className="flex h-8 px-2.5 items-center justify-center rounded-lg bg-white shadow-[0_0_15px_rgba(255,255,255,0.15)]">
+              <div className="flex h-8 px-2 items-center justify-center rounded-lg bg-white shadow-[0_0_15px_rgba(255,255,255,0.15)]">
                 <img
                   src="/logo_header.png"
-                  alt="Printway.io"
-                  className="h-4 w-auto object-contain"
+                  alt="Printway Nexus"
+                  className="h-4.5 w-auto object-contain"
                 />
               </div>
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00FF88] bg-[#00FF88]/15 px-1.5 py-0.5 rounded border border-[#00FF88]/30">
-                R&D Hub
+                v2.0 PROD
               </span>
             </div>
           ) : (
             <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-[0_0_15px_rgba(255,255,255,0.15)] p-1">
               <img
-                src="/logo_header.png"
-                alt="Printway.io"
+                src="/printway-emblem.png"
+                alt="Printway Nexus"
                 className="h-full w-full object-contain"
               />
             </div>
