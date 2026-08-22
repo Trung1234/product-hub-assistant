@@ -55,29 +55,25 @@ export function AuthScreen() {
   };
 
   return (
-    <div className="relative min-h-screen w-screen flex items-center justify-center bg-[#080B21] text-white overflow-hidden p-4">
-      {/* Cyberpunk Background Gradients & Grid */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-900/20 via-[#080B21] to-[#080B21] pointer-events-none" />
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#00D2FF]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#00FF88]/10 rounded-full blur-[120px] pointer-events-none" />
+    <div className="relative min-h-screen w-screen flex items-center justify-center text-white overflow-hidden p-4">
+      {/* Fullscreen Competition Background Banner */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
+        style={{ backgroundImage: "url('/banner_crossborder.png')" }}
+      />
+      {/* Cyberpunk & Vignette Dark Overlays */}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#080B21] via-[#080B21]/80 to-[#080B21]/65 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-[#080B21]/60 to-[#080B21] pointer-events-none" />
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#00D2FF]/15 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[#00FF88]/15 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-lg">
-        {/* Competition Summit Banner */}
-        <div className="relative mb-4 w-full overflow-hidden rounded-2xl border border-[#00FF88]/30 bg-[#0E1538]/90 shadow-[0_0_25px_rgba(0,255,136,0.2)]">
-          <img
-            src="/banner_crossborder.png"
-            alt="Cross Border AI Innovation Summit 2026"
-            className="h-auto w-full max-h-[120px] sm:max-h-[145px] object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#080B21]/90 via-transparent to-transparent"></div>
-        </div>
-
+      <div className="relative z-10 w-full max-w-md">
         {/* Logo & Header */}
         <div className="text-center mb-5">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-2.5 shadow-lg">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0E1538]/90 border border-[#00FF88]/30 backdrop-blur-md mb-2.5 shadow-[0_0_20px_rgba(0,255,136,0.2)]">
             <Sparkles className="w-4 h-4 text-[#00FF88]" />
-            <span className="text-xs font-semibold text-slate-300">
-              Printway Nexus 2.0 • AI R&D Platform
+            <span className="text-xs font-semibold text-slate-200">
+              Cross Border AI Innovation Summit 2026
             </span>
           </div>
 
@@ -91,16 +87,16 @@ export function AuthScreen() {
             </div>
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-100 to-slate-400">
+          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-[0_0_20px_rgba(0,255,136,0.3)]">
             Printway Nexus
           </h1>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Hệ thống AI Copilot phát hiện cơ hội sản phẩm POD đa sàn thời gian thực
+          <p className="text-xs text-slate-300 mt-0.5 font-medium">
+            AI Copilot phát hiện cơ hội sản phẩm POD đa sàn thời gian thực
           </p>
         </div>
 
-        {/* Main Card */}
-        <div className="bg-[#0E1538]/80 border border-white/10 backdrop-blur-xl rounded-3xl p-6 sm:p-8 shadow-2xl">
+        {/* Main Frosted Glass Card */}
+        <div className="bg-[#0E1538]/85 border border-[#00FF88]/30 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
           {/* Tabs */}
           <div className="flex rounded-xl bg-[#080B21] p-1 mb-6 border border-white/5">
             <button

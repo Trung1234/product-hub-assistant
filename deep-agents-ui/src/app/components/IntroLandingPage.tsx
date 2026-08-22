@@ -630,36 +630,44 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
         </div>
       </footer>
 
-      {/* Quick Auth Modal */}
+      {/* Quick Auth Modal with Competition Background */}
       {authModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="relative w-full max-w-md rounded-3xl border border-[#00FF88]/30 bg-[#0E1538] p-6 sm:p-8 shadow-[0_0_50px_rgba(0,255,136,0.2)]">
-            <button
-              type="button"
-              onClick={() => setAuthModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-white text-xs font-mono"
-            >
-              ✕ Đóng
-            </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-[#00FF88]/30 bg-[#0E1538]/90 p-6 sm:p-8 shadow-[0_0_60px_rgba(0,255,136,0.2)] backdrop-blur-2xl">
+            {/* Background Competition Watermark */}
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20 pointer-events-none scale-105"
+              style={{ backgroundImage: "url('/banner_crossborder.png')" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0E1538] via-[#0E1538]/90 to-[#0E1538]/75 pointer-events-none" />
 
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="flex justify-center mb-3">
-                <div className="flex h-10 px-3.5 items-center justify-center rounded-xl bg-white shadow-xl">
-                  <img
-                    src="/logo_header.png"
-                    alt="Printway"
-                    className="h-5 w-auto object-contain"
-                  />
+            <div className="relative z-10">
+              <button
+                type="button"
+                onClick={() => setAuthModalOpen(false)}
+                className="absolute top-0 right-0 text-slate-400 hover:text-white text-xs font-mono"
+              >
+                ✕ Đóng
+              </button>
+
+              {/* Header */}
+              <div className="text-center mb-6">
+                <div className="flex justify-center mb-3">
+                  <div className="flex h-10 px-3.5 items-center justify-center rounded-xl bg-white shadow-xl">
+                    <img
+                      src="/logo_header.png"
+                      alt="Printway"
+                      className="h-5 w-auto object-contain"
+                    />
+                  </div>
                 </div>
+                <h3 className="text-xl font-black text-white">
+                  {authTab === "signin" ? "Đăng Nhập Printway Nexus" : "Tạo Tài Khoản Mới"}
+                </h3>
+                <p className="text-xs text-slate-300 mt-1 font-medium">
+                  Hệ thống AI R&D phát hiện cơ hội sản phẩm Print-on-Demand
+                </p>
               </div>
-              <h3 className="text-xl font-black text-white">
-                {authTab === "signin" ? "Đăng Nhập Printway Nexus" : "Tạo Tài Khoản Mới"}
-              </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Hệ thống AI R&D phát hiện cơ hội sản phẩm Print-on-Demand
-              </p>
-            </div>
 
             {/* Tabs */}
             <div className="flex rounded-xl bg-[#080B21] p-1 mb-5 border border-white/5 text-xs font-bold">
@@ -775,7 +783,8 @@ export function IntroLandingPage({ onEnterApp }: IntroLandingPageProps) {
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    )}
+  </div>
   );
 }
