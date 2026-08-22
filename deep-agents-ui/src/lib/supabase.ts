@@ -23,4 +23,6 @@ export interface UserProfile {
   full_name: string;
   role: "admin" | "lead_rd" | "designer" | "seller";
   org_id: string;
+  avatar_url?: string;
+  created_at?: string;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { supabase, isSupabaseConfigured, UserProfile } from "@/lib/supabase";
 
 interface AuthContextType {
@@ -10,6 +11,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error?: string }>;
   signUp: (email: string, password: string, fullName: string, role: string, orgId: string) => Promise<{ error?: string }>;
   signInWithGoogle: () => Promise<{ error?: string }>;
+  signInWithClerk: () => void;
+  signUpWithClerk: () => void;
   signOut: () => Promise<void>;
   signInDemo: (email: string, role: string) => void;
 }
@@ -21,17 +24,59 @@ const AuthContext = createContext<AuthContextType>({
   signIn: async () => ({}),
   signUp: async () => ({}),
   signInWithGoogle: async () => ({}),
+  signInWithClerk: () => {},
+  signUpWithClerk: () => {},
   signOut: async () => {},
   signInDemo: () => {},
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const clerk = useClerk();
+  const { isLoaded: isClerkLoaded, isSignedIn: isClerkSignedIn, user: clerkUser } = useUser();
+
   const [user, setUser] = useState<any | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Sync Clerk Session
   useEffect(() => {
-    // Check local storage for persistent session
+    if (isClerkSignedIn && clerkUser) {
+      const email = clerkUser.primaryEmailAddress?.emailAddress || "";
+      const fullName = clerkUser.fullName || clerkUser.firstName || email.split("@")[0] || "Printway User";
+      const role = (clerkUser.publicMetadata?.role as string) || "lead_rd";
+      const orgId = (clerkUser.publicMetadata?.org_id as string) || "printway_internal";
+
+      const mappedUser = {
+        id: clerkUser.id,
+        email,
+        user_metadata: {
+          full_name: fullName,
+          role,
+          org_id: orgId,
+          avatar_url: clerkUser.imageUrl
+        }
+      };
+
+      const mappedProfile: UserProfile = {
+        id: clerkUser.id,
+        email,
+        full_name: fullName,
+        role: role as any,
+        org_id: orgId,
+        avatar_url: clerkUser.imageUrl,
+        created_at: clerkUser.createdAt ? new Date(clerkUser.createdAt).toISOString() : new Date().toISOString()
+      };
+
+      setUser(mappedUser);
+      setProfile(mappedProfile);
+      setLoading(false);
+    }
+  }, [isClerkSignedIn, clerkUser]);
+
+  useEffect(() => {
+    // If Clerk is not signed in, check local demo or Supabase session
+    if (isClerkSignedIn) return;
+
     const savedDemo = localStorage.getItem("printway_demo_user");
     if (savedDemo) {
       try {
@@ -39,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(parsed.user);
         setProfile(parsed.profile);
         setLoading(false);
+        return;
       } catch {
         localStorage.removeItem("printway_demo_user");
       }
@@ -76,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [isClerkSignedIn]);
 
   const fetchProfile = async (authUser: any) => {
     if (!supabase) return;
@@ -90,7 +136,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (data) {
         setProfile(data as UserProfile);
       } else {
-        // Default profile from metadata
         setProfile({
           id: authUser.id,
           email: authUser.email,
@@ -110,9 +155,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const signInWithClerk = () => {
+    try {
+      clerk.openSignIn({
+        fallbackRedirectUrl: "/",
+        signUpFallbackRedirectUrl: "/",
+      });
+    } catch {
+      signInDemo("designer@printway.io", "designer");
+    }
+  };
+
+  const signUpWithClerk = () => {
+    try {
+      clerk.openSignUp({
+        fallbackRedirectUrl: "/",
+        signInFallbackRedirectUrl: "/",
+      });
+    } catch {
+      signInDemo("new_designer@printway.io", "designer");
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      clerk.openSignIn({
+        fallbackRedirectUrl: "/",
+        signUpFallbackRedirectUrl: "/",
+      });
+      return {};
+    } catch (err: any) {
+      if (supabase) {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/`,
+          },
+        });
+        if (error) return { error: error.message };
+        return {};
+      }
+      signInDemo("google_user@printway.io", "designer");
+      return {};
+    }
+  };
+
   const signIn = async (email: string, password: string) => {
     if (!supabase) {
-      // Fallback demo sign in
       signInDemo(email, "designer");
       return {};
     }
@@ -149,30 +238,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return {};
   };
 
-  const signInWithGoogle = async () => {
-    if (!supabase) {
-      signInDemo("google_user@printway.io", "designer");
-      return {};
-    }
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${typeof window !== "undefined" ? window.location.origin : ""}/`,
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
-      },
-    });
-    if (error) return { error: error.message };
-    return {};
-  };
-
   const signOut = async () => {
     localStorage.removeItem("printway_demo_user");
     if (supabase) {
       await supabase.auth.signOut();
     }
+    try {
+      await clerk.signOut();
+    } catch {}
     setUser(null);
     setProfile(null);
   };
@@ -196,7 +269,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signInWithGoogle, signOut, signInDemo }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        profile,
+        loading,
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signInWithClerk,
+        signUpWithClerk,
+        signOut,
+        signInDemo
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

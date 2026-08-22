@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -112,17 +114,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="vi" suppressHydrationWarning>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className={inter.className} suppressHydrationWarning>
-        <NuqsAdapter>{children}</NuqsAdapter>
-        <Toaster />
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="vi" suppressHydrationWarning>
+        <head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+        </head>
+        <body className={inter.className} suppressHydrationWarning>
+          <NuqsAdapter>{children}</NuqsAdapter>
+          <Toaster />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
